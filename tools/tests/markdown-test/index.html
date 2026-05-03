@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Astro v6.2.1"><title>LARMAX_OS // CONTROL_PANEL</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.j56hQv-j.js"></script><link rel="stylesheet" href="/_astro/panel-data.YpVsIyKh.css"></head> <body> <div class="global-boot" id="globalBoot" aria-hidden="true"> <div class="global-boot__frame" role="presentation"> <div class="global-boot__header"> <span class="global-boot__tag">LARMAX_OS</span> <span class="global-boot__muted">// SESSION_BOOT</span> </div> <div class="global-boot__body"> <div class="global-boot__lines" aria-label="Boot log"> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: DISPLAY_PIPELINE</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: CONTENT_INDEX</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: ROUTER_HANDSHAKE</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> STATUS: <span class="global-boot__ok">OK</span></div> </div> <div class="global-boot__cursor" aria-hidden="true">_</div> </div> </div> </div> <script>
+			(() => {
+				const BOOT_FLAG = 'larmax_boot_shown_v1';
+				const bootEl = document.getElementById('globalBoot');
+
+				const showBoot = () => {
+					if (!bootEl) return;
+					bootEl.classList.add('is-active');
+					document.documentElement.classList.add('has-boot-overlay');
+					window.setTimeout(() => {
+						bootEl.classList.remove('is-active');
+						document.documentElement.classList.remove('has-boot-overlay');
+					}, 850);
+				};
+
+				try {
+					const already = sessionStorage.getItem(BOOT_FLAG);
+					if (!already) {
+						sessionStorage.setItem(BOOT_FLAG, '1');
+						showBoot();
+					}
+				} catch {
+					// If sessionStorage is unavailable, fail open (no boot).
+				}
+			})();
+		</script>  <div class="app-container"> <div class="corner-bracket cb-tl"></div><div class="corner-bracket cb-tr"></div> <div class="corner-bracket cb-bl"></div><div class="corner-bracket cb-br"></div> <div class="sidebar-overlay" id="sidebarOverlay"></div> <!-- 左侧导航 --><aside class="sidebar" id="sidebar"> <div class="brand">LARMAX.CTRL_SYS</div> <div class="nav-section"> <div class="nav-section-title">MAIN_DIRECTORY</div> <a class="nav-item nav-link " href="/"> <i class="ph ph-house"></i> 首页 [HOME]
+</a> <a class="nav-item nav-link " href="/articles"> <i class="ph ph-article"></i> 文章 [ARTICLES]
+</a> <a class="nav-item nav-link active" href="/tools"> <i class="ph ph-wrench"></i> 工具 [TOOLS]
+</a> <!-- 说说板块 --> <a class="nav-item nav-link " href="/moments"> <i class="ph ph-chat-teardrop-text"></i> 说说 [MOMENTS]
+</a> </div> <div class="nav-section" style="margin-top: 24px;"> <div class="nav-section-title">EXTERNAL_LINKS</div> <a class="nav-item nav-link " href="/friends"> <i class="ph ph-users"></i> 朋友 [FRIENDS]
+</a> <a class="nav-item nav-link " href="/about"> <i class="ph ph-fingerprint"></i> 关于 [ABOUT]
+</a> </div> </aside> <section class="list-pane" data-section-key="tools"> <div class="list-header"> <div class="search-bar"> <i class="ph ph-list mobile-toggle" id="menuBtn"></i> <i class="ph ph-magnifying-glass" style="color:var(--text-muted)"></i> <input type="text" id="panelSearchInput" placeholder="QUERY DATABASE..."> </div> <div class="list-status-bar"> <span id="listTitle" style="color:var(--accent-cyan); font-weight:700;">// 工具</span> <span id="listCount">MATCHES: 3</span> </div> </div> <div class="notes-container" id="notesList">  <div class="list-folder " data-folder="scripts"><div class="list-folder-header" data-folder-header><div class="left-wrap"><i class="ph-fill ph-folder-notch" style="color:var(--accent-cyan)"></i>scripts</div><i class="ph ph-caret-down caret"></i></div><div class="list-folder-content"><a class="log-card article-card-hook " data-id="tools:scripts/batch-rename-automation" href="/tools/scripts/batch-rename-automation" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>Batch Rename Automation</div><div class="log-date">2024-03-15</div></div><div class="log-excerpt">&gt; Python regex script to clean up file names.</div></a></div></div><div class="list-folder open" data-folder="tests"><div class="list-folder-header" data-folder-header><div class="left-wrap"><i class="ph-fill ph-folder-notch" style="color:var(--accent-cyan)"></i>tests</div><i class="ph ph-caret-down caret"></i></div><div class="list-folder-content"><a class="log-card article-card-hook active" data-id="tools:tests/markdown-test" href="/tools/tests/markdown-test" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>MARKDOWN_TEST</div><div class="log-date">2026-05-03</div></div><div class="log-excerpt">&gt; Extreme Markdown rendering test for media, math, code, and component-like blocks.</div></a></div></div><a class="log-card article-card-hook " data-id="tools:starter-tool" href="/tools/starter-tool" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>Starter Tool</div><div class="log-date">2026-05-03</div></div><div class="log-excerpt">&gt; A simple non-test tool entry so the Tools panel has an everyday clickable item.</div></a> </div> </section> <script type="module">const E=document.querySelector(".list-pane"),d=E instanceof HTMLElement?E.dataset.sectionKey??"":"",g=`larmax:listScroll:${d}`,u="larmax:restoreListScrollSection",p=e=>(e||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,""),b=()=>{const e=document.getElementById("listCount"),o=document.getElementById("notesList");if(!e||!o)return;const s=Array.from(o.querySelectorAll(".article-card-hook")).filter(n=>n instanceof HTMLElement?n.style.display!=="none":!1);e.textContent=`MATCHES: ${s.length}`},I=e=>{const o=document.getElementById("notesList");if(!o)return;const s=p(e),n=Array.from(o.querySelectorAll(".article-card-hook")),c=Array.from(o.querySelectorAll(".list-folder"));n.forEach(t=>{if(!(t instanceof HTMLElement))return;const r=p(t.textContent||""),a=s.length===0||r.includes(s);t.style.display=a?"":"none"}),c.forEach(t=>{if(!(t instanceof HTMLElement))return;const r=Array.from(t.querySelectorAll(".article-card-hook")).filter(a=>a instanceof HTMLElement?a.style.display!=="none":!1);t.style.display=r.length>0?"":"none",s.length>0&&r.length>0&&t.classList.add("open")}),b()},h=()=>{const e=document.getElementById("notesList"),o=document.getElementById("viewPane"),s=document.getElementById("sidebar"),n=document.getElementById("sidebarOverlay"),c=document.getElementById("menuBtn"),t=document.getElementById("backBtn"),r=document.getElementById("panelSearchInput");if(e instanceof HTMLElement&&sessionStorage.getItem(u)===d){const i=sessionStorage.getItem(g);if(i){const l=Number(i)||0;requestAnimationFrame(()=>{e.scrollTop=l})}sessionStorage.removeItem(u)}c instanceof HTMLElement&&!c.dataset.bound&&(c.dataset.bound="1",c.addEventListener("click",()=>{!s||!n||(s.classList.add("open"),n.classList.add("open"))})),n instanceof HTMLElement&&!n.dataset.boundOverlay&&(n.dataset.boundOverlay="1",n.addEventListener("click",()=>{s&&(s.classList.remove("open"),n.classList.remove("open"))})),t instanceof HTMLElement&&!t.dataset.bound&&(t.dataset.bound="1",t.addEventListener("click",()=>{o&&o.classList.remove("active")})),e instanceof HTMLElement&&!e.dataset.bound&&(e.dataset.bound="1",e.addEventListener("click",a=>{const i=a.target;if(!(i instanceof Element))return;const l=i.closest("[data-folder-header]");if(l){const L=l.closest(".list-folder");L&&L.classList.toggle("open");return}const m=i.closest(".article-card-hook");if(!(m instanceof HTMLAnchorElement))return;const f=m.getAttribute("data-id");if(!f)return;const[y,...v]=f.split(":"),S=v.join(":");!y||!S||(y===d&&e instanceof HTMLElement&&(sessionStorage.setItem(g,String(e.scrollTop)),sessionStorage.setItem(u,d)),window.innerWidth<=900&&o&&o.classList.add("active"))})),r instanceof HTMLInputElement&&(r.oninput=()=>{I(r.value)})};h();document.addEventListener("astro:page-load",h);</script> <main class="view-pane" id="viewPane"> <div class="toolbar"> <div style="display: flex; align-items: center; gap: 12px;"> <i class="ph ph-arrow-left mobile-toggle" id="backBtn"></i> <span id="filePath" style="color: var(--text-muted);">~/tools/tests/markdown-test</span> </div> <div style="display:flex; gap:12px;"> <a href="https://github.com/LarmaxHarkerX" target="_blank" style="color:var(--text-muted); font-size:18px; display:flex; align-items:center;"><i class="ph ph-github-logo"></i></a> <button class="action-btn primary" id="shareActionBtn"><i class="ph ph-share-network"></i> SHARE</button> </div> </div> <div class="editor-content animate-fade-in-right" id="editorContent">  <div class="editor-title">MARKDOWN_TEST</div> <div class="article-meta-bar"> <div class="meta-item"> <i class="ph-fill ph-folder"></i><span class="meta-value">TOOLS</span> </div> <div class="meta-item"> <i class="ph-fill ph-calendar-blank"></i><span class="meta-value">2026-05-03</span> </div> <div class="meta-item"> <i class="ph-fill ph-text-aa"></i><span class="meta-value">~2982 Bytes</span> </div> <div class="meta-item"> <i class="ph-fill ph-clock"></i><span class="meta-value">ETA: 2m</span> </div> </div> <div class="editor-body"><h1 id="h1-markdown-stress-test">H1: Markdown Stress Test</h1>
+<p>This document exists to verify the final rendering of headings, media, math, code blocks, tables, alerts, and embedded HTML.</p>
+<h2 id="h2-typography--inline-content">H2: Typography &#x26; Inline Content</h2>
+<p>Normal text, <strong>bold text</strong>, <em>italic text</em>, <del>strikethrough</del>, <code>inline code</code>, and ==highlight== all in one line.</p>
+<blockquote>
+<p>Terminal note: the system should render quotes, spacing, and emphasis cleanly.</p>
+</blockquote>
+<h3 id="h3-lists">H3: Lists</h3>
+<ul>
+<li>Unordered item A</li>
+<li>Unordered item B
+<ul>
+<li>Nested item B-1</li>
+<li>Nested item B-2</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>Ordered item 01</li>
+<li>Ordered item 02</li>
+<li>Ordered item 03</li>
+</ol>
+<h2 id="h2-alerts--link-card">H2: Alerts &#x26; Link Card</h2>
+<div class="terminal-alert terminal-alert-info">
+	<strong>[INFO]</strong> Informational alert block for testing custom embedded HTML inside markdown.
+</div>
+<div class="terminal-alert terminal-alert-warning">
+	<strong>[WARN]</strong> Warning alert block for visual verification.
+</div>
+<a class="link-card" href="https://github.com" target="_blank" rel="noreferrer">
+	<div class="link-card-icon"><i class="ph ph-github-logo"></i></div>
+	<div class="link-card-content">
+		<div class="link-card-title">GitHub Reference Link</div>
+		<div class="link-card-desc">Used to verify the embedded card layout, icon alignment, and link treatment.</div>
+	</div>
+</a>
+<h2 id="h2-code-blocks">H2: Code Blocks</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> greet</span><span style="color:#E1E4E8">(name: </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">) -> </span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    message </span><span style="color:#F97583">=</span><span style="color:#F97583"> f</span><span style="color:#9ECBFF">"hello, </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">name</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(message)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> message</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">greet(</span><span style="color:#9ECBFF">"larmax"</span><span style="color:#E1E4E8">)</span></span></code></pre>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="javascript"><code><span class="line"><span style="color:#F97583">const</span><span style="color:#79B8FF"> packet</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">  panel: </span><span style="color:#9ECBFF">'tools'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  slug: </span><span style="color:#9ECBFF">'markdown-test'</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  status: </span><span style="color:#9ECBFF">'online'</span></span>
+<span class="line"><span style="color:#E1E4E8">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">console.</span><span style="color:#B392F0">log</span><span style="color:#E1E4E8">(packet);</span></span></code></pre>
+<h2 id="h2-table">H2: Table</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead><tbody><tr><td><code>title</code></td><td><code>string</code></td><td>Primary article title</td></tr><tr><td><code>date</code></td><td><code>date</code></td><td>Used in sorting and metadata</td></tr><tr><td><code>pinned</code></td><td><code>boolean</code></td><td>Moves entries above non-pinned docs</td></tr></tbody></table>
+<h2 id="h2-media-rendering">H2: Media Rendering</h2>
+<h3 id="h3-terminal-video">H3: Terminal Video</h3>
+<video class="terminal-video" controls poster="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&#x26;w=800&#x26;auto=format&#x26;fit=crop">
+	<source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+</video>
+<h3 id="h3-browser-audio">H3: Browser Audio</h3>
+<p>This section intentionally uses the browser-native audio control for reliable playback testing.</p>
+<audio controls preload="metadata" style="width: 100%; margin-bottom: 16px;">
+	<source src="https://www.w3schools.com/html/horse.ogg" type="audio/ogg">
+	Your browser does not support the audio element.
+</audio>
+<h3 id="h3-image--iframe">H3: Image &#x26; Iframe</h3>
+<img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&#x26;w=1000&#x26;auto=format&#x26;fit=crop" class="editor-image" alt="Matrix Code">
+<iframe width="100%" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 id="h2-math-katex">H2: Math (KaTeX)</h2>
+<p>Inline equation: <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mi mathvariant="normal">ℏ</mi><mfrac><mrow><mi mathvariant="normal">∂</mi><mi mathvariant="normal">Ψ</mi></mrow><mrow><mi mathvariant="normal">∂</mi><mi>t</mi></mrow></mfrac><mo>=</mo><mover accent="true"><mi>H</mi><mo>^</mo></mover><mi mathvariant="normal">Ψ</mi></mrow><annotation encoding="application/x-tex">i\hbar \frac{\partial \Psi}{\partial t} = \hat{H}\Psi</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2251em;vertical-align:-0.345em;"></span><span class="mord mathnormal">i</span><span class="mord">ℏ</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight" style="margin-right:0.0556em;">∂</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight" style="margin-right:0.0556em;">∂</span><span class="mord mtight">Ψ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9468em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9468em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.0813em;">H</span></span><span style="top:-3.2523em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.1944em;"><span class="mord">^</span></span></span></span></span></span></span><span class="mord">Ψ</span></span></span></span></p>
+<p>Block equation:</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>f</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mi mathvariant="normal">∞</mi></msubsup><mover accent="true"><mi>f</mi><mo>^</mo></mover><mo stretchy="false">(</mo><mi>ξ</mi><mo stretchy="false">)</mo><mtext> </mtext><msup><mi>e</mi><mrow><mn>2</mn><mi>π</mi><mi>i</mi><mi>ξ</mi><mi>x</mi></mrow></msup><mtext> </mtext><mi>d</mi><mi>ξ</mi></mrow><annotation encoding="application/x-tex">f(x) = \int_{-\infty}^{\infty} \hat{f}(\xi)\,e^{2 \pi i \xi x} \,d\xi</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.3846em;vertical-align:-0.9703em;"></span><span class="mop"><span class="mop op-symbol large-op" style="margin-right:0.4445em;position:relative;top:-0.0011em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4143em;"><span style="top:-1.7881em;margin-left:-0.4445em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">∞</span></span></span></span><span style="top:-3.8129em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∞</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9703em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9579em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.1076em;">f</span></span><span style="top:-3.2634em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.0833em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1944em;"><span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.046em;">ξ</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">e</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight" style="margin-right:0.0359em;">π</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight" style="margin-right:0.046em;">ξ</span><span class="mord mathnormal mtight">x</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.046em;">ξ</span></span></span></span></span>
+<hr>
+<p><em>Test document complete. End of File (EOF).</em></p></div>  </div> <div class="modal-overlay" id="shareModal"> <div class="modal-box"> <div class="corner-bracket cb-tl"></div><div class="corner-bracket cb-tr"></div> <div class="corner-bracket cb-bl"></div><div class="corner-bracket cb-br"></div> <div class="modal-header"><span>[ ENCRYPTED_UPLINK ]</span> <i class="ph ph-x modal-close" id="shareModalClose"></i></div> <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Share public access node:</p> <div style="display:flex; gap:8px;"> <input type="text" id="shareLinkInput" style="flex:1; background:#000; border:1px solid var(--border-dim); color:var(--accent-green); padding:8px 12px; font-family:var(--font-mono); font-size:12px; outline:none; border-radius: 4px;" readonly> <button class="action-btn primary" id="copyShareBtn">COPY</button> </div> </div> </div> </main> <script type="module">const d=document.getElementById("editorContent"),m=()=>{const e=document.getElementById("shareActionBtn"),t=document.getElementById("shareModal"),c=document.getElementById("shareModalClose"),o=document.getElementById("shareLinkInput"),n=document.getElementById("copyShareBtn");e instanceof HTMLButtonElement&&(e.onclick=()=>{t instanceof HTMLElement&&(o instanceof HTMLInputElement&&(o.value=window.location.href),n instanceof HTMLButtonElement&&(n.textContent="COPY"),t.classList.add("active"))}),c instanceof HTMLElement&&(c.onclick=()=>{t instanceof HTMLElement&&t.classList.remove("active")}),t instanceof HTMLElement&&(t.onclick=a=>{a.target===t&&t.classList.remove("active")}),n instanceof HTMLButtonElement&&o instanceof HTMLInputElement&&(n.onclick=async()=>{const a=o.value;try{navigator.clipboard?.writeText?await navigator.clipboard.writeText(a):(o.focus(),o.select(),document.execCommand("copy")),n.textContent="COPIED"}catch{n.textContent="FAILED"}finally{window.setTimeout(()=>{n.textContent="COPY"},2e3)}})};m();document.addEventListener("astro:page-load",m);d instanceof HTMLElement&&(d.classList.remove("animate-fade-in-right"),d.offsetWidth,d.classList.add("animate-fade-in-right"));const u=()=>{const e=document.getElementById("viewPane");if(!(e instanceof HTMLElement))return;const t=window.innerWidth<=900,n=(window.location.pathname.replace(/\/+$/,"")||"/").split("/").filter(Boolean).length>=2,a=t&&n;e.classList.toggle("active",a)};u();document.addEventListener("astro:page-load",u);const r=e=>e.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;"),f=()=>{document.querySelectorAll(".editor-body pre").forEach(e=>{if(!(e instanceof HTMLElement)||e.dataset.codeEnhanced==="1")return;const t=e.querySelector("code");if(!(t instanceof HTMLElement))return;e.dataset.codeEnhanced="1",e.classList.add("code-enhanced");const c=Array.from(t.classList).find(i=>i.startsWith("language-")),o=e.dataset.language||(c?c.replace("language-",""):"text"),n=t.textContent??"",a=n.replace(/\n$/,"").split(`
+`),l=document.createElement("div");l.className="code-block-toolbar",l.innerHTML=`<span class="code-block-lang">${r(o)}</span><button class="code-block-copy" type="button">COPY</button>`,e.prepend(l),t.innerHTML=a.map((i,p)=>{const g=i.length>0?r(i):"&nbsp;";return`<span class="code-line"><span class="code-line-number">${String(p+1).padStart(2,"0")}</span><span class="code-line-text">${g}</span></span>`}).join("");const s=l.querySelector(".code-block-copy");s instanceof HTMLButtonElement&&s.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(n),s.textContent="COPIED"}catch{s.textContent="FAILED"}finally{window.setTimeout(()=>{s.textContent="COPY"},2e3)}})})};f();document.addEventListener("astro:page-load",f);</script> </div>  </body></html>
