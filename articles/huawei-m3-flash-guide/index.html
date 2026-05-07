@@ -1,0 +1,496 @@
+<!DOCTYPE html><html lang="en" data-pf-theme="dark"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Astro v6.2.1"><title>LARMAX_OS | LARMAX_OS</title><link rel="canonical" href="https://larmax.github.io/articles/huawei-m3-flash-guide/"><meta name="description" content="个人数字花园"><meta name="robots" content="index, follow"><meta property="og:title" content="LARMAX_OS"><meta property="og:type" content="website"><meta property="og:image" content="https://ui-avatars.com/api/?name=LR&#38;background=00ff66&#38;color=000"><meta property="og:url" content="https://larmax.github.io/articles/huawei-m3-flash-guide/"><meta property="og:description" content="个人数字花园"><meta property="og:site_name" content="LARMAX_OS"><meta name="twitter:card" content="summary"><meta name="twitter:site" content="@root"><link rel="alternate" type="application/rss+xml" href="/rss.xml" title="RSS"><link href="/pagefind/pagefind-component-ui.css" rel="stylesheet"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.j56hQv-j.js"></script><link rel="stylesheet" href="/_astro/Layout.9TUQQN18.css">
+<link rel="stylesheet" href="/_astro/panel-data.Bwkiwyy9.css"></head> <body> <div class="global-boot" id="globalBoot" aria-hidden="true"> <div class="global-boot__frame" role="presentation"> <div class="global-boot__header"> <span class="global-boot__tag">LARMAX_OS</span> <span class="global-boot__muted">// SESSION_BOOT</span> </div> <div class="global-boot__body"> <div class="global-boot__lines" aria-label="Boot log"> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: DISPLAY_PIPELINE</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: CONTENT_INDEX</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: ROUTER_HANDSHAKE</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> STATUS: <span class="global-boot__ok">OK</span></div> </div> <div class="global-boot__cursor" aria-hidden="true">_</div> </div> </div> </div> <script>
+			(() => {
+				const BOOT_FLAG = 'larmax_boot_shown_v1';
+				const bootEl = document.getElementById('globalBoot');
+
+				const showBoot = async () => {
+					if (!bootEl) return;
+					bootEl.classList.add('is-active');
+					document.documentElement.classList.add('has-boot-overlay');
+
+					// Wait for fonts to load (with timeout)
+					await Promise.race([
+						document.fonts.ready,
+						new Promise(resolve => setTimeout(resolve, 3000)),
+					]);
+
+					// Minimum display time for the boot animation (synced with THEME.bootDuration)
+					await new Promise(resolve => setTimeout(resolve, 850));
+
+					bootEl.classList.remove('is-active');
+					document.documentElement.classList.remove('has-boot-overlay');
+				};
+
+				try {
+					const already = sessionStorage.getItem(BOOT_FLAG);
+					if (!already) {
+						sessionStorage.setItem(BOOT_FLAG, '1');
+						showBoot();
+					}
+				} catch {
+					// If sessionStorage is unavailable, fail open (no boot).
+				}
+			})();
+		</script> <script type="module" src="/_astro/Layout.astro_astro_type_script_index_0_lang.DP7v6V7H.js"></script> <script type="module">let e={top:0};document.addEventListener("astro:before-swap",()=>{const t=document.querySelector(".notes-container");t&&(e={left:0,top:t.scrollTop})});document.addEventListener("astro:after-swap",()=>{const t=document.querySelector(".notes-container");t&&(t.scrollTop=e.top)});</script>  <div class="app-container"> <div class="corner-bracket cb-tl"></div><div class="corner-bracket cb-tr"></div> <div class="corner-bracket cb-bl"></div><div class="corner-bracket cb-br"></div> <div class="sidebar-overlay" id="sidebarOverlay"></div> <!-- 左侧导航 --><aside class="sidebar" id="sidebar"> <div class="brand">LARMAX.CTRL_SYS</div> <div class="nav-section"> <div class="nav-section-title">MAIN_DIRECTORY</div> <a class="nav-item nav-link " href="/"> <i class="ph ph-house"></i> 首页 [HOME] </a><a class="nav-item nav-link active" href="/articles"> <i class="ph ph-article"></i> 文章 [ARTICLES] </a><a class="nav-item nav-link " href="/tools"> <i class="ph ph-wrench"></i> 工具 [TOOLS] </a><a class="nav-item nav-link " href="/moments"> <i class="ph ph-chat-teardrop-text"></i> 说说 [MOMENTS] </a> </div> <div class="nav-section nav-section-external"> <div class="nav-section-title">EXTERNAL_LINKS</div> <a class="nav-item nav-link " href="/friends"> <i class="ph ph-users"></i> 朋友 [FRIENDS] </a><a class="nav-item nav-link " href="/about"> <i class="ph ph-fingerprint"></i> 关于 [ABOUT] </a> </div> </aside> <section class="list-pane" data-section-key="articles"> <div class="list-header"> <div class="search-bar"> <i class="ph ph-list mobile-toggle" id="menuBtn" aria-label="Menu"></i> <div class="search-trigger" id="searchTrigger"> <i class="ph ph-magnifying-glass search-bar-icon"></i> <input type="text" id="panelSearchInput" placeholder="QUERY DATABASE..." readonly tabindex="-1" class="search-bar-input"> </div> </div> <div class="list-status-bar"> <span id="listTitle" class="list-title">// 文章</span> <span id="listCount">MATCHES: 3</span> </div> </div> <!-- Search Modal --> <div id="searchModal" class="search-modal"> <div id="searchBackdrop" class="search-modal-backdrop"></div> <div class="search-modal-content"> <div class="search-modal-header"> <input type="text" id="searchInput" placeholder="Search..." autocomplete="off" class="search-modal-input"> <kbd class="search-modal-kbd">Esc</kbd> </div> <div id="searchResults" class="search-modal-results"> <div id="searchEmpty" class="search-modal-empty">Start typing to search...</div> </div> </div> </div> <div class="notes-container" id="notesList">  <a class="log-card article-card-hook " data-id="articles:feature-showcase" href="/articles/feature-showcase" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>feature-showcase</div><div class="log-date">2026-05-07</div></div><div class="log-excerpt">&gt; Comprehensive demonstration of all supported Markdown features in LARMAX_OS.</div></a><a class="log-card article-card-hook " data-id="articles:coreldraw-clean-uninstall" href="/articles/coreldraw-clean-uninstall" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>coreldraw-clean-uninstall</div><div class="log-date">2026-03-16</div></div><div class="log-excerpt">&gt; 解决 CorelDRAW 卸载后仍提示&quot;已安装更新版本&quot;的问题。</div></a><a class="log-card article-card-hook active" data-id="articles:huawei-m3-flash-guide" href="/articles/huawei-m3-flash-guide" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>huawei-m3-flash-guide</div><div class="log-date">2026-03-15</div></div><div class="log-excerpt">&gt; 华为平板 M3 (BTV-DL09) 扩容 System 分区并刷入 Google 套件的完整教程。</div></a> </div> </section> <script>(function(){const mobileBreakpoint = 900;
+
+		const sectionRoot = document.querySelector('.list-pane');
+		const currentSectionKey = sectionRoot instanceof HTMLElement ? sectionRoot.dataset.sectionKey ?? '' : '';
+		const scrollStorageKey = `larmax:listScroll:${currentSectionKey}`;
+		const restoreFlagKey = 'larmax:restoreListScrollSection';
+
+		let notesListClickAbort = new AbortController();
+
+		const setupListPane = () => {
+			// Abort previous click listener to prevent double-binding
+			notesListClickAbort.abort();
+			notesListClickAbort = new AbortController();
+
+			const notesList = document.getElementById('notesList');
+			const viewPane = document.getElementById('viewPane');
+			const sidebar = document.getElementById('sidebar');
+			const sidebarOverlay = document.getElementById('sidebarOverlay');
+			const menuBtn = document.getElementById('menuBtn');
+			const backBtn = document.getElementById('backBtn');
+
+			if (notesList instanceof HTMLElement) {
+				const shouldRestore = sessionStorage.getItem(restoreFlagKey) === currentSectionKey;
+				if (shouldRestore) {
+					const savedScroll = sessionStorage.getItem(scrollStorageKey);
+					if (savedScroll) {
+						const next = Number(savedScroll) || 0;
+						// Allow layout + list expand to settle before restoring scroll.
+						requestAnimationFrame(() => {
+							notesList.scrollTop = next;
+						});
+					}
+					sessionStorage.removeItem(restoreFlagKey);
+				}
+			}
+
+			if (menuBtn instanceof HTMLElement && !menuBtn.dataset.bound) {
+				menuBtn.dataset.bound = '1';
+				menuBtn.addEventListener('click', () => {
+					if (!sidebar || !sidebarOverlay) return;
+					sidebar.classList.add('open');
+					sidebarOverlay.classList.add('open');
+				});
+			}
+
+			if (sidebarOverlay instanceof HTMLElement && !sidebarOverlay.dataset.boundOverlay) {
+				sidebarOverlay.dataset.boundOverlay = '1';
+				sidebarOverlay.addEventListener('click', () => {
+					if (!sidebar) return;
+					sidebar.classList.remove('open');
+					sidebarOverlay.classList.remove('open');
+				});
+			}
+
+			if (backBtn instanceof HTMLElement && !backBtn.dataset.bound) {
+				backBtn.dataset.bound = '1';
+				backBtn.addEventListener('click', () => {
+					if (!viewPane) return;
+					viewPane.classList.remove('active');
+				});
+			}
+
+		const handleNotesListClick = (e) => {
+			const target = e.target;
+			if (!(target instanceof Element)) return;
+
+			const folderHeader = target.closest('[data-folder-header]');
+			if (folderHeader) {
+				const folder = folderHeader.closest('.list-folder');
+				if (folder) {
+					const isExpanded = folder.getAttribute('data-expanded') === 'true';
+					folder.setAttribute('data-expanded', isExpanded ? 'false' : 'true');
+				}
+				e.preventDefault();
+				e.stopPropagation();
+				return;
+			}
+
+			const cardLink = target.closest('.article-card-hook');
+			if (!(cardLink instanceof HTMLAnchorElement)) return;
+
+			const key = cardLink.getAttribute('data-id');
+			if (!key) return;
+
+			const [collection, ...rest] = key.split(':');
+			const id = rest.join(':');
+			if (!collection || !id) return;
+
+			if (collection === currentSectionKey && notesList instanceof HTMLElement) {
+				sessionStorage.setItem(scrollStorageKey, String(notesList.scrollTop));
+				sessionStorage.setItem(restoreFlagKey, currentSectionKey);
+			}
+			if (window.innerWidth <= mobileBreakpoint && viewPane) viewPane.classList.add('active');
+		};
+
+			if (notesList instanceof HTMLElement) {
+				notesList.addEventListener('click', handleNotesListClick, { signal: notesListClickAbort.signal });
+			}
+		};
+
+		setupListPane();
+		document.addEventListener('astro:page-load', setupListPane);
+
+		// Search functionality using raw Pagefind JS API
+		let pagefind = null;
+		let debounceTimer = null;
+
+		async function loadPagefind() {
+			if (pagefind) return pagefind;
+			try {
+				pagefind = await import('/pagefind/pagefind.js');
+				await pagefind.init();
+				return pagefind;
+			} catch (e) {
+				console.warn('Pagefind not available:', e);
+				return null;
+			}
+		}
+
+		function openSearch() {
+			const modal = document.getElementById('searchModal');
+			const input = document.getElementById('searchInput');
+			if (modal) {
+				modal.classList.add('active');
+				input?.focus();
+				document.body.style.overflow = 'hidden';
+			}
+		}
+
+		function closeSearch() {
+			const modal = document.getElementById('searchModal');
+			const input = document.getElementById('searchInput');
+			const results = document.getElementById('searchResults');
+			const empty = document.getElementById('searchEmpty');
+			if (modal) {
+				modal.classList.remove('active');
+				if (input) input.value = '';
+				if (results) results.innerHTML = '';
+				if (empty) {
+					results?.appendChild(empty);
+					empty.textContent = 'Start typing to search...';
+				}
+				document.body.style.overflow = '';
+			}
+		}
+
+		async function performSearch() {
+			const input = document.getElementById('searchInput');
+			const results = document.getElementById('searchResults');
+			const empty = document.getElementById('searchEmpty');
+			const query = input?.value?.trim();
+
+			if (!query) {
+				closeSearch();
+				return;
+			}
+
+			try {
+				const pf = await loadPagefind();
+				if (!pf) return;
+
+				const search = await pf.search(query);
+				const data = await Promise.all(
+					search.results.slice(0, 8).map(r => r.data())
+				);
+
+				if (!results) return;
+				results.innerHTML = '';
+
+				if (data.length === 0) {
+					const noResults = document.createElement('div');
+					noResults.className = 'search-modal-empty';
+					noResults.textContent = 'No results found.';
+					results.appendChild(noResults);
+					return;
+				}
+
+				data.forEach((result) => {
+					const a = document.createElement('a');
+					a.href = result.url;
+					a.className = 'search-result-item';
+					a.innerHTML = `
+						<div class="search-result-title">${result.meta?.title || 'Untitled'}</div>
+						<div class="search-result-excerpt">${result.excerpt || ''}</div>
+					`;
+					a.addEventListener('click', closeSearch);
+					results.appendChild(a);
+				});
+			} catch (e) {
+				console.warn('Search error:', e);
+				if (results) {
+					results.innerHTML = '<div class="search-modal-empty">Search index loading...</div>';
+				}
+			}
+		}
+
+		function setupSearch() {
+			const trigger = document.getElementById('searchTrigger');
+			const backdrop = document.getElementById('searchBackdrop');
+			const input = document.getElementById('searchInput');
+
+			// Remove old listeners
+			trigger?.removeEventListener('click', openSearch);
+			backdrop?.removeEventListener('click', closeSearch);
+			input?.removeEventListener('input', handleInput);
+
+			// Add fresh listeners
+			trigger?.addEventListener('click', openSearch);
+			backdrop?.addEventListener('click', closeSearch);
+			input?.addEventListener('input', handleInput);
+		}
+
+		function handleInput() {
+			clearTimeout(debounceTimer);
+			debounceTimer = setTimeout(performSearch, 200);
+		}
+
+		// Global keyboard shortcuts - register once
+		if (!window._searchKeydownRegistered) {
+			document.addEventListener('keydown', (e) => {
+				if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+					e.preventDefault();
+					const modal = document.getElementById('searchModal');
+					modal?.classList.contains('active') ? closeSearch() : openSearch();
+				}
+				if (e.key === 'Escape') closeSearch();
+			});
+			window._searchKeydownRegistered = true;
+		}
+
+		setupSearch();
+		document.addEventListener('astro:page-load', setupSearch);
+	})();</script> <main class="view-pane" id="viewPane"> <div class="toolbar"> <div class="toolbar-left"> <i class="ph ph-arrow-left mobile-toggle" id="backBtn" aria-label="Back"></i> <span id="filePath" class="toolbar-filepath">~/articles/huawei-m3-flash-guide</span> </div> <div class="toolbar-right"> <a href="https://github.com/LarmaxHarkerX" target="_blank" aria-label="GitHub" class="toolbar-icon-link"><i class="ph ph-github-logo"></i></a> <a href="/rss.xml" target="_blank" aria-label="RSS Feed" class="toolbar-icon-link"><i class="ph ph-rss"></i></a> <button class="action-btn primary" id="shareActionBtn" aria-label="Share"><i class="ph ph-share-network"></i> SHARE</button> </div> </div> <div class="reading-progress" id="readingProgress"></div> <div class="editor-content animate-fade-in-right" id="editorContent">  <div class="editor-title">Huawei M3 Flash Guide</div> <div class="article-meta-bar"> <div class="meta-item"> <i class="ph-fill ph-folder"></i><span class="meta-value">ARTICLES</span> </div> <div class="meta-item"> <i class="ph-fill ph-calendar-blank"></i><span class="meta-value">2026-03-15</span> </div> <div class="meta-item"> <i class="ph-fill ph-text-aa"></i><span class="meta-value">~4613 Bytes</span> </div> <div class="meta-item"> <i class="ph-fill ph-clock"></i><span class="meta-value">ETA: 5m</span> </div> </div> <div class="editor-body"><h1 id="华为平板-m3-扩容与刷机指南">华为平板 M3 扩容与刷机指南</h1>
+<blockquote><p>DEVICE: BTV-DL09 (64GB) // KIRIN 950</p></blockquote>
+<p>本教程基于实际操作记录，针对华为平板 M3 (BTV-DL09 64GB 版)。严格按步骤操作即可完成扩容和刷机。</p>
+<hr>
+<h2 id="️-风险提示">⚠️ 风险提示</h2>
+<ul>
+<li><strong>数据会全部清除</strong>：请提前备份到电脑或 SD 卡</li>
+<li><strong>分区操作有变砖风险</strong>：命令务必复制粘贴，不要手动输入</li>
+</ul>
+<hr>
+<h2 id="准备工作">准备工作</h2>
+<h3 id="必需条件">必需条件</h3>
+<ol>
+<li><strong>已解锁 Bootloader</strong>：Fastboot 界面显示 <code>PHONE Unlocked</code></li>
+<li><strong>ADB 工具</strong>：必须使用 <strong>v23.0.1</strong> 版本，新版会导致 <code>partition size: 0</code> 假报错</li>
+<li><strong>TWRP 镜像</strong>：适配当前系统的 <code>twrp.img</code></li>
+<li><strong>底层工具包</strong>：<code>parted</code>、<code>mkfs.ext4</code>、<code>e2fsck</code>、<code>resize2fs</code></li>
+<li><strong>ROM 和 GApps</strong>：放入 MicroSD 卡中</li>
+</ol>
+<hr>
+<h2 id="第一步刷入-twrp">第一步：刷入 TWRP</h2>
+<ol>
+<li>
+<p>平板进入 Fastboot 模式（关机状态，按住<strong>音量下</strong>，插 USB 线）</p>
+</li>
+<li>
+<p>执行刷入命令：</p>
+</li>
+</ol>
+<div class="expressive-code"><link rel="stylesheet" href="/_astro/ec.3l3gv.css"><script type="module" src="/_astro/ec.0vx5m.js"></script><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">fastboot</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">flash</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">recovery</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">twrp.img</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="fastboot flash recovery twrp.img"><div></div></button></div></figure></div>
+<blockquote><p>看到 <code>Writing 'recovery' OKAY</code> 且没有 <code>partition size: 0</code> 警告才是成功</p></blockquote>
+<ol start="3">
+<li>
+<p><strong>关键操作</strong>：刷完后<strong>不要 reboot</strong>，立刻拔掉 USB 线，长按电源键强制关机</p>
+</li>
+<li>
+<p>进入 TWRP：同时按住<strong>音量上 + 电源键</strong>，看到华为 Logo 松开电源键，继续按住音量上</p>
+</li>
+</ol>
+<hr>
+<h2 id="第二步推送工具">第二步：推送工具</h2>
+<p>在 TWRP 界面连接 USB，执行：</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">push</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">parted</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">push</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">mkfs.ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">push</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">e2fsck</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">push</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">resize2fs</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">shell</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">chmod</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">0777</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/parted</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">chmod</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">0777</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/mkfs.ext4</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">chmod</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">0777</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/e2fsck</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">chmod</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">0777</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/sbin/resize2fs</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="adb push parted /sbin/adb push mkfs.ext4 /sbin/adb push e2fsck /sbin/adb push resize2fs /sbin/adb shellchmod 0777 /sbin/partedchmod 0777 /sbin/mkfs.ext4chmod 0777 /sbin/e2fsckchmod 0777 /sbin/resize2fs"><div></div></button></div></figure></div>
+<hr>
+<h2 id="第三步扩容-system-分区">第三步：扩容 System 分区</h2>
+<p>在 <code>adb shell</code> 中执行：</p>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/parted</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="/sbin/parted /dev/block/mmcblk0"><div></div></button></div></figure></div>
+<h3 id="查看分区表">查看分区表</h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#79B8FF">print</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="print"><div></div></button></div></figure></div>
+<blockquote><p>如果提示 Backup GPT table corrupt，输入 <code>ok</code> 回车</p></blockquote>
+<h3 id="确认分区号">确认分区号</h3>
+<ul>
+<li>第 43 号：system</li>
+<li>第 49 号：userdata</li>
+</ul>
+<h3 id="删除旧分区">删除旧分区</h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">rm</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">49</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">rm</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">48</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">rm</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">47</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">rm</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">46</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">rm</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">45</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">rm</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">44</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">rm</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">43</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="rm 49rm 48rm 47rm 46rm 45rm 44rm 43"><div></div></button></div></figure></div>
+<h3 id="重建分区64gb-版本">重建分区（64GB 版本）</h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkpart</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">system</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ext2</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">1174</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">6501</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">name</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">43</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">system</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">set</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">43</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">msftdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">on</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkpart</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">cust</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">6501</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">6702</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">name</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">44</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">cust</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">set</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">44</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">msftdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">on</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkpart</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">version</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">6702</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">6736</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">name</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">45</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">version</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">set</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">45</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">msftdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">on</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkpart</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">vendor</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ext2</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">6736</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">7374</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">name</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">46</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">vendor</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">set</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">46</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">msftdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">on</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkpart</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">product</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">7374</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">7575</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">name</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">47</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">product</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">set</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">47</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">msftdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">on</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkpart</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">hisitest2</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">7575</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">7579</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">name</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">48</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">hisitest2</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">set</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">48</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">msftdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">on</span></div></div><div class="ec-line"><div class="code">
+</div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">mkpart</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">userdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">7579</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">62.5GB</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">name</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">49</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">userdata</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">set</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">49</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">msftdata</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">on</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="mkpart system ext2 1174 6501name 43 systemset 43 msftdata onmkpart cust ext4 6501 6702name 44 custset 44 msftdata onmkpart version ext4 6702 6736name 45 versionset 45 msftdata onmkpart vendor ext2 6736 7374name 46 vendorset 46 msftdata onmkpart product ext4 7374 7575name 47 productset 47 msftdata onmkpart hisitest2 7575 7579name 48 hisitest2set 48 msftdata onmkpart userdata 7579 62.5GBname 49 userdataset 49 msftdata on"><div></div></button></div></figure></div>
+<blockquote><p>32GB/16GB 版本请将 <code>62.5GB</code> 替换为 <code>print</code> 显示的总容量</p></blockquote>
+<h3 id="退出">退出</h3>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">quit</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="quit"><div></div></button></div></figure></div>
+<hr>
+<h2 id="第四步格式化分区">第四步：格式化分区</h2>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/mkfs.ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p43</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/mkfs.ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p44</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/mkfs.ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p45</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/mkfs.ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p46</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/mkfs.ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p47</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/mkfs.ext4</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p49</span></div></div><div class="ec-line"><div class="code"><span style="--0:#79B8FF">exit</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="/sbin/mkfs.ext4 /dev/block/mmcblk0p43/sbin/mkfs.ext4 /dev/block/mmcblk0p44/sbin/mkfs.ext4 /dev/block/mmcblk0p45/sbin/mkfs.ext4 /dev/block/mmcblk0p46/sbin/mkfs.ext4 /dev/block/mmcblk0p47/sbin/mkfs.ext4 /dev/block/mmcblk0p49exit"><div></div></button></div></figure></div>
+<h3 id="重启-twrp">重启 TWRP</h3>
+<p>拔掉 USB，长按电源键关机，重新进入 TWRP。</p>
+<h3 id="修复-data-分区">修复 Data 分区</h3>
+<ol>
+<li>TWRP 主界面 → <strong>Wipe</strong> → <strong>Format Data</strong> → 输入 <code>yes</code></li>
+<li>返回 → <strong>Advanced Wipe</strong> → 勾选 <strong>System</strong> → <strong>Repair or Change File System</strong> → <strong>Change File System</strong> → 选择 <strong>EXT4</strong></li>
+<li>对 <strong>Vendor</strong> 分区重复同样操作</li>
+</ol>
+<h3 id="验证">验证</h3>
+<p>在 <strong>Mount</strong> 菜单确认 System、Vendor、Data 都能勾选且不报错。</p>
+<hr>
+<h2 id="第五步刷入-rom">第五步：刷入 ROM</h2>
+<ol>
+<li>
+<p>从 SD 卡选择 ROM 包刷入，<strong>不要重启</strong></p>
+</li>
+<li>
+<p>扩展文件系统：</p>
+</li>
+</ol>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">shell</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/e2fsck</span><span style="--0:#E1E4E8"> </span><span style="--0:#79B8FF">-f</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p43</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">/sbin/resize2fs</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">/dev/block/mmcblk0p43</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="adb shell/sbin/e2fsck -f /dev/block/mmcblk0p43/sbin/resize2fs /dev/block/mmcblk0p43"><div></div></button></div></figure></div>
+<blockquote><p>看到 <code>The filesystem is now 1300480 blocks long</code> 表示 5GB 扩容成功</p></blockquote>
+<ol start="3">
+<li>
+<p>刷入 GApps 全量包</p>
+</li>
+<li>
+<p><strong>Wipe Cache/Dalvik</strong></p>
+</li>
+</ol>
+<hr>
+<h2 id="第六步重启">第六步：重启</h2>
+<ol>
+<li>TWRP → <strong>Reboot</strong> → <strong>System</strong></li>
+<li>首次开机需要 5-15 分钟（Data 分区较大）</li>
+<li>进入系统后在”设置-存储”确认空间</li>
+</ol>
+<hr>
+<h2 id="进阶优化">进阶优化</h2>
+<ul>
+<li><strong>动画缩放</strong>：开发者选项中将所有动画缩放调至 0.5x</li>
+<li><strong>Play 商店认证</strong>：刷入 Magisk + Play Integrity Fix 模块</li>
+</ul>
+<hr>
+<h2 id="修复-wifi-网络受限">修复 WiFi “网络受限”</h2>
+<p>连上 WiFi 后如果提示”已连接，但无法访问网络”：</p>
+<h3 id="原因">原因</h3>
+<p>原生安卓默认访问 Google 服务器验证网络，国内环境会超时失败。</p>
+<h3 id="修复方法">修复方法</h3>
+<ol>
+<li>开启 USB 调试</li>
+<li>执行：</li>
+</ol>
+<div class="expressive-code"><figure class="frame is-terminal"><figcaption class="header"><span class="title"></span><span class="sr-only">Terminal window</span></figcaption><pre data-language="bash"><code><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">shell</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">settings</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">put</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">global</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">captive_portal_http_url</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">http://connect.rom.miui.com/generate_204</span></div></div><div class="ec-line"><div class="code"><span style="--0:#B392F0">adb</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">shell</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">settings</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">put</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">global</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">captive_portal_https_url</span><span style="--0:#E1E4E8"> </span><span style="--0:#9ECBFF">https://connect.rom.miui.com/generate_204</span></div></div></code></pre><div class="copy"><div aria-live="polite"></div><button title="Copy to clipboard" data-copied="Copied!" data-code="adb shell settings put global captive_portal_http_url http://connect.rom.miui.com/generate_204adb shell settings put global captive_portal_https_url https://connect.rom.miui.com/generate_204"><div></div></button></div></figure></div>
+<ol start="3">
+<li>开启飞行模式 → 等待 3 秒 → 关闭飞行模式 → 重新连接 WiFi</li>
+</ol>
+<h3 id="备用服务器">备用服务器</h3>
+<ul>
+<li><code>https://cp.cloudflare.com/generate_204</code></li>
+<li><code>https://www.qualcomm.cn/generate_204</code></li>
+</ul>
+<hr>
+<p><em>Last updated: 2026-03-15</em></p></div>  </div> <dialog id="shareModal"> <div class="modal-box"> <div class="corner-bracket cb-tl"></div><div class="corner-bracket cb-tr"></div> <div class="corner-bracket cb-bl"></div><div class="corner-bracket cb-br"></div> <div class="modal-header"><span>[ ENCRYPTED_UPLINK ]</span> <i class="ph ph-x modal-close" id="shareModalClose" aria-label="Close"></i></div> <p class="share-modal-desc">Share public access node:</p> <div class="share-modal-row"> <input type="text" id="shareLinkInput" class="share-input" readonly> <button class="action-btn primary" id="copyShareBtn">COPY</button> </div> </div> </dialog> </main> <script>(function(){const copyFeedbackDuration = 2000;
+const mobileBreakpoint = 900;
+
+	const editorContent = document.getElementById('editorContent');
+
+	const setupShareUi = () => {
+		const shareActionBtn = document.getElementById('shareActionBtn');
+		const shareModal = document.getElementById('shareModal');
+		const shareModalClose = document.getElementById('shareModalClose');
+		const shareLinkInput = document.getElementById('shareLinkInput');
+		const copyButton = document.getElementById('copyShareBtn');
+
+		if (shareActionBtn instanceof HTMLButtonElement) {
+			shareActionBtn.onclick = () => {
+				if (!(shareModal instanceof HTMLDialogElement)) return;
+				if (shareLinkInput instanceof HTMLInputElement) shareLinkInput.value = window.location.href;
+				if (copyButton instanceof HTMLButtonElement) copyButton.textContent = 'COPY';
+				shareModal.showModal();
+			};
+		}
+
+		if (shareModalClose instanceof HTMLElement) {
+			shareModalClose.onclick = () => {
+				if (shareModal instanceof HTMLDialogElement) shareModal.close();
+			};
+		}
+
+		if (shareModal instanceof HTMLDialogElement) {
+			shareModal.addEventListener('click', (event) => {
+				if (event.target === shareModal) shareModal.close();
+			});
+		}
+
+		if (copyButton instanceof HTMLButtonElement && shareLinkInput instanceof HTMLInputElement) {
+			copyButton.onclick = async () => {
+				const value = shareLinkInput.value;
+				try {
+					await navigator.clipboard.writeText(value);
+					copyButton.textContent = 'COPIED';
+				} catch {
+					copyButton.textContent = 'FAILED';
+				} finally {
+					window.setTimeout(() => {
+						copyButton.textContent = 'COPY';
+					}, copyFeedbackDuration);
+				}
+			};
+		}
+	};
+
+	setupShareUi();
+	document.addEventListener('astro:page-load', setupShareUi);
+
+	if (editorContent instanceof HTMLElement) {
+		editorContent.classList.remove('animate-fade-in-right');
+		void editorContent.offsetWidth;
+		editorContent.classList.add('animate-fade-in-right');
+	}
+
+	const syncMobileViewPane = () => {
+		const viewPane = document.getElementById('viewPane');
+		if (!(viewPane instanceof HTMLElement)) return;
+		const isMobile = window.innerWidth <= mobileBreakpoint;
+		const normalizedPath = window.location.pathname.replace(/\/+$/, '') || '/';
+		const segments = normalizedPath.split('/').filter(Boolean);
+		const isDetailRoute = segments.length >= 2;
+		const shouldOpen = isMobile && isDetailRoute;
+		viewPane.classList.toggle('active', shouldOpen);
+	};
+
+	syncMobileViewPane();
+	document.addEventListener('astro:page-load', syncMobileViewPane);
+
+	const updateProgress = () => {
+		const editor = document.getElementById('editorContent');
+		const progress = document.getElementById('readingProgress');
+		if (!editor || !progress) return;
+		const scrollTop = editor.scrollTop;
+		const scrollHeight = editor.scrollHeight - editor.clientHeight;
+		const percent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+		progress.style.width = `${percent}%`;
+	};
+
+	const bindProgressScroll = () => {
+		const editor = document.getElementById('editorContent');
+		if (editor) {
+			editor.removeEventListener('scroll', updateProgress);
+			editor.addEventListener('scroll', updateProgress);
+			updateProgress();
+		}
+	};
+
+	bindProgressScroll();
+	document.addEventListener('astro:page-load', bindProgressScroll);
+})();</script> </div>  </body></html>
