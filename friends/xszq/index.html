@@ -1,5 +1,5 @@
-<!DOCTYPE html><html lang="en" data-pf-theme="dark"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Astro v6.2.1"><title>LARMAX_OS | LARMAX_OS</title><link rel="canonical" href="https://larmax.github.io/friends/xszq/"><meta name="description" content="个人数字花园"><meta name="robots" content="index, follow"><meta property="og:title" content="LARMAX_OS"><meta property="og:type" content="website"><meta property="og:image" content="https://ui-avatars.com/api/?name=LR&#38;background=00ff66&#38;color=000"><meta property="og:url" content="https://larmax.github.io/friends/xszq/"><meta property="og:description" content="个人数字花园"><meta property="og:site_name" content="LARMAX_OS"><meta name="twitter:card" content="summary"><meta name="twitter:site" content="@root"><link rel="alternate" type="application/rss+xml" href="/rss.xml" title="RSS"><link href="/pagefind/pagefind-component-ui.css" rel="stylesheet"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.j56hQv-j.js"></script><link rel="stylesheet" href="/_astro/Layout.C5P_k1Ui.css">
-<link rel="stylesheet" href="/_astro/panel-data.Bwkiwyy9.css"></head> <body> <div class="boot-overlay" id="bootOverlay" aria-hidden="true"> <!-- CRT 扫描线 --> <div class="crt-scanlines"></div> <!-- 暗角效果 --> <div class="crt-vignette"></div> <!-- 终端内容 --> <div class="boot-terminal"> <!-- ASCII Logo --> <pre class="boot-logo boot-text" id="bootLogo">   __                                      
+<!DOCTYPE html><html lang="en" data-pf-theme="dark"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Astro v6.2.1"><title>LARMAX_OS | LARMAX_OS</title><link rel="canonical" href="https://larmax.github.io/friends/xszq/"><meta name="description" content="个人数字花园"><meta name="robots" content="index, follow"><meta property="og:title" content="LARMAX_OS"><meta property="og:type" content="website"><meta property="og:image" content="https://ui-avatars.com/api/?name=LR&#38;background=00ff66&#38;color=000"><meta property="og:url" content="https://larmax.github.io/friends/xszq/"><meta property="og:description" content="个人数字花园"><meta property="og:site_name" content="LARMAX_OS"><meta name="twitter:card" content="summary"><meta name="twitter:site" content="@root"><link rel="alternate" type="application/rss+xml" href="/rss.xml" title="RSS"><link href="/pagefind/pagefind-component-ui.css" rel="stylesheet"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.j56hQv-j.js"></script><link rel="stylesheet" href="/_astro/Layout.CI-5Szf-.css">
+<link rel="stylesheet" href="/_astro/panel-data.BRKXMWAJ.css"></head> <body> <div class="boot-overlay" id="bootOverlay" aria-hidden="true"> <!-- CRT 扫描线 --> <div class="crt-scanlines"></div> <!-- 暗角效果 --> <div class="crt-vignette"></div> <!-- 终端内容 --> <div class="boot-terminal"> <!-- ASCII Logo --> <pre class="boot-logo boot-text" id="bootLogo">   __                                      
   / /   ____ __________ ___  ____ __  __   
  / /   / __ `/ ___/ __ `__ \/ __ `/ |/_/   
 / /___/ /_/ / /  / / / / / / /_/ /&gt;  &lt;     
@@ -18,38 +18,53 @@
 					
 					// 检查是否首次访问
 					const BOOT_FLAG = 'larmax_boot_v2';
+					let isFirstVisit = false;
+					
 					try {
-						if (sessionStorage.getItem(BOOT_FLAG)) {
-							overlay.style.display = 'none';
-							document.body.classList.add('fonts-loaded');
-							return;
+						if (!sessionStorage.getItem(BOOT_FLAG)) {
+							isFirstVisit = true;
+							sessionStorage.setItem(BOOT_FLAG, '1');
 						}
-						sessionStorage.setItem(BOOT_FLAG, '1');
 					} catch {}
 					
-					// 1. 等待字体加载
+					if (!isFirstVisit) {
+						// 非首次访问，直接隐藏
+						overlay.style.display = 'none';
+						document.body.classList.add('fonts-loaded');
+						return;
+					}
+					
+					// 首次访问：执行完整动画流程
+					
+					// 1. 锁定页面滚动以防抖动
+					document.body.style.overflow = 'hidden';
+					
+					// 2. 等待字体加载
 					await this.waitForFonts();
 					document.body.classList.add('fonts-loaded');
 					
-					// 2. 等待 CRT 亮屏动画
+					// 3. 触发亮屏动画
+					overlay.classList.add('power-on');
+					
+					// 4. 等待 CRT 亮屏动画完成
 					await new Promise(r => setTimeout(r, 600));
 					
-					// 3. 开始虚拟进度
+					// 5. 开始虚拟进度
 					this.startVirtualProgress();
 					
-					// 4. 逐行显示日志
+					// 6. 逐行显示日志
 					await this.printLogs();
 					
-					// 5. 等待最小时间 + 资源加载
+					// 7. 等待最小时间 + 资源加载
 					await Promise.all([
 						this.waitForMinTime(),
 						this.waitForResources(),
 					]);
 					
-					// 6. 完成进度
+					// 8. 完成进度
 					this.completeProgress();
 					
-					// 7. 退场动画
+					// 9. 退场动画
 					await this.exitAnimation();
 				},
 				
@@ -157,16 +172,14 @@
 					const overlay = document.getElementById('bootOverlay');
 					if (!overlay) return;
 					
-					// 解除滚动锁定
-					document.body.style.overflow = 'auto';
-					
 					// 添加退场动画
 					overlay.classList.add('console-retract');
 					
-					// 动画完成后移除 DOM
+					// 动画完成后移除 DOM 并恢复滚动
 					return new Promise(resolve => {
 						setTimeout(() => {
 							overlay.style.display = 'none';
+							document.body.style.overflow = '';
 							resolve();
 						}, 700);
 					});
