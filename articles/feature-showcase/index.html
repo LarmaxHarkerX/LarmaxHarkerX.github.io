@@ -1,37 +1,179 @@
-<!DOCTYPE html><html lang="en" data-pf-theme="dark"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Astro v6.2.1"><title>LARMAX_OS | LARMAX_OS</title><link rel="canonical" href="https://larmax.github.io/articles/feature-showcase/"><meta name="description" content="个人数字花园"><meta name="robots" content="index, follow"><meta property="og:title" content="LARMAX_OS"><meta property="og:type" content="website"><meta property="og:image" content="https://ui-avatars.com/api/?name=LR&#38;background=00ff66&#38;color=000"><meta property="og:url" content="https://larmax.github.io/articles/feature-showcase/"><meta property="og:description" content="个人数字花园"><meta property="og:site_name" content="LARMAX_OS"><meta name="twitter:card" content="summary"><meta name="twitter:site" content="@root"><link rel="alternate" type="application/rss+xml" href="/rss.xml" title="RSS"><link href="/pagefind/pagefind-component-ui.css" rel="stylesheet"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.j56hQv-j.js"></script><link rel="stylesheet" href="/_astro/Layout.9TUQQN18.css">
-<link rel="stylesheet" href="/_astro/panel-data.Bwkiwyy9.css"></head> <body> <div class="global-boot" id="globalBoot" aria-hidden="true"> <div class="global-boot__frame" role="presentation"> <div class="global-boot__header"> <span class="global-boot__tag">LARMAX_OS</span> <span class="global-boot__muted">// SESSION_BOOT</span> </div> <div class="global-boot__body"> <div class="global-boot__lines" aria-label="Boot log"> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: DISPLAY_PIPELINE</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: CONTENT_INDEX</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> INIT: ROUTER_HANDSHAKE</div> <div class="global-boot__line"><span class="global-boot__prompt">&gt;</span> STATUS: <span class="global-boot__ok">OK</span></div> </div> <div class="global-boot__cursor" aria-hidden="true">_</div> </div> </div> </div> <script>
-			(() => {
-				const BOOT_FLAG = 'larmax_boot_shown_v1';
-				const bootEl = document.getElementById('globalBoot');
-
-				const showBoot = async () => {
-					if (!bootEl) return;
-					bootEl.classList.add('is-active');
-					document.documentElement.classList.add('has-boot-overlay');
-
-					// Wait for fonts to load (with timeout)
-					await Promise.race([
-						document.fonts.ready,
-						new Promise(resolve => setTimeout(resolve, 3000)),
-					]);
-
-					// Minimum display time for the boot animation (synced with THEME.bootDuration)
-					await new Promise(resolve => setTimeout(resolve, 850));
-
-					bootEl.classList.remove('is-active');
-					document.documentElement.classList.remove('has-boot-overlay');
-				};
-
-				try {
-					const already = sessionStorage.getItem(BOOT_FLAG);
-					if (!already) {
+<!DOCTYPE html><html lang="en" data-pf-theme="dark"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Astro v6.2.1"><title>LARMAX_OS | LARMAX_OS</title><link rel="canonical" href="https://larmax.github.io/articles/feature-showcase/"><meta name="description" content="个人数字花园"><meta name="robots" content="index, follow"><meta property="og:title" content="LARMAX_OS"><meta property="og:type" content="website"><meta property="og:image" content="https://ui-avatars.com/api/?name=LR&#38;background=00ff66&#38;color=000"><meta property="og:url" content="https://larmax.github.io/articles/feature-showcase/"><meta property="og:description" content="个人数字花园"><meta property="og:site_name" content="LARMAX_OS"><meta name="twitter:card" content="summary"><meta name="twitter:site" content="@root"><link rel="alternate" type="application/rss+xml" href="/rss.xml" title="RSS"><link href="/pagefind/pagefind-component-ui.css" rel="stylesheet"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.j56hQv-j.js"></script><link rel="stylesheet" href="/_astro/Layout.C5P_k1Ui.css">
+<link rel="stylesheet" href="/_astro/panel-data.Bwkiwyy9.css"></head> <body> <div class="boot-overlay" id="bootOverlay" aria-hidden="true"> <!-- CRT 扫描线 --> <div class="crt-scanlines"></div> <!-- 暗角效果 --> <div class="crt-vignette"></div> <!-- 终端内容 --> <div class="boot-terminal"> <!-- ASCII Logo --> <pre class="boot-logo boot-text" id="bootLogo">   __                                      
+  / /   ____ __________ ___  ____ __  __   
+ / /   / __ `/ ___/ __ `__ \/ __ `/ |/_/   
+/ /___/ /_/ / /  / / / / / / /_/ /&gt;  &lt;     
+\_____/\__,_/_/  /_/ /_/ /_/\__,_/_/|_|     
+                                            
+:: Digital Garden Environment v2.0 ::</pre> <!-- 启动日志 --> <div class="boot-logs boot-text" id="bootLogs"></div> <!-- 进度条 --> <div class="boot-progress boot-text"> <span id="bootProgressText"></span> <span class="boot-cursor" id="bootCursor">_</span> </div> </div> </div> <script>
+			// 开屏动画管理器
+			const bootManager = {
+				MIN_LOAD_TIME: 2800,
+				virtualProgress: 0,
+				progressInterval: null,
+				
+				async init() {
+					const overlay = document.getElementById('bootOverlay');
+					if (!overlay) return;
+					
+					// 检查是否首次访问
+					const BOOT_FLAG = 'larmax_boot_v2';
+					try {
+						if (sessionStorage.getItem(BOOT_FLAG)) {
+							overlay.style.display = 'none';
+							document.body.classList.add('fonts-loaded');
+							return;
+						}
 						sessionStorage.setItem(BOOT_FLAG, '1');
-						showBoot();
+					} catch {}
+					
+					// 1. 等待字体加载
+					await this.waitForFonts();
+					document.body.classList.add('fonts-loaded');
+					
+					// 2. 等待 CRT 亮屏动画
+					await new Promise(r => setTimeout(r, 600));
+					
+					// 3. 开始虚拟进度
+					this.startVirtualProgress();
+					
+					// 4. 逐行显示日志
+					await this.printLogs();
+					
+					// 5. 等待最小时间 + 资源加载
+					await Promise.all([
+						this.waitForMinTime(),
+						this.waitForResources(),
+					]);
+					
+					// 6. 完成进度
+					this.completeProgress();
+					
+					// 7. 退场动画
+					await this.exitAnimation();
+				},
+				
+				async waitForFonts() {
+					try {
+						await Promise.race([
+							document.fonts.load('16px "JetBrains Mono"'),
+							new Promise((_, rej) => setTimeout(() => rej(), 3000)),
+						]);
+					} catch {}
+				},
+				
+				startVirtualProgress() {
+					this.progressInterval = setInterval(() => {
+						if (this.virtualProgress < 88) {
+							this.virtualProgress += Math.random() * 5 + 1;
+							if (this.virtualProgress > 88) this.virtualProgress = 88;
+							this.renderProgressBar(this.virtualProgress);
+						}
+					}, 80);
+				},
+				
+				renderProgressBar(percentage) {
+					const progressText = document.getElementById('bootProgressText');
+					if (!progressText) return;
+					
+					const isMobile = window.innerWidth < 480;
+					const barLength = isMobile ? 12 : 20;
+					const filledLength = Math.round((percentage / 100) * barLength);
+					const emptyLength = barLength - filledLength;
+					
+					const bar = '█'.repeat(filledLength) + '░'.repeat(emptyLength);
+					progressText.textContent = `Booting: [${bar}] ${Math.floor(percentage)}%`;
+				},
+				
+				async printLogs() {
+					const bootLogs = document.getElementById('bootLogs');
+					if (!bootLogs) return;
+					
+					const bootSequences = [
+						{ text: '[SYSTEM] Initializing botanical root system...', type: 'info' },
+						{ text: '[MEM] Allocating conceptual memory... ', type: 'info', append: '<span class="boot-log-ok">[1024MB OK]</span>' },
+						{ text: '[MOUNT] Mounting virtual soil matrix...', type: 'info' },
+						{ text: '[WARN] Stray thoughts detected in node_modules. Pruning...', type: 'warn' },
+						{ text: '[DATA] Fetching markdown seeds from local storage...', type: 'info' },
+						{ text: '[GRAPH] Knowledge graph mapped and synchronized.', type: 'ok' },
+						{ text: '[ENV] Watering neural nodes... Ready to bloom.', type: 'info' },
+					];
+					
+					for (const seq of bootSequences) {
+						const lineDiv = document.createElement('div');
+						lineDiv.className = 'boot-log-line';
+						
+						let formattedText = seq.text.replace(/^\[(.*?)\]/, (match, p1) => {
+							let colorClass = 'boot-log-keyword';
+							if (seq.type === 'warn') colorClass = 'boot-log-warn';
+							if (seq.type === 'ok') colorClass = 'boot-log-ok';
+							return `<span class="${colorClass}">[${p1}]</span>`;
+						});
+						if (seq.append) formattedText += seq.append;
+						
+						lineDiv.innerHTML = formattedText;
+						bootLogs.appendChild(lineDiv);
+						
+						const delay = Math.random() * 200 + 100;
+						await new Promise(r => setTimeout(r, delay));
 					}
-				} catch {
-					// If sessionStorage is unavailable, fail open (no boot).
-				}
-			})();
+				},
+				
+				waitForMinTime() {
+					return new Promise(resolve => setTimeout(resolve, this.MIN_LOAD_TIME));
+				},
+				
+				waitForResources() {
+					return Promise.all([
+						document.fonts.ready,
+						new Promise(resolve => {
+							if (document.readyState === 'complete') {
+								resolve();
+							} else {
+								window.addEventListener('load', resolve, { once: true });
+							}
+						}),
+					]);
+				},
+				
+				completeProgress() {
+					if (this.progressInterval) {
+						clearInterval(this.progressInterval);
+					}
+					this.renderProgressBar(100);
+					
+					const cursor = document.getElementById('bootCursor');
+					if (cursor) cursor.style.display = 'none';
+					
+					const progressText = document.getElementById('bootProgressText');
+					if (progressText) {
+						progressText.textContent += '\n\nAccess Granted. Entering Larmax Garden...';
+					}
+				},
+				
+				async exitAnimation() {
+					await new Promise(r => setTimeout(r, 600));
+					
+					const overlay = document.getElementById('bootOverlay');
+					if (!overlay) return;
+					
+					// 解除滚动锁定
+					document.body.style.overflow = 'auto';
+					
+					// 添加退场动画
+					overlay.classList.add('console-retract');
+					
+					// 动画完成后移除 DOM
+					return new Promise(resolve => {
+						setTimeout(() => {
+							overlay.style.display = 'none';
+							resolve();
+						}, 700);
+					});
+				},
+			};
+			
+			bootManager.init();
 		</script> <script type="module" src="/_astro/Layout.astro_astro_type_script_index_0_lang.DP7v6V7H.js"></script> <script type="module">let e={top:0};document.addEventListener("astro:before-swap",()=>{const t=document.querySelector(".notes-container");t&&(e={left:0,top:t.scrollTop})});document.addEventListener("astro:after-swap",()=>{const t=document.querySelector(".notes-container");t&&(t.scrollTop=e.top)});</script>  <div class="app-container"> <div class="corner-bracket cb-tl"></div><div class="corner-bracket cb-tr"></div> <div class="corner-bracket cb-bl"></div><div class="corner-bracket cb-br"></div> <div class="sidebar-overlay" id="sidebarOverlay"></div> <!-- 左侧导航 --><aside class="sidebar" id="sidebar"> <div class="brand">LARMAX.CTRL_SYS</div> <div class="nav-section"> <div class="nav-section-title">MAIN_DIRECTORY</div> <a class="nav-item nav-link " href="/"> <i class="ph ph-house"></i> 首页 [HOME] </a><a class="nav-item nav-link active" href="/articles"> <i class="ph ph-article"></i> 文章 [ARTICLES] </a><a class="nav-item nav-link " href="/tools"> <i class="ph ph-wrench"></i> 工具 [TOOLS] </a><a class="nav-item nav-link " href="/moments"> <i class="ph ph-chat-teardrop-text"></i> 说说 [MOMENTS] </a> </div> <div class="nav-section nav-section-external"> <div class="nav-section-title">EXTERNAL_LINKS</div> <a class="nav-item nav-link " href="/friends"> <i class="ph ph-users"></i> 朋友 [FRIENDS] </a><a class="nav-item nav-link " href="/about"> <i class="ph ph-fingerprint"></i> 关于 [ABOUT] </a> </div> </aside> <section class="list-pane" data-section-key="articles"> <div class="list-header"> <div class="search-bar"> <i class="ph ph-list mobile-toggle" id="menuBtn" aria-label="Menu"></i> <div class="search-trigger" id="searchTrigger"> <i class="ph ph-magnifying-glass search-bar-icon"></i> <input type="text" id="panelSearchInput" placeholder="QUERY DATABASE..." readonly tabindex="-1" class="search-bar-input"> </div> </div> <div class="list-status-bar"> <span id="listTitle" class="list-title">// 文章</span> <span id="listCount">MATCHES: 3</span> </div> </div> <!-- Search Modal --> <div id="searchModal" class="search-modal"> <div id="searchBackdrop" class="search-modal-backdrop"></div> <div class="search-modal-content"> <div class="search-modal-header"> <input type="text" id="searchInput" placeholder="Search..." autocomplete="off" class="search-modal-input"> <kbd class="search-modal-kbd">Esc</kbd> </div> <div id="searchResults" class="search-modal-results"> <div id="searchEmpty" class="search-modal-empty">Start typing to search...</div> </div> </div> </div> <div class="notes-container" id="notesList">  <a class="log-card article-card-hook active" data-id="articles:feature-showcase" href="/articles/feature-showcase" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>feature-showcase</div><div class="log-date">2026-05-07</div></div><div class="log-excerpt">&gt; Comprehensive demonstration of all supported Markdown features in LARMAX_OS.</div></a><a class="log-card article-card-hook " data-id="articles:coreldraw-clean-uninstall" href="/articles/coreldraw-clean-uninstall" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>coreldraw-clean-uninstall</div><div class="log-date">2026-03-16</div></div><div class="log-excerpt">&gt; 解决 CorelDRAW 卸载后仍提示&quot;已安装更新版本&quot;的问题。</div></a><a class="log-card article-card-hook " data-id="articles:huawei-m3-flash-guide" href="/articles/huawei-m3-flash-guide" style="opacity: 1; transform: translateY(0);"><div class="log-header"><div class="log-title"><div class="status-dot"></div>huawei-m3-flash-guide</div><div class="log-date">2026-03-15</div></div><div class="log-excerpt">&gt; 华为平板 M3 (BTV-DL09) 扩容 System 分区并刷入 Google 套件的完整教程。</div></a> </div> </section> <script>(function(){const mobileBreakpoint = 900;
 
 		const sectionRoot = document.querySelector('.list-pane');
