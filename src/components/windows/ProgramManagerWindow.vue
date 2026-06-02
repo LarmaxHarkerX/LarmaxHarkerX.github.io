@@ -32,13 +32,12 @@ const emit = defineEmits<{
 
 <style scoped>
 .program-manager {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 100%;
 }
 
 .pm-grid {
-  flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 16px;
@@ -81,5 +80,6 @@ const emit = defineEmits<{
   font-family: 'MS Sans Serif', Arial, sans-serif;
   font-size: 11px;
   color: #808080;
+  margin-top: auto;
 }
 </style>
