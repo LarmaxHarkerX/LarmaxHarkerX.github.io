@@ -4,6 +4,13 @@ import TerminalWindow from '../components/layout/TerminalWindow.vue'
 import TerminalPrompt from '../components/terminal/TerminalPrompt.vue'
 import TypewriterText from '../components/terminal/TypewriterText.vue'
 import CursorBlink from '../components/terminal/CursorBlink.vue'
+import SearchBar from '../components/ui/SearchBar.vue'
+import { useSEO } from '../composables/useSEO'
+
+useSEO({
+  title: 'LARMAX Blog',
+  description: 'A terminal-style blog for developers - Welcome to my digital space',
+})
 
 const welcomeText = 'Welcome to LARMAX Blog'
 const subtitleText = 'A terminal-style blog for developers'
@@ -53,6 +60,11 @@ const handleTypingComplete = () => {
           <TerminalPrompt path="~" />
           <span class="text-muted">{{ subtitleText }}</span>
           <CursorBlink />
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-section">
+          <SearchBar />
         </div>
         
         <!-- Navigation Commands -->
@@ -122,8 +134,12 @@ const handleTypingComplete = () => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
   color: var(--terminal-fg-muted);
+}
+
+.search-section {
+  margin-bottom: var(--space-6);
 }
 
 .quick-nav {
