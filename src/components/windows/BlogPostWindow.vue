@@ -37,7 +37,10 @@ const fixLinks = () => {
   const links = bpBody.value.querySelectorAll('a[href]')
   links.forEach((link) => {
     const anchor = link as HTMLAnchorElement
-    if (!anchor.target) {
+    const href = anchor.getAttribute('href') || ''
+    
+    // Only add target="_blank" to external links, not anchor links
+    if (!href.startsWith('#')) {
       anchor.target = '_blank'
       anchor.rel = 'noopener noreferrer'
     }
@@ -49,7 +52,23 @@ const handleBodyClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement
   const anchor = target.tagName === 'A' ? target as HTMLAnchorElement : target.closest('a') as HTMLAnchorElement
   
-  if (anchor && anchor.href) {
+  if (!anchor) return
+  
+  const href = anchor.getAttribute('href') || ''
+  
+  // Anchor link - scroll to element
+  if (href.startsWith('#')) {
+    e.preventDefault()
+    const id = href.slice(1)
+    const element = bpBody.value?.querySelector(`#${id}`) || document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+    return
+  }
+  
+  // External link - open in new tab
+  if (anchor.href) {
     e.preventDefault()
     window.open(anchor.href, '_blank', 'noopener,noreferrer')
   }
