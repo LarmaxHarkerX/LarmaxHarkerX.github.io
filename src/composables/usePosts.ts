@@ -14,7 +14,7 @@ const posts = ref<Post[]>([])
 
 export function usePosts() {
   const loadPosts = async () => {
-    const modules = import.meta.glob('../posts/*.md', { eager: true })
+    const modules = import.meta.glob('../../posts/*.md', { eager: true })
     
     posts.value = Object.entries(modules).map(([path, module]: [string, any]) => {
       const slug = path.replace('../posts/', '').replace('.md', '')
