@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import friendsData from '../../data/friends.json'
+import { ref, computed, onMounted } from 'vue'
+import { useFriends } from '../../composables/useFriends'
 
-interface Friend {
-  name: string
-  avatar: string
-  description: string
-  url: string
-  color: string
-}
-
-const friends = ref<Friend[]>(friendsData)
+const { friends, loadFriends } = useFriends()
 const currentIndex = ref(0)
+
+onMounted(() => {
+  loadFriends()
+})
 
 const currentFriend = computed(() => friends.value[currentIndex.value])
 
@@ -23,33 +19,36 @@ const prevFriend = () => {
   currentIndex.value = (currentIndex.value - 1 + friends.value.length) % friends.value.length
 }
 
-const visitFriend = () => {
-  window.open(currentFriend.value.url, '_blank')
+const visitBlog = () => {
+  if (currentFriend.value?.blog) {
+    window.open(currentFriend.value.blog, '_blank')
+  }
+}
+
+const visitGithub = () => {
+  if (currentFriend.value?.github) {
+    window.open(currentFriend.value.github, '_blank')
+  }
 }
 </script>
 
 <template>
   <div class="cardfile">
-    <!-- Toolbar -->
     <div class="cf-toolbar">
-      <button class="cf-btn">➕</button>
-      <button class="cf-btn">➖</button>
-      <div class="cf-separator"></div>
       <button class="cf-btn" @click="prevFriend">⬆️</button>
       <button class="cf-btn" @click="nextFriend">⬇️</button>
       <div class="cf-separator"></div>
-      <button class="cf-btn" @click="visitFriend">🔗</button>
+      <button class="cf-btn" @click="visitBlog" title="Blog">🔗</button>
+      <button class="cf-btn" @click="visitGithub" title="GitHub">📦</button>
     </div>
     
-    <!-- Content -->
     <div class="cf-content">
-      <!-- Index -->
       <div class="cf-index">
         <div class="cf-index-header">Index</div>
         <div class="cf-index-list">
           <div 
             v-for="(friend, index) in friends" 
-            :key="friend.name"
+            :key="friend.slug"
             class="cf-index-item"
             :class="{ active: index === currentIndex }"
             @click="currentIndex = index"
@@ -59,8 +58,7 @@ const visitFriend = () => {
         </div>
       </div>
       
-      <!-- Detail -->
-      <div class="cf-detail">
+      <div v-if="currentFriend" class="cf-detail">
         <div class="cf-avatar">
           <img :src="currentFriend.avatar" :alt="currentFriend.name" />
         </div>
@@ -68,23 +66,22 @@ const visitFriend = () => {
         <div class="cf-desc">{{ currentFriend.description }}</div>
         <div class="cf-fields">
           <div class="cf-field">
-            <span class="cf-label">Name:</span>
-            <input class="cf-input" :value="currentFriend.name" readonly />
+            <span class="cf-label">Blog:</span>
+            <input class="cf-input" :value="currentFriend.blog" readonly @click="visitBlog" />
           </div>
           <div class="cf-field">
-            <span class="cf-label">URL:</span>
-            <input class="cf-input" :value="currentFriend.url" readonly />
+            <span class="cf-label">GitHub:</span>
+            <input class="cf-input" :value="currentFriend.github" readonly @click="visitGithub" />
           </div>
         </div>
         <div class="cf-actions">
           <button class="cf-action-btn" @click="prevFriend">← Previous</button>
-          <button class="cf-action-btn primary" @click="visitFriend">Visit</button>
+          <button class="cf-action-btn primary" @click="visitBlog">Visit Blog</button>
           <button class="cf-action-btn" @click="nextFriend">Next →</button>
         </div>
       </div>
     </div>
     
-    <!-- Status -->
     <div class="cf-status">
       <span>Card {{ currentIndex + 1 }} of {{ friends.length }}</span>
     </div>
@@ -234,6 +231,11 @@ const visitFriend = () => {
   font-family: 'MS Sans Serif', Arial, sans-serif;
   font-size: 11px;
   box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
+  cursor: pointer;
+}
+
+.cf-input:hover {
+  background: #e0e0ff;
 }
 
 .cf-actions {

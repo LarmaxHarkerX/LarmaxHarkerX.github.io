@@ -1,31 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import shuoshuoData from '../../data/shuoshuo.json'
+import { onMounted } from 'vue'
+import { useMoments } from '../../composables/useMoments'
 
-interface ShuoshuoItem {
-  id: number
-  content: string
-  date: string
-  tags: string[]
-}
+const { moments, loadMoments } = useMoments()
 
-const items = ref<ShuoshuoItem[]>(shuoshuoData)
+onMounted(() => {
+  loadMoments()
+})
 
 const formatDate = (dateStr: string) => {
+  if (!dateStr) return ''
   const date = new Date(dateStr)
   return date.toLocaleDateString('en-US', { 
     month: '2-digit', 
     day: '2-digit', 
-    year: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
+    year: '2-digit'
   })
 }
 </script>
 
 <template>
   <div class="notepad">
-    <!-- Toolbar -->
     <div class="np-toolbar">
       <button class="np-btn">📄</button>
       <button class="np-btn">📂</button>
@@ -36,26 +31,23 @@ const formatDate = (dateStr: string) => {
       <button class="np-btn">📌</button>
     </div>
     
-    <!-- Content -->
     <div class="np-content">
-      <div class="np-text">
-        <div v-for="item in items" :key="item.id" class="shuoshuo-entry">
-          <div class="entry-header">
-            <span class="entry-id">[{{ item.id }}]</span>
-            <span class="entry-date">{{ formatDate(item.date) }}</span>
-          </div>
-          <div class="entry-content">{{ item.content }}</div>
-          <div class="entry-tags">
-            <span v-for="tag in item.tags" :key="tag" class="entry-tag">#{{ tag }}</span>
-          </div>
-          <div class="entry-separator">────────────────────────────────</div>
+      <div v-for="moment in moments" :key="moment.slug" class="moment-entry">
+        <div class="entry-header">
+          <span class="entry-date">{{ formatDate(moment.date) }}</span>
         </div>
+        <div class="entry-content">
+          <component :is="moment.component" v-if="moment.component" />
+        </div>
+        <div class="entry-tags">
+          <span v-for="tag in moment.tags" :key="tag" class="entry-tag">#{{ tag }}</span>
+        </div>
+        <div class="entry-separator">────────────────────────────────</div>
       </div>
     </div>
     
-    <!-- Status -->
     <div class="np-status">
-      <span>{{ items.length }} entries</span>
+      <span>{{ moments.length }} entries</span>
     </div>
   </div>
 </template>
@@ -104,13 +96,7 @@ const formatDate = (dateStr: string) => {
   padding: 8px;
 }
 
-.np-text {
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.shuoshuo-entry {
+.moment-entry {
   margin-bottom: 12px;
 }
 
@@ -120,18 +106,16 @@ const formatDate = (dateStr: string) => {
   margin-bottom: 4px;
 }
 
-.entry-id {
-  font-weight: bold;
-  color: #000080;
-}
-
 .entry-date {
   color: #808080;
+  font-size: 11px;
 }
 
 .entry-content {
   margin-bottom: 4px;
-  white-space: pre-wrap;
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .entry-tags {
