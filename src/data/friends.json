@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Vue.js",
+    "avatar": "https://vuejs.org/images/logo.png",
+    "description": "The Progressive JavaScript Framework",
+    "url": "https://vuejs.org",
+    "color": "#42b883"
+  },
+  {
+    "name": "Vite",
+    "avatar": "https://vitejs.dev/logo.svg",
+    "description": "Next Generation Frontend Tooling",
+    "url": "https://vitejs.dev",
+    "color": "#646cff"
+  },
+  {
+    "name": "GitHub",
+    "avatar": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+    "description": "Where the world builds software",
+    "url": "https://github.com",
+    "color": "#333"
+  },
+  {
+    "name": "MDN Web Docs",
+    "avatar": "https://developer.mozilla.org/mdn-social-share.png",
+    "description": "Resources for developers, by developers",
+    "url": "https://developer.mozilla.org",
+    "color": "#1b1b1b"
+  },
+  {
+    "name": "Stack Overflow",
+    "avatar": "https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon.png",
+    "description": "Where Developers Learn & Share",
+    "url": "https://stackoverflow.com",
+    "color": "#f48024"
+  }
+]

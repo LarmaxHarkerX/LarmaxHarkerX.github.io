@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "content": "Just launched my new terminal-style blog! Built with Vue 3 + Vite. The developer experience is amazing. 🚀",
+    "date": "2024-01-15T10:30:00Z",
+    "tags": ["blog", "vue", "launch"]
+  },
+  {
+    "id": 2,
+    "content": "Working on a new feature for the blog - interactive terminal commands. Stay tuned! 💻",
+    "date": "2024-01-14T15:45:00Z",
+    "tags": ["development", "feature"]
+  },
+  {
+    "id": 3,
+    "content": "The Vue 3 Composition API is a game-changer for code organization. So much cleaner than Options API.",
+    "date": "2024-01-13T09:20:00Z",
+    "tags": ["vue", "opinion"]
+  },
+  {
+    "id": 4,
+    "content": "Deployed to GitHub Pages with GitHub Actions. Zero-config CI/CD is beautiful. ✨",
+    "date": "2024-01-12T14:10:00Z",
+    "tags": ["deployment", "github"]
+  },
+  {
+    "id": 5,
+    "content": "Tip: Use Vite's glob imports to dynamically load markdown files. Perfect for blog systems!",
+    "date": "2024-01-11T11:55:00Z",
+    "tags": ["tip", "vite"]
+  }
+]

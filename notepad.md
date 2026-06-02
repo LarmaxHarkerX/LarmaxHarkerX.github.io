@@ -85,7 +85,24 @@ Wave 2（T1完成后）：
 
 Wave 3（T2、T3完成后）：
 - T4: Router + Layout Shell ✅ 完成
-- T6: Markdown Content Pipeline 🔄 进行中
+- T6: Markdown Content Pipeline ✅ 完成
+
+Wave 4（T4、T6完成后）：
+- T5: Terminal UI Components ✅ 完成
+- T15: Loading Animation ✅ 完成
+- T16: Page Transitions ✅ 完成
+
+Wave 5（T5、T6完成后）：
+- T7: Blog Pages (List + Detail) ✅ 完成
+- T8: Home Page ✅ 完成
+- T9: Shuoshuo Page ✅ 完成
+- T10: Friends Page ✅ 完成
+- T11: About Page ✅ 完成
+
+Wave 6（T7完成后）：
+- T12: Search Integration 🔄 进行中
+- T13: RSS Generation ⏳
+- T14: SEO + Meta Tags ⏳
 
 Wave 2（T1完成后）：
 - T3: Vite Config + SSG Setup
