@@ -5,20 +5,14 @@ import TerminalWindow from '../components/layout/TerminalWindow.vue'
 const router = useRouter()
 
 const programs = [
-  { icon: '📝', label: 'Blog Posts', path: '/blog', description: 'View all blog posts' },
-  { icon: '💬', label: 'Shuo Shuo', path: '/shuoshuo', description: 'Short thoughts & updates' },
-  { icon: '👥', label: 'Friends', path: '/friends', description: 'Friend links & contacts' },
-  { icon: 'ℹ️', label: 'About Me', path: '/about', description: 'Learn about the author' },
-  { icon: '🔍', label: 'Search', path: '/blog', description: 'Search blog posts' },
-  { icon: '📰', label: 'RSS Feed', path: '/feed.xml', description: 'Subscribe to RSS' },
+  { icon: '📝', label: 'File Manager', path: '/blog', description: 'Browse blog posts' },
+  { icon: '📋', label: 'Notepad', path: '/shuoshuo', description: 'Read short thoughts' },
+  { icon: '📇', label: 'Cardfile', path: '/friends', description: 'View friend links' },
+  { icon: 'ℹ️', label: 'About', path: '/about', description: 'About this program' },
 ]
 
-const navigateTo = (path: string) => {
-  if (path.startsWith('http') || path.endsWith('.xml')) {
-    window.open(path, '_blank')
-  } else {
-    router.push(path)
-  }
+const handleDoubleClick = (path: string) => {
+  router.push(path)
 }
 </script>
 
@@ -29,17 +23,14 @@ const navigateTo = (path: string) => {
       icon="📁"
       :showMenu="true"
       :menuItems="['File', 'Options', 'Window', 'Help']"
-      :showStatus="true"
-      statusText="Ready"
       width="100%"
-      height="100%"
     >
       <div class="program-manager">
         <!-- Main Group Window -->
         <div class="group-window">
           <div class="group-title">
             <span class="group-icon">📁</span>
-            <span>LARMAX Blog</span>
+            <span>Main</span>
           </div>
           
           <div class="program-grid">
@@ -47,7 +38,7 @@ const navigateTo = (path: string) => {
               v-for="program in programs" 
               :key="program.path"
               class="program-item"
-              @dblclick="navigateTo(program.path)"
+              @dblclick="handleDoubleClick(program.path)"
               :title="program.description"
             >
               <div class="program-icon">{{ program.icon }}</div>
@@ -56,24 +47,9 @@ const navigateTo = (path: string) => {
           </div>
         </div>
         
-        <!-- Welcome Message -->
-        <div class="welcome-window">
-          <TerminalWindow 
-            title="Welcome" 
-            icon="ℹ️"
-            width="100%"
-          >
-            <div class="welcome-content">
-              <div class="welcome-text">
-                <p class="welcome-title">Welcome to LARMAX Blog!</p>
-                <p>This is a Windows 3.1 style blog interface.</p>
-                <p>Double-click any icon above to open a program.</p>
-              </div>
-              <button class="win31-button win31-button--default" @click="navigateTo('/blog')">
-                OK
-              </button>
-            </div>
-          </TerminalWindow>
+        <!-- Tips -->
+        <div class="tips-bar">
+          <span class="tip-text">Double-click an icon to open a program</span>
         </div>
       </div>
     </TerminalWindow>
@@ -83,116 +59,106 @@ const navigateTo = (path: string) => {
 <style scoped>
 .home-page {
   width: 100%;
-  height: calc(100vh - 36px);
+  max-width: 600px;
 }
 
 .program-manager {
   padding: 8px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  height: 100%;
 }
 
 .group-window {
-  background: var(--win31-gray);
+  background: #c0c0c0;
   border: 2px solid;
-  border-color: var(--win31-white) var(--win31-black) 
-                var(--win31-black) var(--win31-white);
+  border-color: #fff #000 #000 #fff;
   box-shadow: 
-    inset 1px 1px 0 var(--win31-light-gray),
-    inset -1px -1px 0 var(--win31-dark-gray);
-  padding: 2px;
+    inset 1px 1px 0 #dfdfdf,
+    inset -1px -1px 0 #808080;
+  flex: 1;
 }
 
 .group-title {
-  background: var(--win31-navy);
-  color: var(--win31-white);
-  font-family: var(--font-system);
+  background: #000080;
+  color: #fff;
+  font-family: 'MS Sans Serif', Arial, sans-serif;
   font-weight: bold;
-  font-size: var(--text-sm);
-  padding: 2px 4px;
+  font-size: 12px;
+  padding: 4px 8px;
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 20px;
 }
 
 .group-icon {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .program-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
-  padding: 8px;
-  background: var(--win31-gray);
+  gap: 16px;
+  padding: 16px;
+  background: #c0c0c0;
 }
 
 .program-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
+  gap: 8px;
+  padding: 8px;
   cursor: pointer;
   user-select: none;
 }
 
 .program-item:hover {
-  background: var(--win31-selection);
+  background: #000080;
 }
 
 .program-item:active {
-  background: var(--win31-selection);
+  background: #000080;
 }
 
 .program-icon {
-  width: 32px;
-  height: 32px;
-  font-size: 24px;
+  width: 48px;
+  height: 48px;
+  font-size: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .program-label {
-  font-family: var(--font-system);
-  font-size: var(--text-xs);
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 11px;
   text-align: center;
   word-break: break-word;
   line-height: 1.2;
-  color: var(--win31-black);
+  color: #000;
 }
 
 .program-item:hover .program-label {
-  background: var(--win31-selection);
-  color: var(--win31-selection-text);
-  padding: 0 2px;
+  color: #fff;
 }
 
-.welcome-window {
-  margin-top: auto;
+.tips-bar {
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  padding: 4px 8px;
+  margin-top: 8px;
 }
 
-.welcome-content {
-  padding: 16px;
-  text-align: center;
+.tip-text {
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 11px;
+  color: #808080;
 }
 
-.welcome-text {
-  margin-bottom: 16px;
-}
-
-.welcome-title {
-  font-weight: bold;
-  font-size: var(--text-lg);
-  margin-bottom: 8px;
-}
-
-.welcome-text p {
-  margin-bottom: 4px;
-  font-size: var(--text-sm);
+@media (max-width: 480px) {
+  .program-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 </style>

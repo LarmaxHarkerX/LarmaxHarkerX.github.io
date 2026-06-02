@@ -1,17 +1,36 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 interface Props {
-  showIcons?: boolean
+  currentTime?: string
+  showStartMenu?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
-  showIcons: true,
+const props = withDefaults(defineProps<Props>(), {
+  currentTime: '00:00',
+  showStartMenu: false,
 })
+
+const emit = defineEmits<{
+  open: [path: string]
+  toggleStart: []
+  startAction: [action: string]
+}>()
+
+const startMenuItems = [
+  { icon: '📁', label: 'Program Manager', action: '/' },
+  { icon: '📝', label: 'File Manager', action: '/blog' },
+  { icon: '📋', label: 'Notepad', action: '/shuoshuo' },
+  { icon: '📇', label: 'Cardfile', action: '/friends' },
+  { icon: 'ℹ️', label: 'About', action: '/about' },
+  { icon: '🔄', label: 'Shut Down...', action: 'shutdown' },
+]
 </script>
 
 <template>
   <div class="win31-desktop">
     <!-- Desktop Icons -->
-    <div v-if="showIcons" class="desktop-icons">
+    <div class="desktop-icons">
       <slot name="icons" />
     </div>
     
@@ -20,14 +39,44 @@ withDefaults(defineProps<Props>(), {
       <slot />
     </div>
     
+    <!-- Start Menu -->
+    <Transition name="menu">
+      <div v-if="showStartMenu" class="start-menu">
+        <div 
+          v-for="item in startMenuItems" 
+          :key="item.action"
+          class="start-menu-item"
+          @click="emit('startAction', item.action)"
+        >
+          <span class="menu-icon">{{ item.icon }}</span>
+          <span class="menu-label">{{ item.label }}</span>
+        </div>
+      </div>
+    </Transition>
+    
     <!-- Taskbar -->
     <div class="win31-taskbar">
       <div class="taskbar-left">
-        <slot name="taskbar-left" />
+        <!-- Start Button -->
+        <button 
+          class="start-button"
+          :class="{ 'start-button--active': showStartMenu }"
+          @click="emit('toggleStart')"
+        >
+          <span class="start-icon">🪟</span>
+          <span class="start-text">Start</span>
+        </button>
+        
+        <!-- Divider -->
+        <div class="taskbar-divider"></div>
+        
+        <!-- Open Windows -->
+        <slot name="taskbar-windows" />
       </div>
+      
       <div class="taskbar-right">
         <div class="taskbar-time">
-          {{ new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) }}
+          {{ currentTime }}
         </div>
       </div>
     </div>
@@ -36,7 +85,7 @@ withDefaults(defineProps<Props>(), {
 
 <style scoped>
 .win31-desktop {
-  background: var(--win31-desktop);
+  background: #008080;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -45,37 +94,82 @@ withDefaults(defineProps<Props>(), {
 
 .desktop-icons {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 16px;
+  left: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  z-index: var(--z-desktop);
+  gap: 16px;
+  z-index: 0;
 }
 
 .desktop-windows {
   flex: 1;
-  padding: 8px;
-  padding-bottom: 36px;
+  padding: 16px;
+  padding-bottom: 40px;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 16px;
   align-content: flex-start;
+  z-index: 1;
 }
 
+/* Start Menu */
+.start-menu {
+  position: fixed;
+  bottom: 32px;
+  left: 4px;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #fff #000 #000 #fff;
+  box-shadow: 
+    inset 1px 1px 0 #dfdfdf,
+    inset -1px -1px 0 #808080,
+    4px 4px 0 rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.start-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.start-menu-item:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.menu-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.menu-label {
+  flex: 1;
+}
+
+/* Taskbar */
 .win31-taskbar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 28px;
-  background: var(--win31-gray);
-  border-top: 2px solid var(--win31-white);
+  height: 32px;
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2px 4px;
-  z-index: var(--z-window);
+  padding: 4px;
+  z-index: 100;
 }
 
 .taskbar-left {
@@ -83,6 +177,7 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
   gap: 4px;
   flex: 1;
+  overflow: hidden;
 }
 
 .taskbar-right {
@@ -91,92 +186,89 @@ withDefaults(defineProps<Props>(), {
   gap: 8px;
 }
 
-.taskbar-time {
-  font-family: var(--font-system);
-  font-size: var(--text-sm);
-  padding: 2px 8px;
-  box-shadow: var(--bevel-inset);
-}
-
-/* Desktop Icon */
-.desktop-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 4px;
-  cursor: pointer;
-  width: 64px;
-  text-align: center;
-}
-
-.desktop-icon:hover {
-  background: var(--win31-selection);
-}
-
-.desktop-icon:active {
-  background: var(--win31-selection);
-}
-
-.desktop-icon-image {
-  width: 32px;
-  height: 32px;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.desktop-icon-label {
-  font-family: var(--font-system);
-  font-size: var(--text-xs);
-  color: var(--win31-white);
-  text-shadow: 1px 1px 0 var(--win31-black);
-  word-break: break-word;
-  line-height: 1.2;
-}
-
-.desktop-icon:hover .desktop-icon-label {
-  background: var(--win31-selection);
-  color: var(--win31-selection-text);
-  text-shadow: none;
-  padding: 0 2px;
-}
-
-/* Taskbar Button */
-.taskbar-button {
+/* Start Button */
+.start-button {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  font-family: var(--font-system);
-  font-size: var(--text-sm);
-  background: var(--win31-gray);
+  background: #c0c0c0;
   border: none;
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
   cursor: pointer;
   box-shadow:
-    inset -1px -1px 0 var(--win31-black),
-    inset 1px 1px 0 var(--win31-white),
-    inset -2px -2px 0 var(--win31-dark-gray),
-    inset 2px 2px 0 var(--win31-light-gray);
-  min-width: 100px;
-  height: 22px;
+    inset -1px -1px 0 #000,
+    inset 1px 1px 0 #fff,
+    inset -2px -2px 0 #808080,
+    inset 2px 2px 0 #dfdfdf;
+  height: 24px;
+  min-width: 60px;
 }
 
-.taskbar-button:active,
-.taskbar-button--active {
+.start-button:active,
+.start-button--active {
   box-shadow:
-    inset 1px 1px 0 var(--win31-black),
-    inset -1px -1px 0 var(--win31-white);
+    inset 1px 1px 0 #000,
+    inset -1px -1px 0 #fff;
 }
 
-.taskbar-button-icon {
+.start-icon {
   font-size: 14px;
 }
 
-.taskbar-button-label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.start-text {
+  font-size: 12px;
+}
+
+/* Taskbar Divider */
+.taskbar-divider {
+  width: 2px;
+  height: 20px;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #fff;
+  margin: 0 4px;
+}
+
+/* Taskbar Time */
+.taskbar-time {
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 12px;
+  padding: 4px 8px;
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #fff;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Menu Transition */
+.menu-enter-active {
+  transition: all 0.15s ease-out;
+}
+
+.menu-leave-active {
+  transition: all 0.1s ease-in;
+}
+
+.menu-enter-from,
+.menu-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@media (max-width: 768px) {
+  .desktop-icons {
+    top: 8px;
+    left: 8px;
+    gap: 8px;
+  }
+  
+  .start-menu {
+    left: 0;
+    right: 0;
+    bottom: 32px;
+  }
 }
 </style>
