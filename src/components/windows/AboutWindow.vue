@@ -4,91 +4,76 @@ const emit = defineEmits<{
 }>()
 
 const skills = [
-  { name: 'Vue.js', level: 90 },
-  { name: 'TypeScript', level: 85 },
-  { name: 'Node.js', level: 80 },
-  { name: 'Python', level: 75 },
-  { name: 'Docker', level: 70 },
-  { name: 'Git', level: 95 },
+  { name: 'Blender', level: 85 },
+  { name: 'After Effects', level: 80 },
+  { name: 'Reaper', level: 75 },
+  { name: 'Photoshop', level: 90 },
+  { name: 'Vegas', level: 70 },
 ]
 </script>
 
 <template>
-  <div class="about">
-    <div class="about-content">
-      <!-- Header -->
-      <div class="about-header">
-        <div class="about-icon">💻</div>
-        <div class="about-info">
-          <div class="about-name">LARMAX Blog</div>
-          <div class="about-version">Version 1.0</div>
-          <div class="about-copyright">Copyright © 2024</div>
-        </div>
+  <div class="about-content">
+    <!-- Header -->
+    <div class="about-header">
+      <div class="about-icon">💻</div>
+      <div class="about-info">
+        <div class="about-name">LARMAX Blog</div>
+        <div class="about-version">Version 1.0</div>
+        <div class="about-copyright">Copyright © 2024</div>
       </div>
-      
-      <!-- System Info -->
-      <div class="about-group">
-        <div class="about-group-title">System Information</div>
-        <div class="about-row">
-          <span class="about-label">Owner:</span>
-          <span>LARMAX</span>
-        </div>
-        <div class="about-row">
-          <span class="about-label">Role:</span>
-          <span>Full Stack Developer</span>
-        </div>
-        <div class="about-row">
-          <span class="about-label">Location:</span>
-          <span>Earth</span>
-        </div>
+    </div>
+    
+    <!-- System Info -->
+    <div class="about-group">
+      <div class="about-group-title">System Information</div>
+      <div class="about-row">
+        <span class="about-label">Owner:</span>
+        <span>LARMAX</span>
       </div>
-      
-      <!-- Skills -->
-      <div class="about-group">
-        <div class="about-group-title">Skills</div>
-        <div v-for="skill in skills" :key="skill.name" class="skill-row">
-          <span class="skill-name">{{ skill.name }}</span>
-          <div class="skill-bar">
-            <div class="skill-fill" :style="{ width: skill.level + '%' }"></div>
-          </div>
-          <span class="skill-level">{{ skill.level }}%</span>
+      <div class="about-row">
+        <span class="about-label">Role:</span>
+        <span>lazy people</span>
+      </div>
+      <div class="about-row">
+        <span class="about-label">Location:</span>
+        <span>Earth</span>
+      </div>
+    </div>
+    
+    <!-- Skills -->
+    <div class="about-group">
+      <div class="about-group-title">Skills</div>
+      <div v-for="skill in skills" :key="skill.name" class="skill-row">
+        <span class="skill-name">{{ skill.name }}</span>
+        <div class="skill-bar">
+          <div class="skill-fill" :style="{ width: skill.level + '%' }"></div>
         </div>
+        <span class="skill-level">{{ skill.level }}%</span>
       </div>
-      
-      <!-- Memory -->
-      <div class="about-group">
-        <div class="about-group-title">Memory</div>
-        <div class="memory-text">Physical Memory: 640K OK</div>
-        <div class="memory-bar">
-          <div class="memory-fill"></div>
-        </div>
+    </div>
+    
+    <!-- Memory -->
+    <div class="about-group">
+      <div class="about-group-title">Memory</div>
+      <div class="memory-text">Physical Memory: 640K OK</div>
+      <div class="memory-bar">
+        <div class="memory-fill"></div>
       </div>
-      
-      <!-- OK Button -->
-      <div class="about-footer">
-        <button class="about-btn" @click="emit('close')">OK</button>
-      </div>
+    </div>
+    
+    <!-- OK Button -->
+    <div class="about-footer">
+      <button class="about-btn" @click="emit('close')">OK</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.about {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
 .about-content {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #000 #000 #fff;
-  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
   padding: 16px;
-  max-width: 400px;
-  width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 .about-header {
@@ -158,7 +143,7 @@ const skills = [
 }
 
 .skill-name {
-  width: 80px;
+  width: 100px;
 }
 
 .skill-bar {
