@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 
 interface WindowState {
   id: string
@@ -34,6 +34,9 @@ const emit = defineEmits<{
   minimize: [id: string]
 }>()
 
+// Detect mobile
+const isMobile = ref(window.innerWidth <= 768)
+
 // Drag state
 const isDragging = ref(false)
 const dragWindowId = ref<string | null>(null)
@@ -45,17 +48,57 @@ const resizeWindowId = ref<string | null>(null)
 const resizeStartPos = ref({ x: 0, y: 0 })
 const resizeStartSize = ref({ width: 0, height: 0 })
 
-const handleMouseDownDrag = (e: MouseEvent, windowId: string) => {
+// Window position/size with responsive adjustments
+const getWindowStyle = (win: WindowState) => {
+  if (isMobile.value || win.isMaximized) {
+    return {
+      left: '0',
+      top: '0',
+      width: '100%',
+      height: 'calc(100% - 32px)',
+      zIndex: win.zIndex
+    }
+  }
+  
+  // Ensure window stays within viewport
+  const maxX = window.innerWidth - win.width
+  const maxY = window.innerHeight - 32 - win.height
+  
+  return {
+    left: Math.min(win.x, maxX) + 'px',
+    top: Math.min(win.y, maxY) + 'px',
+    width: win.width + 'px',
+    height: win.height + 'px',
+    zIndex: win.zIndex
+  }
+}
+
+// Handle window resize
+const handleWindowResize = () => {
+  isMobile.value = window.innerWidth <= 768
+}
+
+// Mouse/touch event handlers
+const getPosition = (e: MouseEvent | TouchEvent) => {
+  if ('touches' in e) {
+    return { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY }
+}
+
+const handleDragStart = (e: MouseEvent | TouchEvent, windowId: string) => {
   if ((e.target as HTMLElement).closest('.window-controls')) return
+  if (isMobile.value) return // Disable drag on mobile
   
   isDragging.value = true
   dragWindowId.value = windowId
   
+  const pos = getPosition(e)
   const win = props.windows.find(w => w.id === windowId)
   if (win) {
     dragOffset.value = {
-      x: e.clientX - win.x,
-      y: e.clientY - win.y
+      x: pos.x - win.x,
+      y: pos.y - win.y
     }
   }
   
@@ -63,13 +106,16 @@ const handleMouseDownDrag = (e: MouseEvent, windowId: string) => {
   e.preventDefault()
 }
 
-const handleMouseDownResize = (e: MouseEvent, windowId: string) => {
+const handleResizeStart = (e: MouseEvent | TouchEvent, windowId: string) => {
+  if (isMobile.value) return // Disable resize on mobile
+  
   isResizing.value = true
   resizeWindowId.value = windowId
   
+  const pos = getPosition(e)
   const win = props.windows.find(w => w.id === windowId)
   if (win) {
-    resizeStartPos.value = { x: e.clientX, y: e.clientY }
+    resizeStartPos.value = { x: pos.x, y: pos.y }
     resizeStartSize.value = { width: win.width, height: win.height }
   }
   
@@ -78,16 +124,18 @@ const handleMouseDownResize = (e: MouseEvent, windowId: string) => {
   e.stopPropagation()
 }
 
-const handleMouseMove = (e: MouseEvent) => {
+const handleMove = (e: MouseEvent | TouchEvent) => {
+  const pos = getPosition(e)
+  
   if (isDragging.value && dragWindowId.value) {
-    const newX = Math.max(0, e.clientX - dragOffset.value.x)
-    const newY = Math.max(0, e.clientY - dragOffset.value.y)
+    const newX = Math.max(0, pos.x - dragOffset.value.x)
+    const newY = Math.max(0, pos.y - dragOffset.value.y)
     emit('move', dragWindowId.value, newX, newY)
   }
   
   if (isResizing.value && resizeWindowId.value) {
-    const deltaX = e.clientX - resizeStartPos.value.x
-    const deltaY = e.clientY - resizeStartPos.value.y
+    const deltaX = pos.x - resizeStartPos.value.x
+    const deltaY = pos.y - resizeStartPos.value.y
     
     const win = props.windows.find(w => w.id === resizeWindowId.value)
     if (win) {
@@ -98,7 +146,7 @@ const handleMouseMove = (e: MouseEvent) => {
   }
 }
 
-const handleMouseUp = () => {
+const handleEnd = () => {
   isDragging.value = false
   dragWindowId.value = null
   isResizing.value = false
@@ -106,13 +154,19 @@ const handleMouseUp = () => {
 }
 
 onMounted(() => {
-  window.addEventListener('mousemove', handleMouseMove)
-  window.addEventListener('mouseup', handleMouseUp)
+  window.addEventListener('mousemove', handleMove)
+  window.addEventListener('mouseup', handleEnd)
+  window.addEventListener('touchmove', handleMove, { passive: false })
+  window.addEventListener('touchend', handleEnd)
+  window.addEventListener('resize', handleWindowResize)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('mousemove', handleMouseMove)
-  window.removeEventListener('mouseup', handleMouseUp)
+  window.removeEventListener('mousemove', handleMove)
+  window.removeEventListener('mouseup', handleEnd)
+  window.removeEventListener('touchmove', handleMove)
+  window.removeEventListener('touchend', handleEnd)
+  window.removeEventListener('resize', handleWindowResize)
 })
 </script>
 
@@ -122,15 +176,13 @@ onUnmounted(() => {
       v-for="win in windows.filter(w => w.isOpen && !w.isMinimized)"
       :key="win.id"
       class="floating-window"
-      :class="{ 'window-active': win.id === activeWindowId }"
-      :style="{
-        left: win.isMaximized ? '0' : win.x + 'px',
-        top: win.isMaximized ? '0' : win.y + 'px',
-        width: win.isMaximized ? '100%' : win.width + 'px',
-        height: win.isMaximized ? 'calc(100% - 32px)' : win.height + 'px',
-        zIndex: win.zIndex
+      :class="{ 
+        'window-active': win.id === activeWindowId,
+        'window-mobile': isMobile
       }"
+      :style="getWindowStyle(win)"
       @mousedown="emit('focus', win.id)"
+      @touchstart="emit('focus', win.id)"
     >
       <!-- Window Frame -->
       <div class="win31-window" style="height: 100%;">
@@ -138,7 +190,8 @@ onUnmounted(() => {
         <div 
           class="win31-titlebar"
           :class="{ 'titlebar-inactive': win.id !== activeWindowId }"
-          @mousedown="handleMouseDownDrag($event, win.id)"
+          @mousedown="handleDragStart($event, win.id)"
+          @touchstart="handleDragStart($event, win.id)"
         >
           <div class="titlebar-text">
             <span class="titlebar-icon">{{ win.icon }}</span>
@@ -153,6 +206,7 @@ onUnmounted(() => {
               ▼
             </button>
             <button 
+              v-if="!isMobile"
               class="win31-control-btn"
               @click="emit('maximize', win.id)"
               title="Maximize"
@@ -174,11 +228,12 @@ onUnmounted(() => {
           <slot :name="win.id" />
         </div>
         
-        <!-- Resize Handle -->
+        <!-- Resize Handle (desktop only) -->
         <div 
-          v-if="!win.isMaximized"
+          v-if="!win.isMaximized && !isMobile"
           class="resize-handle"
-          @mousedown="handleMouseDownResize($event, win.id)"
+          @mousedown="handleResizeStart($event, win.id)"
+          @touchstart="handleResizeStart($event, win.id)"
         ></div>
       </div>
     </div>
@@ -306,5 +361,16 @@ onUnmounted(() => {
       #808080 60%, #808080 65%,
       transparent 65%
     );
+}
+
+/* Mobile styles */
+.window-mobile .win31-titlebar {
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .window-manager {
+    bottom: 28px;
+  }
 }
 </style>
