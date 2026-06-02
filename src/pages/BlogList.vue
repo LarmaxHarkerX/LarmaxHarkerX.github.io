@@ -5,7 +5,7 @@ import TerminalWindow from '../components/layout/TerminalWindow.vue'
 import { usePosts } from '../composables/usePosts'
 
 const router = useRouter()
-const { posts, loadPosts, categories, tags } = usePosts()
+const { posts, loadPosts, categories } = usePosts()
 
 onMounted(() => {
   loadPosts()

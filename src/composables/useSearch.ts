@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import FlexSearch from 'flexsearch'
 
 interface SearchItem {
@@ -7,6 +7,7 @@ interface SearchItem {
   content: string
   tags: string[]
   category: string
+  [key: string]: any
 }
 
 const index = new FlexSearch.Document<SearchItem>({

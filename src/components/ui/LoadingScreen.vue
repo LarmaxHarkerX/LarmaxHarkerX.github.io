@@ -44,11 +44,13 @@ onMounted(() => {
   })
 
   // Fade out
-  timeline.to(loadingRef.value, {
-    opacity: 0,
-    duration: 0.5,
-    delay: 0.5,
-  })
+  if (loadingRef.value) {
+    timeline.to(loadingRef.value, {
+      opacity: 0,
+      duration: 0.5,
+      delay: 0.5,
+    })
+  }
 })
 </script>
 

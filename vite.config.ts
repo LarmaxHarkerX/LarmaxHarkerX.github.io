@@ -15,8 +15,5 @@ export default defineConfig({
       },
     }),
   ],
-  ssgOptions: {
-    script: 'async',
-    formatting: 'minify',
-  },
+  base: '/LARMAX_BLOG/',
 })

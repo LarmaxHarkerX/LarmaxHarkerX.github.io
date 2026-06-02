@@ -1,20 +1,31 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+interface WindowState {
+  id: string
+  title: string
+  icon: string
+  isOpen: boolean
+  isMinimized: boolean
+}
 
 interface Props {
   currentTime?: string
   showStartMenu?: boolean
+  windows?: WindowState[]
+  activeWindowId?: string | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
   currentTime: '00:00',
   showStartMenu: false,
+  windows: () => [],
+  activeWindowId: null,
 })
 
 const emit = defineEmits<{
-  open: [path: string]
   toggleStart: []
   startAction: [action: string]
+  iconDblclick: [action: string]
+  taskbarClick: [id: string]
 }>()
 
 const startMenuItems = [
@@ -25,18 +36,29 @@ const startMenuItems = [
   { icon: 'ℹ️', label: 'About', action: '/about' },
   { icon: '🔄', label: 'Shut Down...', action: 'shutdown' },
 ]
+
+const desktopIcons = [
+  { icon: '📁', label: 'Program\nManager', action: '/' },
+  { icon: '📝', label: 'File\nManager', action: '/blog' },
+  { icon: '📋', label: 'Notepad', action: '/shuoshuo' },
+  { icon: '📇', label: 'Cardfile', action: '/friends' },
+  { icon: 'ℹ️', label: 'About', action: '/about' },
+]
 </script>
 
 <template>
   <div class="win31-desktop">
     <!-- Desktop Icons -->
     <div class="desktop-icons">
-      <slot name="icons" />
-    </div>
-    
-    <!-- Windows Container -->
-    <div class="desktop-windows">
-      <slot />
+      <div 
+        v-for="icon in desktopIcons" 
+        :key="icon.action"
+        class="desktop-icon"
+        @dblclick="emit('iconDblclick', icon.action)"
+      >
+        <div class="icon-image">{{ icon.icon }}</div>
+        <div class="icon-label" v-html="icon.label.replace('\n', '<br>')"></div>
+      </div>
     </div>
     
     <!-- Start Menu -->
@@ -57,7 +79,6 @@ const startMenuItems = [
     <!-- Taskbar -->
     <div class="win31-taskbar">
       <div class="taskbar-left">
-        <!-- Start Button -->
         <button 
           class="start-button"
           :class="{ 'start-button--active': showStartMenu }"
@@ -67,11 +88,19 @@ const startMenuItems = [
           <span class="start-text">Start</span>
         </button>
         
-        <!-- Divider -->
         <div class="taskbar-divider"></div>
         
-        <!-- Open Windows -->
-        <slot name="taskbar-windows" />
+        <!-- Open Windows in Taskbar -->
+        <button 
+          v-for="win in windows.filter(w => w.isOpen)" 
+          :key="win.id"
+          class="taskbar-window-btn"
+          :class="{ 'taskbar-window-btn--active': win.id === activeWindowId && !win.isMinimized }"
+          @click="emit('taskbarClick', win.id)"
+        >
+          <span class="window-btn-icon">{{ win.icon }}</span>
+          <span class="window-btn-title">{{ win.title }}</span>
+        </button>
       </div>
       
       <div class="taskbar-right">
@@ -87,8 +116,6 @@ const startMenuItems = [
 .win31-desktop {
   background: #008080;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   position: relative;
 }
 
@@ -102,15 +129,43 @@ const startMenuItems = [
   z-index: 0;
 }
 
-.desktop-windows {
-  flex: 1;
-  padding: 16px;
-  padding-bottom: 40px;
+.desktop-icon {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-content: flex-start;
-  z-index: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  cursor: pointer;
+  width: 80px;
+  text-align: center;
+  user-select: none;
+}
+
+.desktop-icon:hover {
+  background: rgba(0, 0, 128, 0.3);
+}
+
+.icon-image {
+  width: 48px;
+  height: 48px;
+  font-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-label {
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 11px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+  line-height: 1.2;
+}
+
+.desktop-icon:hover .icon-label {
+  background: #000080;
+  text-shadow: none;
+  padding: 2px 4px;
 }
 
 /* Start Menu */
@@ -152,10 +207,6 @@ const startMenuItems = [
   text-align: center;
 }
 
-.menu-label {
-  flex: 1;
-}
-
 /* Taskbar */
 .win31-taskbar {
   position: fixed;
@@ -183,10 +234,8 @@ const startMenuItems = [
 .taskbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-/* Start Button */
 .start-button {
   display: flex;
   align-items: center;
@@ -214,15 +263,8 @@ const startMenuItems = [
     inset -1px -1px 0 #fff;
 }
 
-.start-icon {
-  font-size: 14px;
-}
+.start-icon { font-size: 14px; }
 
-.start-text {
-  font-size: 12px;
-}
-
-/* Taskbar Divider */
 .taskbar-divider {
   width: 2px;
   height: 20px;
@@ -231,7 +273,41 @@ const startMenuItems = [
   margin: 0 4px;
 }
 
-/* Taskbar Time */
+.taskbar-window-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: #c0c0c0;
+  border: none;
+  font-family: 'MS Sans Serif', Arial, sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow:
+    inset -1px -1px 0 #000,
+    inset 1px 1px 0 #fff,
+    inset -2px -2px 0 #808080,
+    inset 2px 2px 0 #dfdfdf;
+  min-width: 100px;
+  height: 22px;
+  max-width: 150px;
+}
+
+.taskbar-window-btn--active {
+  box-shadow:
+    inset 1px 1px 0 #000,
+    inset -1px -1px 0 #fff;
+  background: #dfdfdf;
+}
+
+.window-btn-icon { font-size: 12px; }
+
+.window-btn-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .taskbar-time {
   font-family: 'MS Sans Serif', Arial, sans-serif;
   font-size: 12px;
@@ -244,31 +320,10 @@ const startMenuItems = [
 }
 
 /* Menu Transition */
-.menu-enter-active {
-  transition: all 0.15s ease-out;
-}
-
-.menu-leave-active {
-  transition: all 0.1s ease-in;
-}
-
-.menu-enter-from,
-.menu-leave-to {
+.menu-enter-active { transition: all 0.15s ease-out; }
+.menu-leave-active { transition: all 0.1s ease-in; }
+.menu-enter-from, .menu-leave-to {
   opacity: 0;
   transform: translateY(10px);
-}
-
-@media (max-width: 768px) {
-  .desktop-icons {
-    top: 8px;
-    left: 8px;
-    gap: 8px;
-  }
-  
-  .start-menu {
-    left: 0;
-    right: 0;
-    bottom: 32px;
-  }
 }
 </style>

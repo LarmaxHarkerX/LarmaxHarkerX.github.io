@@ -10,7 +10,7 @@ interface Props {
   statusText?: string
   width?: string
   height?: string
-  maximizable?: boolean
+  maxWidth?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,24 +22,15 @@ const props = withDefaults(defineProps<Props>(), {
   statusText: 'Ready',
   width: 'auto',
   height: 'auto',
-  maximizable: true,
+  maxWidth: undefined,
 })
 
 const emit = defineEmits<{
   close: []
-  minimize: []
-  maximize: []
   menuClick: [item: string]
 }>()
 
-const isMaximized = ref(false)
-
 const handleClose = () => emit('close')
-const handleMinimize = () => emit('minimize')
-const handleMaximize = () => {
-  isMaximized.value = !isMaximized.value
-  emit('maximize')
-}
 
 const handleMenuClick = (item: string) => {
   emit('menuClick', item)
