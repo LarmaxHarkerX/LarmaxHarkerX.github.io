@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { usePosts } from '../../composables/usePosts'
 
 const { posts, loadPosts, categories } = usePosts()
+
+// Current path state
+const currentPath = ref<string[]>([])
 
 onMounted(() => {
   loadPosts()
@@ -12,6 +15,52 @@ const emit = defineEmits<{
   openPost: [slug: string]
   openParent: []
 }>()
+
+// Get current posts based on path
+const currentPosts = computed(() => {
+  if (currentPath.value.length === 0) {
+    // Root level - show categories
+    return []
+  }
+  
+  const category = currentPath.value[0]
+  return posts.value.filter(post => post.category === category)
+})
+
+// Get current categories (folders)
+const currentCategories = computed(() => {
+  if (currentPath.value.length === 0) {
+    // Root level - show all categories
+    return categories.value
+  }
+  
+  // Inside a category - no subcategories
+  return []
+})
+
+// Current directory path string
+const currentPathStr = computed(() => {
+  return 'C:\\BLOG\\POSTS' + (currentPath.value.length > 0 ? '\\' + currentPath.value.join('\\') : '')
+})
+
+// Navigate into folder
+const enterFolder = (folderName: string) => {
+  currentPath.value.push(folderName)
+}
+
+// Navigate back
+const goBack = () => {
+  if (currentPath.value.length > 0) {
+    currentPath.value.pop()
+  } else {
+    emit('openParent')
+  }
+}
+
+// Open post
+const openPost = (slug: string) => {
+  emit('openPost', slug)
+}
 
 const formatDate = (dateStr: string) => {
   if (!dateStr) return '--------'
@@ -28,7 +77,7 @@ const formatDate = (dateStr: string) => {
   <div class="file-manager">
     <!-- Toolbar -->
     <div class="fm-toolbar">
-      <button class="fm-btn" @click="emit('openParent')">⬅️</button>
+      <button class="fm-btn" @click="goBack">⬅️</button>
       <button class="fm-btn">➡️</button>
       <div class="fm-separator"></div>
       <button class="fm-btn">📋</button>
@@ -38,7 +87,7 @@ const formatDate = (dateStr: string) => {
     <!-- Address Bar -->
     <div class="fm-address">
       <span>Directory:</span>
-      <input class="fm-input" value="C:\BLOG\POSTS" readonly />
+      <input class="fm-input" :value="currentPathStr" readonly />
     </div>
     
     <!-- File List -->
@@ -52,7 +101,7 @@ const formatDate = (dateStr: string) => {
       
       <div class="fm-list">
         <!-- Parent Directory -->
-        <div class="fm-item" @dblclick="emit('openParent')">
+        <div class="fm-item" @dblclick="goBack">
           <span class="fm-icon">📁</span>
           <span class="fm-name">..</span>
           <span class="fm-size"></span>
@@ -61,9 +110,10 @@ const formatDate = (dateStr: string) => {
         
         <!-- Categories (Folders) -->
         <div 
-          v-for="cat in categories" 
+          v-for="cat in currentCategories" 
           :key="cat"
           class="fm-item"
+          @dblclick="enterFolder(cat)"
         >
           <span class="fm-icon">📁</span>
           <span class="fm-name">{{ cat }}</span>
@@ -73,10 +123,10 @@ const formatDate = (dateStr: string) => {
         
         <!-- Posts (Files) -->
         <div 
-          v-for="post in posts" 
+          v-for="post in currentPosts" 
           :key="post.slug"
           class="fm-item"
-          @dblclick="emit('openPost', post.slug)"
+          @dblclick="openPost(post.slug)"
         >
           <span class="fm-icon">📄</span>
           <span class="fm-name">{{ post.title }}</span>
@@ -88,8 +138,8 @@ const formatDate = (dateStr: string) => {
     
     <!-- Status Bar -->
     <div class="fm-status">
-      <span>{{ posts.length }} file(s)</span>
-      <span>{{ categories.length }} folder(s)</span>
+      <span>{{ currentPosts.length }} file(s)</span>
+      <span>{{ currentCategories.length }} folder(s)</span>
     </div>
   </div>
 </template>

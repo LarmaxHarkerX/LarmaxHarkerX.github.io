@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, shallowRef, markRaw } from 'vue'
 import { usePosts } from '../../composables/usePosts'
 
 interface Props {
@@ -10,21 +10,21 @@ const props = defineProps<Props>()
 const { getPostBySlug } = usePosts()
 
 const post = ref<any>(null)
-const content = ref('')
+const contentComponent = shallowRef<any>(null)
 
 onMounted(async () => {
   post.value = getPostBySlug(props.slug)
   
-  // Load markdown content
+  // Load markdown component
   try {
     const modules = import.meta.glob('../../posts/*.md', { eager: true })
     const path = `../../posts/${props.slug}.md`
     const mod = modules[path] as any
     if (mod) {
-      content.value = mod.default || mod.__content || ''
+      contentComponent.value = markRaw(mod.default)
     }
   } catch (e) {
-    content.value = 'Error loading content'
+    console.error('Error loading post:', e)
   }
 })
 
@@ -57,7 +57,9 @@ const emit = defineEmits<{
         </div>
         <div class="bp-description">{{ post.description }}</div>
         <hr class="bp-divider" />
-        <div class="bp-body" v-html="content"></div>
+        <div class="bp-body">
+          <component :is="contentComponent" v-if="contentComponent" />
+        </div>
       </div>
       <div v-else class="bp-loading">
         Loading...
@@ -162,6 +164,13 @@ const emit = defineEmits<{
   font-size: 12px;
 }
 
+.bp-body :deep(h1) {
+  font-size: 20px;
+  margin: 20px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #808080;
+}
+
 .bp-body :deep(h2) {
   font-size: 16px;
   margin: 16px 0 8px;
@@ -176,6 +185,16 @@ const emit = defineEmits<{
   margin-bottom: 12px;
 }
 
+.bp-body :deep(ul),
+.bp-body :deep(ol) {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.bp-body :deep(li) {
+  margin-bottom: 4px;
+}
+
 .bp-body :deep(code) {
   background: #f0f0f0;
   padding: 2px 4px;
@@ -188,11 +207,57 @@ const emit = defineEmits<{
   padding: 8px;
   overflow-x: auto;
   margin-bottom: 12px;
+  border: 1px solid #808080;
 }
 
 .bp-body :deep(pre code) {
   background: none;
   padding: 0;
+  border: none;
+}
+
+.bp-body :deep(blockquote) {
+  border-left: 3px solid #000080;
+  padding-left: 12px;
+  margin: 12px 0;
+  color: #808080;
+}
+
+.bp-body :deep(table) {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+}
+
+.bp-body :deep(th),
+.bp-body :deep(td) {
+  border: 1px solid #808080;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.bp-body :deep(th) {
+  background: #c0c0c0;
+  font-weight: bold;
+}
+
+.bp-body :deep(a) {
+  color: #000080;
+  text-decoration: underline;
+}
+
+.bp-body :deep(hr) {
+  border: none;
+  border-top: 1px solid #808080;
+  margin: 16px 0;
+}
+
+.bp-body :deep(strong) {
+  font-weight: bold;
+}
+
+.bp-body :deep(em) {
+  font-style: italic;
 }
 
 .bp-loading {
