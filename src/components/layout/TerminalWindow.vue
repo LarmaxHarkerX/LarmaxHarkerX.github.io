@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-
 interface Props {
   title?: string
   icon?: string
@@ -10,7 +8,6 @@ interface Props {
   statusText?: string
   width?: string
   height?: string
-  maxWidth?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,7 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
   statusText: 'Ready',
   width: 'auto',
   height: 'auto',
-  maxWidth: undefined,
 })
 
 const emit = defineEmits<{
@@ -40,7 +36,6 @@ const handleMenuClick = (item: string) => {
 <template>
   <div 
     class="win31-window"
-    :class="{ 'win31-window--maximized': isMaximized }"
     :style="{ width, height }"
   >
     <!-- Title Bar -->

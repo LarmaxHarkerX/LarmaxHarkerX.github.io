@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Markdown from 'vite-plugin-md'
+// @ts-ignore
 import prism from 'markdown-it-prism'
 
 // Plugin to add target="_blank" to external links only
