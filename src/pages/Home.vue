@@ -1,100 +1,80 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import TerminalWindow from '../components/layout/TerminalWindow.vue'
-import TerminalPrompt from '../components/terminal/TerminalPrompt.vue'
-import TypewriterText from '../components/terminal/TypewriterText.vue'
-import CursorBlink from '../components/terminal/CursorBlink.vue'
-import SearchBar from '../components/ui/SearchBar.vue'
-import { useSEO } from '../composables/useSEO'
 
-useSEO({
-  title: 'LARMAX Blog',
-  description: 'A terminal-style blog for developers - Welcome to my digital space',
-})
+const router = useRouter()
 
-const welcomeText = 'Welcome to LARMAX Blog'
-const subtitleText = 'A terminal-style blog for developers'
-const isLoaded = ref(false)
-const showNav = ref(false)
+const programs = [
+  { icon: '📝', label: 'Blog Posts', path: '/blog', description: 'View all blog posts' },
+  { icon: '💬', label: 'Shuo Shuo', path: '/shuoshuo', description: 'Short thoughts & updates' },
+  { icon: '👥', label: 'Friends', path: '/friends', description: 'Friend links & contacts' },
+  { icon: 'ℹ️', label: 'About Me', path: '/about', description: 'Learn about the author' },
+  { icon: '🔍', label: 'Search', path: '/blog', description: 'Search blog posts' },
+  { icon: '📰', label: 'RSS Feed', path: '/feed.xml', description: 'Subscribe to RSS' },
+]
 
-onMounted(() => {
-  setTimeout(() => {
-    isLoaded.value = true
-  }, 500)
-  
-  setTimeout(() => {
-    showNav.value = true
-  }, 1500)
-})
-
-const handleTypingComplete = () => {
-  // Typing animation completed
+const navigateTo = (path: string) => {
+  if (path.startsWith('http') || path.endsWith('.xml')) {
+    window.open(path, '_blank')
+  } else {
+    router.push(path)
+  }
 }
 </script>
 
 <template>
   <div class="home-page">
-    <TerminalWindow title="~/home">
-      <div class="welcome-section">
-        <!-- ASCII Art Logo -->
-        <pre class="ascii-logo">
- _     _____ ____  __  __   _    ____   ___  
-| |   |  _  |  _ \|  \/  | / \  | __ ) / _ \ 
-| |   | | | | |_) | |\/| |/ _ \ |  _ \| | | |
-| |___| |_| |  _ <| |  | / ___ \| |_) | |_| |
-|_____|_____|_| \_\_|  |_/_/   \_\____/ \___/ 
-        </pre>
+    <TerminalWindow 
+      title="Program Manager" 
+      icon="📁"
+      :showMenu="true"
+      :menuItems="['File', 'Options', 'Window', 'Help']"
+      :showStatus="true"
+      statusText="Ready"
+      width="100%"
+      height="100%"
+    >
+      <div class="program-manager">
+        <!-- Main Group Window -->
+        <div class="group-window">
+          <div class="group-title">
+            <span class="group-icon">📁</span>
+            <span>LARMAX Blog</span>
+          </div>
+          
+          <div class="program-grid">
+            <div 
+              v-for="program in programs" 
+              :key="program.path"
+              class="program-item"
+              @dblclick="navigateTo(program.path)"
+              :title="program.description"
+            >
+              <div class="program-icon">{{ program.icon }}</div>
+              <div class="program-label">{{ program.label }}</div>
+            </div>
+          </div>
+        </div>
         
         <!-- Welcome Message -->
-        <div class="welcome-message">
-          <TerminalPrompt path="~" />
-          <TypewriterText 
-            :text="welcomeText" 
-            :speed="50" 
-            @complete="handleTypingComplete"
-          />
+        <div class="welcome-window">
+          <TerminalWindow 
+            title="Welcome" 
+            icon="ℹ️"
+            width="100%"
+          >
+            <div class="welcome-content">
+              <div class="welcome-text">
+                <p class="welcome-title">Welcome to LARMAX Blog!</p>
+                <p>This is a Windows 3.1 style blog interface.</p>
+                <p>Double-click any icon above to open a program.</p>
+              </div>
+              <button class="win31-button win31-button--default" @click="navigateTo('/blog')">
+                OK
+              </button>
+            </div>
+          </TerminalWindow>
         </div>
-        
-        <!-- Subtitle -->
-        <div class="subtitle">
-          <TerminalPrompt path="~" />
-          <span class="text-muted">{{ subtitleText }}</span>
-          <CursorBlink />
-        </div>
-        
-        <!-- Search Bar -->
-        <div class="search-section">
-          <SearchBar />
-        </div>
-        
-        <!-- Navigation Commands -->
-        <Transition name="fade-up">
-          <nav v-if="showNav" class="quick-nav">
-            <router-link to="/blog" class="nav-command">
-              <span class="command-icon">📁</span>
-              <span class="prompt">ls</span> blog/
-              <span class="description">// View blog posts</span>
-            </router-link>
-            
-            <router-link to="/shuoshuo" class="nav-command">
-              <span class="command-icon">💬</span>
-              <span class="prompt">cat</span> shuoshuo.md
-              <span class="description">// Read my thoughts</span>
-            </router-link>
-            
-            <router-link to="/friends" class="nav-command">
-              <span class="command-icon">👥</span>
-              <span class="prompt">ls</span> friends/
-              <span class="description">// Check friend links</span>
-            </router-link>
-            
-            <router-link to="/about" class="nav-command">
-              <span class="command-icon">👤</span>
-              <span class="prompt">whoami</span>
-              <span class="description">// Learn about me</span>
-            </router-link>
-          </nav>
-        </Transition>
       </div>
     </TerminalWindow>
   </div>
@@ -102,113 +82,117 @@ const handleTypingComplete = () => {
 
 <style scoped>
 .home-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
+  width: 100%;
+  height: calc(100vh - 36px);
 }
 
-.welcome-section {
-  padding: var(--space-6) 0;
-}
-
-.ascii-logo {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--terminal-accent);
-  text-align: center;
-  margin-bottom: var(--space-8);
-  line-height: 1.2;
-  white-space: pre;
-  overflow-x: auto;
-}
-
-.welcome-message {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-  font-size: var(--text-lg);
-}
-
-.subtitle {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
-  color: var(--terminal-fg-muted);
-}
-
-.search-section {
-  margin-bottom: var(--space-6);
-}
-
-.quick-nav {
+.program-manager {
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 8px;
+  height: 100%;
 }
 
-.nav-command {
+.group-window {
+  background: var(--win31-gray);
+  border: 2px solid;
+  border-color: var(--win31-white) var(--win31-black) 
+                var(--win31-black) var(--win31-white);
+  box-shadow: 
+    inset 1px 1px 0 var(--win31-light-gray),
+    inset -1px -1px 0 var(--win31-dark-gray);
+  padding: 2px;
+}
+
+.group-title {
+  background: var(--win31-navy);
+  color: var(--win31-white);
+  font-family: var(--font-system);
+  font-weight: bold;
+  font-size: var(--text-sm);
+  padding: 2px 4px;
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  color: var(--terminal-fg);
-  text-decoration: none;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--terminal-border);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  gap: 4px;
+  height: 20px;
 }
 
-.nav-command:hover {
-  border-color: var(--terminal-accent);
-  background: var(--terminal-bg-secondary);
-  transform: translateX(5px);
+.group-icon {
+  font-size: 12px;
 }
 
-.command-icon {
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+  padding: 8px;
+  background: var(--win31-gray);
+}
+
+.program-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.program-item:hover {
+  background: var(--win31-selection);
+}
+
+.program-item:active {
+  background: var(--win31-selection);
+}
+
+.program-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.program-label {
+  font-family: var(--font-system);
+  font-size: var(--text-xs);
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.2;
+  color: var(--win31-black);
+}
+
+.program-item:hover .program-label {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+  padding: 0 2px;
+}
+
+.welcome-window {
+  margin-top: auto;
+}
+
+.welcome-content {
+  padding: 16px;
+  text-align: center;
+}
+
+.welcome-text {
+  margin-bottom: 16px;
+}
+
+.welcome-title {
+  font-weight: bold;
   font-size: var(--text-lg);
+  margin-bottom: 8px;
 }
 
-.nav-command .prompt {
-  color: var(--terminal-accent);
-  font-weight: 600;
-}
-
-.description {
-  color: var(--terminal-fg-muted);
+.welcome-text p {
+  margin-bottom: 4px;
   font-size: var(--text-sm);
-  margin-left: auto;
-}
-
-/* Fade up transition */
-.fade-up-enter-active {
-  transition: all 0.5s ease-out;
-}
-
-.fade-up-leave-active {
-  transition: all 0.3s ease-in;
-}
-
-.fade-up-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.fade-up-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-@media (max-width: 768px) {
-  .ascii-logo {
-    font-size: 0.6rem;
-  }
-  
-  .description {
-    display: none;
-  }
 }
 </style>

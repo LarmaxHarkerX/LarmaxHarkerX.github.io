@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import TerminalWindow from '../components/layout/TerminalWindow.vue'
-import TerminalPrompt from '../components/terminal/TerminalPrompt.vue'
 import { usePosts } from '../composables/usePosts'
 
+const router = useRouter()
 const { posts, loadPosts, categories, tags } = usePosts()
 
 onMounted(() => {
@@ -11,218 +12,232 @@ onMounted(() => {
 })
 
 const formatDate = (dateStr: string) => {
-  if (!dateStr) return '----------'
+  if (!dateStr) return '--------'
   const date = new Date(dateStr)
-  return date.toISOString().split('T')[0]
+  return date.toLocaleDateString('en-US', { 
+    month: '2-digit', 
+    day: '2-digit', 
+    year: '2-digit' 
+  })
+}
+
+const navigateToPost = (slug: string) => {
+  router.push(`/blog/${slug}`)
 }
 </script>
 
 <template>
   <div class="blog-list-page">
-    <TerminalWindow title="~/blog">
-      <!-- Header -->
-      <div class="blog-header">
-        <TerminalPrompt path="~/blog" />
-        <span class="command">ls -la</span>
+    <TerminalWindow 
+      title="File Manager" 
+      icon="📁"
+      :showMenu="true"
+      :menuItems="['File', 'Disk', 'Tree', 'View', 'Options', 'Help']"
+      :showStatus="true"
+      :statusText="`${posts.length} file(s)`"
+      width="100%"
+    >
+      <!-- Toolbar -->
+      <div class="win31-toolbar">
+        <button class="win31-toolbar-button" title="Back">⬅️</button>
+        <button class="win31-toolbar-button" title="Forward">➡️</button>
+        <div class="win31-toolbar-separator"></div>
+        <button class="win31-toolbar-button" title="Copy">📋</button>
+        <button class="win31-toolbar-button" title="Move">📦</button>
+        <button class="win31-toolbar-button" title="Delete">🗑️</button>
+        <div class="win31-toolbar-separator"></div>
+        <button class="win31-toolbar-button" title="View">👁️</button>
       </div>
       
-      <!-- Table Header -->
-      <div class="ls-header">
-        <span class="col-permissions">Permissions</span>
-        <span class="col-date">Date</span>
-        <span class="col-category">Category</span>
-        <span class="col-title">Title</span>
+      <!-- Address Bar -->
+      <div class="address-bar">
+        <span class="address-label">Directory:</span>
+        <input 
+          type="text" 
+          class="win31-input address-input" 
+          value="C:\BLOG\POSTS" 
+          readonly
+        />
       </div>
       
-      <!-- Posts List -->
-      <div class="posts-list">
-        <router-link 
-          v-for="post in posts" 
-          :key="post.slug"
-          :to="post.path"
-          class="post-row"
-        >
-          <span class="col-permissions">-rw-r--r--</span>
-          <span class="col-date">{{ formatDate(post.date) }}</span>
-          <span class="col-category">
-            <span class="category-badge">{{ post.category }}</span>
-          </span>
-          <span class="col-title">
-            <span class="post-title">{{ post.title }}</span>
-            <span class="post-tags">
-              <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
-            </span>
-          </span>
-        </router-link>
-      </div>
-      
-      <!-- Summary -->
-      <div class="ls-summary">
-        <span class="text-muted">total {{ posts.length }} posts</span>
-      </div>
-      
-      <!-- Categories -->
-      <div class="categories-section">
-        <TerminalPrompt path="~/blog" />
-        <span class="command">ls categories/</span>
-        <div class="categories-list">
-          <span v-for="cat in categories" :key="cat" class="category-item">
-            {{ cat }}
-          </span>
+      <!-- File List -->
+      <div class="file-list-container">
+        <!-- Table Header -->
+        <div class="file-list-header">
+          <span class="col-icon"></span>
+          <span class="col-name">Name</span>
+          <span class="col-size">Size</span>
+          <span class="col-date">Date</span>
+          <span class="col-type">Type</span>
+        </div>
+        
+        <!-- File List -->
+        <div class="file-list">
+          <!-- Parent Directory -->
+          <div class="file-item" @dblclick="router.push('/')">
+            <span class="col-icon">📁</span>
+            <span class="col-name">..</span>
+            <span class="col-size"></span>
+            <span class="col-date"></span>
+            <span class="col-type">Parent Dir</span>
+          </div>
+          
+          <!-- Folders (Categories) -->
+          <div 
+            v-for="category in categories" 
+            :key="category"
+            class="file-item file-item--folder"
+          >
+            <span class="col-icon">📁</span>
+            <span class="col-name">{{ category }}</span>
+            <span class="col-size">&lt;DIR&gt;</span>
+            <span class="col-date"></span>
+            <span class="col-type">Folder</span>
+          </div>
+          
+          <!-- Files (Posts) -->
+          <div 
+            v-for="post in posts" 
+            :key="post.slug"
+            class="file-item file-item--file"
+            @dblclick="navigateToPost(post.slug)"
+          >
+            <span class="col-icon">📄</span>
+            <span class="col-name">{{ post.title }}</span>
+            <span class="col-size">4 KB</span>
+            <span class="col-date">{{ formatDate(post.date) }}</span>
+            <span class="col-type">Markdown</span>
+          </div>
         </div>
       </div>
       
-      <!-- Tags -->
-      <div class="tags-section">
-        <TerminalPrompt path="~/blog" />
-        <span class="command">grep -r "tags" . | sort | uniq</span>
-        <div class="tags-cloud">
-          <span v-for="tag in tags" :key="tag" class="tag-item">
-            #{{ tag }}
-          </span>
+      <!-- Status Bar -->
+      <template #status>
+        <div class="status-section">
+          {{ posts.length }} file(s)
         </div>
-      </div>
+        <div class="status-section">
+          {{ categories.length }} folder(s)
+        </div>
+      </template>
     </TerminalWindow>
   </div>
 </template>
 
 <style scoped>
 .blog-list-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
+  width: 100%;
 }
 
-.blog-header {
+.address-bar {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--win31-gray);
+  border-bottom: 1px solid var(--win31-dark-gray);
 }
 
-.command {
-  color: var(--terminal-fg);
-}
-
-.ls-header {
-  display: grid;
-  grid-template-columns: 120px 100px 120px 1fr;
-  gap: var(--space-4);
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--terminal-border);
-  color: var(--terminal-fg-muted);
+.address-label {
+  font-family: var(--font-system);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
-.posts-list {
-  margin-bottom: var(--space-4);
-}
-
-.post-row {
-  display: grid;
-  grid-template-columns: 120px 100px 120px 1fr;
-  gap: var(--space-4);
-  padding: var(--space-3) 0;
-  border-bottom: 1px solid var(--terminal-border);
-  color: var(--terminal-fg);
-  text-decoration: none;
-  transition: all var(--transition-fast);
-}
-
-.post-row:hover {
-  background: var(--terminal-bg-secondary);
-  border-color: var(--terminal-accent);
-}
-
-.col-permissions {
-  color: var(--terminal-fg-muted);
+.address-input {
+  flex: 1;
   font-size: var(--text-sm);
 }
 
-.col-date {
-  color: var(--terminal-green);
-  font-size: var(--text-sm);
-}
-
-.col-category {
-  font-size: var(--text-sm);
-}
-
-.category-badge {
-  background: var(--terminal-bg-secondary);
-  border: 1px solid var(--terminal-border);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-xs);
-}
-
-.col-title {
+.file-list-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  background: var(--win31-white);
+  box-shadow: var(--bevel-inset);
+  margin: 2px;
+  overflow: hidden;
 }
 
-.post-title {
-  color: var(--terminal-accent);
-  font-weight: 500;
+.file-list-header {
+  display: grid;
+  grid-template-columns: 24px 1fr 60px 80px 80px;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--win31-gray);
+  border-bottom: 2px solid;
+  border-color: var(--win31-white) var(--win31-black) 
+                var(--win31-black) var(--win31-white);
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  font-weight: bold;
 }
 
-.post-tags {
+.file-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.file-item {
+  display: grid;
+  grid-template-columns: 24px 1fr 60px 80px 80px;
+  gap: 4px;
+  padding: 4px 8px;
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.file-item:hover {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+.file-item:active {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+.file-item--folder {
+  font-weight: bold;
+}
+
+.col-icon {
+  font-size: 14px;
   display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
-.tag {
-  color: var(--terminal-fg-muted);
+.col-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.col-size,
+.col-date,
+.col-type {
   font-size: var(--text-xs);
+  color: var(--win31-dark-gray);
 }
 
-.ls-summary {
-  padding: var(--space-2) 0;
-  border-top: 1px solid var(--terminal-border);
-  margin-bottom: var(--space-8);
-}
-
-.categories-section,
-.tags-section {
-  margin-top: var(--space-6);
-  padding-top: var(--space-6);
-  border-top: 1px solid var(--terminal-border);
-}
-
-.categories-list,
-.tags-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  margin-top: var(--space-3);
-  padding-left: var(--space-6);
-}
-
-.category-item {
-  background: var(--terminal-bg-secondary);
-  border: 1px solid var(--terminal-border);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  color: var(--terminal-fg);
-}
-
-.tag-item {
-  color: var(--terminal-cyan);
-  font-size: var(--text-sm);
+.file-item:hover .col-size,
+.file-item:hover .col-date,
+.file-item:hover .col-type {
+  color: var(--win31-selection-text);
 }
 
 @media (max-width: 768px) {
-  .ls-header,
-  .post-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-1);
+  .file-list-header,
+  .file-item {
+    grid-template-columns: 24px 1fr 60px;
   }
   
-  .col-permissions {
+  .col-date,
+  .col-type {
     display: none;
   }
 }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import TerminalWindow from '../components/layout/TerminalWindow.vue'
-import TerminalPrompt from '../components/terminal/TerminalPrompt.vue'
 import shuoshuoData from '../data/shuoshuo.json'
 
 interface ShuoshuoItem {
@@ -15,48 +14,55 @@ const items = ref<ShuoshuoItem[]>(shuoshuoData)
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return date.toLocaleDateString('en-US', { 
+    month: '2-digit', 
+    day: '2-digit', 
+    year: '2-digit',
     hour: '2-digit',
-    minute: '2-digit',
+    minute: '2-digit'
   })
 }
 </script>
 
 <template>
   <div class="shuoshuo-page">
-    <TerminalWindow title="~/shuoshuo">
-      <!-- Header -->
-      <div class="shuoshuo-header">
-        <TerminalPrompt path="~/shuoshuo" />
-        <span class="command">cat shuoshuo.md</span>
+    <TerminalWindow 
+      title="Notepad - ShuoShuo.txt" 
+      icon="📝"
+      :showMenu="true"
+      :menuItems="['File', 'Edit', 'Search', 'Help']"
+      :showStatus="true"
+      statusText="Ready"
+      width="100%"
+    >
+      <!-- Toolbar -->
+      <div class="win31-toolbar">
+        <button class="win31-toolbar-button" title="New">📄</button>
+        <button class="win31-toolbar-button" title="Open">📂</button>
+        <button class="win31-toolbar-button" title="Save">💾</button>
+        <div class="win31-toolbar-separator"></div>
+        <button class="win31-toolbar-button" title="Cut">✂️</button>
+        <button class="win31-toolbar-button" title="Copy">📋</button>
+        <button class="win31-toolbar-button" title="Paste">📌</button>
       </div>
       
-      <!-- Shuoshuo Items -->
-      <div class="shuoshuo-list">
-        <article v-for="item in items" :key="item.id" class="shuoshuo-card">
-          <div class="card-header">
-            <span class="card-id">#{{ item.id }}</span>
-            <span class="card-date">{{ formatDate(item.date) }}</span>
+      <!-- Content -->
+      <div class="notepad-content">
+        <div class="notepad-text">
+          <div v-for="item in items" :key="item.id" class="shuoshuo-entry">
+            <div class="entry-header">
+              <span class="entry-id">[{{ item.id }}]</span>
+              <span class="entry-date">{{ formatDate(item.date) }}</span>
+            </div>
+            <div class="entry-content">{{ item.content }}</div>
+            <div class="entry-tags">
+              <span v-for="tag in item.tags" :key="tag" class="entry-tag">
+                #{{ tag }}
+              </span>
+            </div>
+            <div class="entry-separator">────────────────────────────────</div>
           </div>
-          
-          <div class="card-content">
-            {{ item.content }}
-          </div>
-          
-          <div class="card-footer">
-            <span v-for="tag in item.tags" :key="tag" class="tag">
-              #{{ tag }}
-            </span>
-          </div>
-        </article>
-      </div>
-      
-      <!-- Summary -->
-      <div class="shuoshuo-summary">
-        <span class="text-muted">共 {{ items.length }} 条说说</span>
+        </div>
       </div>
     </TerminalWindow>
   </div>
@@ -64,79 +70,69 @@ const formatDate = (dateStr: string) => {
 
 <style scoped>
 .shuoshuo-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
+  width: 100%;
 }
 
-.shuoshuo-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
+.notepad-content {
+  flex: 1;
+  background: var(--win31-white);
+  box-shadow: var(--bevel-inset);
+  margin: 2px;
+  overflow-y: auto;
+  padding: 8px;
 }
 
-.command {
-  color: var(--terminal-fg);
-}
-
-.shuoshuo-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.shuoshuo-card {
-  background: var(--terminal-bg-secondary);
-  border: 1px solid var(--terminal-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  transition: all var(--transition-fast);
-}
-
-.shuoshuo-card:hover {
-  border-color: var(--terminal-accent);
-  box-shadow: 0 0 20px var(--terminal-glow);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-3);
-}
-
-.card-id {
-  color: var(--terminal-accent);
-  font-weight: 600;
+.notepad-text {
+  font-family: var(--font-mono);
   font-size: var(--text-sm);
+  line-height: 1.6;
 }
 
-.card-date {
-  color: var(--terminal-fg-muted);
-  font-size: var(--text-sm);
+.shuoshuo-entry {
+  margin-bottom: 8px;
 }
 
-.card-content {
-  color: var(--terminal-fg);
-  line-height: 1.8;
-  margin-bottom: var(--space-3);
-}
-
-.card-footer {
+.entry-header {
   display: flex;
-  gap: var(--space-2);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.entry-id {
+  font-weight: bold;
+  color: var(--win31-navy);
+}
+
+.entry-date {
+  color: var(--win31-dark-gray);
+}
+
+.entry-content {
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+
+.entry-tags {
+  display: flex;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
-.tag {
-  color: var(--terminal-cyan);
-  font-size: var(--text-sm);
+.entry-tag {
+  color: var(--win31-navy);
+  font-size: var(--text-xs);
 }
 
-.shuoshuo-summary {
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--terminal-border);
+.entry-separator {
+  color: var(--win31-dark-gray);
+  margin-top: 8px;
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 768px) {
+  .entry-header {
+    flex-direction: column;
+    gap: 2px;
+  }
 }
 </style>

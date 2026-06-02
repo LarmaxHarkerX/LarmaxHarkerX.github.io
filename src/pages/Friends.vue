@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import TerminalWindow from '../components/layout/TerminalWindow.vue'
-import TerminalPrompt from '../components/terminal/TerminalPrompt.vue'
 import friendsData from '../data/friends.json'
 
 interface Friend {
@@ -13,48 +12,115 @@ interface Friend {
 }
 
 const friends = ref<Friend[]>(friendsData)
+const currentIndex = ref(0)
+
+const currentFriend = computed(() => friends.value[currentIndex.value])
+
+const nextFriend = () => {
+  currentIndex.value = (currentIndex.value + 1) % friends.value.length
+}
+
+const prevFriend = () => {
+  currentIndex.value = (currentIndex.value - 1 + friends.value.length) % friends.value.length
+}
+
+const visitFriend = () => {
+  window.open(currentFriend.value.url, '_blank')
+}
 </script>
 
 <template>
   <div class="friends-page">
-    <TerminalWindow title="~/friends">
-      <!-- Header -->
-      <div class="friends-header">
-        <TerminalPrompt path="~/friends" />
-        <span class="command">ls -la friends/</span>
+    <TerminalWindow 
+      title="Cardfile - Friends" 
+      icon="📇"
+      :showMenu="true"
+      :menuItems="['File', 'Card', 'Search', 'Help']"
+      :showStatus="true"
+      :statusText="`Card ${currentIndex + 1} of ${friends.length}`"
+      width="100%"
+    >
+      <!-- Toolbar -->
+      <div class="win31-toolbar">
+        <button class="win31-toolbar-button" title="Add Card">➕</button>
+        <button class="win31-toolbar-button" title="Delete Card">➖</button>
+        <div class="win31-toolbar-separator"></div>
+        <button class="win31-toolbar-button" title="Previous" @click="prevFriend">⬆️</button>
+        <button class="win31-toolbar-button" title="Next" @click="nextFriend">⬇️</button>
+        <div class="win31-toolbar-separator"></div>
+        <button class="win31-toolbar-button" title="Visit" @click="visitFriend">🔗</button>
       </div>
       
-      <!-- Friends Grid -->
-      <div class="friends-grid">
-        <a 
-          v-for="friend in friends" 
-          :key="friend.name"
-          :href="friend.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="friend-card"
-          :style="{ '--card-color': friend.color }"
-        >
-          <div class="card-avatar">
-            <img :src="friend.avatar" :alt="friend.name" />
+      <!-- Card Content -->
+      <div class="card-content">
+        <div class="card-index">
+          <div class="index-label">Index</div>
+          <div class="index-list">
+            <div 
+              v-for="(friend, index) in friends" 
+              :key="friend.name"
+              class="index-item"
+              :class="{ 'index-item--active': index === currentIndex }"
+              @click="currentIndex = index"
+            >
+              {{ friend.name }}
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-detail">
+          <div class="card-header">
+            <div class="card-avatar">
+              <img :src="currentFriend.avatar" :alt="currentFriend.name" />
+            </div>
+            <div class="card-info">
+              <div class="card-name">{{ currentFriend.name }}</div>
+              <div class="card-description">{{ currentFriend.description }}</div>
+            </div>
           </div>
           
-          <div class="card-content">
-            <h3 class="card-name">{{ friend.name }}</h3>
-            <p class="card-description">{{ friend.description }}</p>
+          <div class="card-fields">
+            <div class="field-row">
+              <span class="field-label">Name:</span>
+              <input 
+                type="text" 
+                class="win31-input field-input" 
+                :value="currentFriend.name" 
+                readonly
+              />
+            </div>
+            <div class="field-row">
+              <span class="field-label">URL:</span>
+              <input 
+                type="text" 
+                class="win31-input field-input" 
+                :value="currentFriend.url" 
+                readonly
+              />
+            </div>
+            <div class="field-row">
+              <span class="field-label">Type:</span>
+              <input 
+                type="text" 
+                class="win31-input field-input" 
+                value="Website" 
+                readonly
+              />
+            </div>
           </div>
           
-          <div class="card-action">
-            <span class="action-text">visit</span>
-            <span class="action-arrow">→</span>
+          <div class="card-actions">
+            <button class="win31-button" @click="prevFriend">
+              ← Previous
+            </button>
+            <button class="win31-button win31-button--default" @click="visitFriend">
+              Visit
+            </button>
+            <button class="win31-button" @click="nextFriend">
+              Next →
+            </button>
           </div>
-        </a>
-      </div>
-      
-      <!-- Summary -->
-      <div class="friends-summary">
-        <TerminalPrompt path="~/friends" />
-        <span class="command">echo "共 {{ friends.length }} 个友情链接"</span>
+        </div>
       </div>
     </TerminalWindow>
   </div>
@@ -62,54 +128,85 @@ const friends = ref<Friend[]>(friendsData)
 
 <style scoped>
 .friends-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
+  width: 100%;
 }
 
-.friends-header {
+.card-content {
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  flex: 1;
+  background: var(--win31-white);
+  box-shadow: var(--bevel-inset);
+  margin: 2px;
+  overflow: hidden;
 }
 
-.command {
-  color: var(--terminal-fg);
-}
-
-.friends-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-
-.friend-card {
+.card-index {
+  width: 150px;
+  border-right: 2px solid;
+  border-color: var(--win31-dark-gray) var(--win31-white) 
+                var(--win31-white) var(--win31-dark-gray);
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  background: var(--terminal-bg-secondary);
-  border: 1px solid var(--terminal-border);
-  border-radius: var(--radius-lg);
-  text-decoration: none;
-  color: var(--terminal-fg);
-  transition: all var(--transition-fast);
+  flex-direction: column;
 }
 
-.friend-card:hover {
-  border-color: var(--card-color, var(--terminal-accent));
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+.index-label {
+  background: var(--win31-gray);
+  padding: 4px 8px;
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  font-weight: bold;
+  border-bottom: 1px solid var(--win31-dark-gray);
+}
+
+.index-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.index-item {
+  padding: 4px 8px;
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.index-item:hover {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+.index-item--active {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+.card-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+.card-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--win31-dark-gray);
 }
 
 .card-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  border: 2px solid;
+  border-color: var(--win31-white) var(--win31-black) 
+                var(--win31-black) var(--win31-white);
+  box-shadow: var(--bevel-inset);
   overflow: hidden;
-  border: 2px solid var(--card-color, var(--terminal-border));
   flex-shrink: 0;
 }
 
@@ -119,53 +216,96 @@ const friends = ref<Friend[]>(friendsData)
   object-fit: cover;
 }
 
-.card-content {
+.card-info {
   flex: 1;
-  min-width: 0;
 }
 
 .card-name {
+  font-family: var(--font-system);
+  font-weight: bold;
   font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--terminal-fg);
-  margin-bottom: var(--space-1);
+  margin-bottom: 4px;
 }
 
 .card-description {
+  font-family: var(--font-system);
   font-size: var(--text-sm);
-  color: var(--terminal-fg-muted);
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--win31-dark-gray);
 }
 
-.card-action {
+.card-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-row {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  color: var(--card-color, var(--terminal-accent));
+  gap: 8px;
+}
+
+.field-label {
+  font-family: var(--font-system);
   font-size: var(--text-sm);
+  font-weight: bold;
+  width: 60px;
   flex-shrink: 0;
 }
 
-.action-arrow {
-  transition: transform var(--transition-fast);
+.field-input {
+  flex: 1;
 }
 
-.friend-card:hover .action-arrow {
-  transform: translateX(4px);
-}
-
-.friends-summary {
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--terminal-border);
+.card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--win31-dark-gray);
 }
 
 @media (max-width: 768px) {
-  .friends-grid {
-    grid-template-columns: 1fr;
+  .card-content {
+    flex-direction: column;
+  }
+  
+  .card-index {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid;
+    border-color: var(--win31-dark-gray) var(--win31-white) 
+                  var(--win31-white) var(--win31-dark-gray);
+    max-height: 120px;
+  }
+  
+  .index-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .index-item {
+    padding: 4px 8px;
+    background: var(--win31-gray);
+    border: 1px solid var(--win31-dark-gray);
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .field-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .field-label {
+    width: auto;
   }
 }
 </style>

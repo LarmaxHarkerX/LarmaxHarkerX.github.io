@@ -1,100 +1,125 @@
-/* Terminal Design System - CSS Variables */
+/* Windows 3.1 Design System - CSS Variables */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
 :root {
-  /* Terminal Colors - Dark Theme (Default) */
-  --terminal-bg: #0a0a0a;
-  --terminal-bg-secondary: #111111;
-  --terminal-bg-tertiary: #1a1a1a;
-  --terminal-fg: #c8d6c8;
-  --terminal-fg-muted: #8b929e;
-  --terminal-accent: #39ff14;
-  --terminal-accent-dim: #2bcc10;
-  --terminal-border: #333333;
-  --terminal-border-focus: #39ff14;
-  --terminal-glow: rgba(57, 255, 20, 0.3);
-  --terminal-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
-
-  /* Terminal Status Colors */
-  --terminal-red: #ff5f57;
-  --terminal-yellow: #ffbd2e;
-  --terminal-green: #28c840;
-  --terminal-blue: #58a6ff;
-  --terminal-purple: #bc8cff;
-  --terminal-cyan: #39c5cf;
-
-  /* Typography */
-  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', 'Consolas', monospace;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-  /* Font Sizes */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-
-  /* Spacing */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-
-  /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
-
-  /* Z-Index */
-  --z-dropdown: 1000;
-  --z-sticky: 1020;
-  --z-fixed: 1030;
-  --z-modal-backdrop: 1040;
-  --z-modal: 1050;
-  --z-popover: 1060;
-  --z-tooltip: 1070;
+  /* ===== Windows 3.1 Core Palette ===== */
+  --win31-gray: #C0C0C0;
+  --win31-dark-gray: #808080;
+  --win31-light-gray: #DFDFDF;
+  --win31-white: #FFFFFF;
+  --win31-black: #000000;
+  
+  /* Title Bar Colors */
+  --win31-navy: #000080;
+  --win31-active-caption-text: #FFFFFF;
+  --win31-inactive-caption: #FFFFFF;
+  --win31-inactive-caption-text: #000000;
+  
+  /* Desktop & Workspace */
+  --win31-desktop: #008080;
+  --win31-workspace: #FFFFFF;
+  
+  /* Selection */
+  --win31-selection: #000080;
+  --win31-selection-text: #FFFFFF;
+  
+  /* Window */
+  --win31-window-bg: #FFFFFF;
+  --win31-window-frame: #000000;
+  
+  /* Menu */
+  --win31-menu-bg: #FFFFFF;
+  --win31-menu-text: #000000;
+  
+  /* ===== Typography ===== */
+  --font-system: 'MS Sans Serif', 'Arial', 'Helvetica', sans-serif;
+  --font-pixel: 'VT323', 'Courier New', monospace;
+  --font-mono: 'Courier New', 'Fixedsys', monospace;
+  
+  /* Font Sizes (Win31 uses 8pt/11px system font) */
+  --text-xs: 10px;
+  --text-sm: 11px;
+  --text-base: 12px;
+  --text-lg: 14px;
+  --text-xl: 16px;
+  --text-2xl: 18px;
+  --text-3xl: 24px;
+  --text-4xl: 32px;
+  
+  /* ===== Spacing (Win31 uses 4px grid) ===== */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-8: 16px;
+  --space-10: 20px;
+  --space-12: 24px;
+  --space-16: 32px;
+  
+  /* ===== Win31 Border Patterns ===== */
+  /* Outset bevel (raised elements like buttons) */
+  --bevel-outset: 
+    inset -1px -1px 0 var(--win31-black),
+    inset 1px 1px 0 var(--win31-white),
+    inset -2px -2px 0 var(--win31-dark-gray),
+    inset 2px 2px 0 var(--win31-light-gray);
+  
+  /* Inset bevel (sunken elements like inputs) */
+  --bevel-inset:
+    inset 1px 1px 0 var(--win31-dark-gray),
+    inset -1px -1px 0 var(--win31-white),
+    inset 2px 2px 0 var(--win31-black),
+    inset -2px -2px 0 var(--win31-light-gray);
+  
+  /* Window border */
+  --border-window: 
+    2px solid var(--win31-white) 
+    2px solid var(--win31-black) 
+    2px solid var(--win31-black) 
+    2px solid var(--win31-white);
+  
+  /* ===== Transitions ===== */
+  --transition-fast: 50ms linear;
+  --transition-normal: 100ms linear;
+  --transition-slow: 150ms linear;
+  
+  /* ===== Z-Index ===== */
+  --z-desktop: 0;
+  --z-window: 10;
+  --z-window-active: 20;
+  --z-menu: 100;
+  --z-dialog: 200;
   --z-loading: 9999;
 }
 
-/* Light Terminal Theme */
-[data-theme="light"] {
-  --terminal-bg: #f5f0e8;
-  --terminal-bg-secondary: #e8e3db;
-  --terminal-bg-tertiary: #dcd7cf;
-  --terminal-fg: #2d2b26;
-  --terminal-fg-muted: #6b6960;
-  --terminal-accent: #da7756;
-  --terminal-accent-dim: #c46a4a;
-  --terminal-border: #c4bfb7;
-  --terminal-border-focus: #da7756;
-  --terminal-glow: rgba(218, 119, 86, 0.3);
-  --terminal-shadow: 0 0 20px rgba(218, 119, 86, 0.1);
+/* ===== Win31 Bevel Mixins (as classes) ===== */
+.bevel-outset {
+  box-shadow: var(--bevel-outset);
 }
 
-/* Amber Terminal Theme */
-[data-theme="amber"] {
-  --terminal-bg: #000000;
-  --terminal-bg-secondary: #0a0a0a;
-  --terminal-bg-tertiary: #141414;
-  --terminal-fg: #ffb000;
-  --terminal-fg-muted: #806000;
-  --terminal-accent: #ffcc00;
-  --terminal-accent-dim: #cc9900;
-  --terminal-border: #333300;
-  --terminal-border-focus: #ffcc00;
-  --terminal-glow: rgba(255, 204, 0, 0.3);
-  --terminal-shadow: 0 0 20px rgba(255, 204, 0, 0.1);
+.bevel-inset {
+  box-shadow: var(--bevel-inset);
+}
+
+/* ===== Win31 Button Press Effect ===== */
+.btn-press:active {
+  box-shadow: 
+    inset 1px 1px 0 var(--win31-black),
+    inset -1px -1px 0 var(--win31-white);
+  padding-left: calc(var(--space-2) + 1px);
+  padding-top: calc(var(--space-1) + 1px);
+}
+
+/* ===== Win31 Selection Highlight ===== */
+::selection {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+::-moz-selection {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
 }

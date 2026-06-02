@@ -1,0 +1,376 @@
+/* Windows 3.1 Design System - Component Styles */
+
+/* ===== Window Container ===== */
+.win31-window {
+  background: var(--win31-gray);
+  border: 2px solid;
+  border-color: var(--win31-white) var(--win31-black) 
+                var(--win31-black) var(--win31-white);
+  box-shadow: 
+    inset 1px 1px 0 var(--win31-light-gray),
+    inset -1px -1px 0 var(--win31-dark-gray);
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Title Bar ===== */
+.win31-titlebar {
+  background: var(--win31-navy);
+  color: var(--win31-active-caption-text);
+  font-family: var(--font-system);
+  font-weight: bold;
+  font-size: var(--text-sm);
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 22px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.win31-titlebar-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+}
+
+.win31-titlebar-controls {
+  display: flex;
+  gap: 2px;
+}
+
+/* ===== Control Button (Single button in Win31) ===== */
+.win31-control-btn {
+  width: 20px;
+  height: 16px;
+  background: var(--win31-gray);
+  border: none;
+  font-size: 10px;
+  font-family: var(--font-system);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    inset -1px -1px 0 var(--win31-black),
+    inset 1px 1px 0 var(--win31-white),
+    inset -2px -2px 0 var(--win31-dark-gray),
+    inset 2px 2px 0 var(--win31-light-gray);
+}
+
+.win31-control-btn:active {
+  box-shadow:
+    inset 1px 1px 0 var(--win31-black),
+    inset -1px -1px 0 var(--win31-white);
+}
+
+/* ===== Menu Bar ===== */
+.win31-menubar {
+  background: var(--win31-gray);
+  border-bottom: 1px solid var(--win31-dark-gray);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.win31-menu-item {
+  background: var(--win31-gray);
+  color: var(--win31-black);
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  padding: 2px 8px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.win31-menu-item:hover,
+.win31-menu-item:focus {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+.win31-menu-item--active {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+/* ===== Dropdown Menu ===== */
+.win31-dropdown {
+  background: var(--win31-white);
+  border: 2px solid;
+  border-color: var(--win31-white) var(--win31-black) 
+                var(--win31-black) var(--win31-white);
+  box-shadow: 
+    inset 1px 1px 0 var(--win31-light-gray),
+    inset -1px -1px 0 var(--win31-dark-gray);
+  padding: 2px;
+  position: absolute;
+  z-index: var(--z-menu);
+  min-width: 150px;
+}
+
+.win31-dropdown-item {
+  padding: 3px 20px 3px 8px;
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.win31-dropdown-item:hover {
+  background: var(--win31-selection);
+  color: var(--win31-selection-text);
+}
+
+.win31-dropdown-separator {
+  height: 1px;
+  background: var(--win31-dark-gray);
+  margin: 2px 0;
+  border-bottom: 1px solid var(--win31-white);
+}
+
+/* ===== Button ===== */
+.win31-button {
+  background: var(--win31-gray);
+  color: var(--win31-black);
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  padding: 4px 16px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow:
+    inset -1px -1px 0 var(--win31-black),
+    inset 1px 1px 0 var(--win31-white),
+    inset -2px -2px 0 var(--win31-dark-gray),
+    inset 2px 2px 0 var(--win31-light-gray);
+}
+
+.win31-button:active {
+  box-shadow:
+    inset 1px 1px 0 var(--win31-black),
+    inset -1px -1px 0 var(--win31-white);
+  padding: 5px 15px 3px 17px;
+}
+
+.win31-button:focus-visible {
+  outline: 1px dotted var(--win31-black);
+  outline-offset: -4px;
+}
+
+.win31-button--default {
+  outline: 1px solid var(--win31-black);
+  outline-offset: 2px;
+}
+
+.win31-button--disabled {
+  color: var(--win31-dark-gray);
+  cursor: default;
+  text-shadow: 1px 1px 0 var(--win31-white);
+}
+
+.win31-button--disabled:active {
+  box-shadow:
+    inset -1px -1px 0 var(--win31-black),
+    inset 1px 1px 0 var(--win31-white),
+    inset -2px -2px 0 var(--win31-dark-gray),
+    inset 2px 2px 0 var(--win31-light-gray);
+  padding: 4px 16px;
+}
+
+/* ===== Input Field ===== */
+.win31-input {
+  background: var(--win31-white);
+  color: var(--win31-black);
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  padding: 3px 4px;
+  border: none;
+  box-shadow: var(--bevel-inset);
+}
+
+.win31-input:focus {
+  outline: none;
+}
+
+.win31-input::placeholder {
+  color: var(--win31-dark-gray);
+}
+
+/* ===== Textarea ===== */
+.win31-textarea {
+  background: var(--win31-white);
+  color: var(--win31-black);
+  font-family: var(--font-system);
+  font-size: var(--text-sm);
+  padding: 4px;
+  border: none;
+  box-shadow: var(--bevel-inset);
+  resize: none;
+  width: 100%;
+}
+
+/* ===== Status Bar ===== */
+.win31-statusbar {
+  background: var(--win31-gray);
+  border-top: 1px solid var(--win31-dark-gray);
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-xs);
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.win31-statusbar-section {
+  box-shadow: var(--bevel-inset);
+  padding: 1px 4px;
+  flex: 1;
+}
+
+.win31-statusbar-section:first-child {
+  flex: 3;
+}
+
+/* ===== Group Box ===== */
+.win31-groupbox {
+  border: 2px solid;
+  border-color: var(--win31-dark-gray) var(--win31-white) 
+                var(--win31-white) var(--win31-dark-gray);
+  padding: 12px 8px 8px;
+  margin: 8px 0;
+  position: relative;
+}
+
+.win31-groupbox-title {
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  background: var(--win31-gray);
+  padding: 0 4px;
+  font-size: var(--text-sm);
+  font-weight: bold;
+}
+
+/* ===== Icon ===== */
+.win31-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  image-rendering: pixelated;
+}
+
+.win31-icon--small {
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+}
+
+.win31-icon--large {
+  width: 48px;
+  height: 48px;
+  font-size: 36px;
+}
+
+/* ===== Dialog Box ===== */
+.win31-dialog {
+  background: var(--win31-gray);
+  border: 2px solid;
+  border-color: var(--win31-white) var(--win31-black) 
+                var(--win31-black) var(--win31-white);
+  box-shadow: 
+    inset 1px 1px 0 var(--win31-light-gray),
+    inset -1px -1px 0 var(--win31-dark-gray);
+  padding: 3px;
+  min-width: 300px;
+}
+
+.win31-dialog-titlebar {
+  background: var(--win31-navy);
+  color: var(--win31-active-caption-text);
+  font-weight: bold;
+  font-size: var(--text-sm);
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 22px;
+}
+
+.win31-dialog-body {
+  padding: 12px;
+}
+
+.win31-dialog-footer {
+  padding: 8px 12px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  border-top: 1px solid var(--win31-dark-gray);
+}
+
+/* ===== Toolbar ===== */
+.win31-toolbar {
+  background: var(--win31-gray);
+  border-bottom: 1px solid var(--win31-dark-gray);
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.win31-toolbar-button {
+  width: 24px;
+  height: 22px;
+  background: var(--win31-gray);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.win31-toolbar-button:hover {
+  box-shadow:
+    inset -1px -1px 0 var(--win31-white),
+    inset 1px 1px 0 var(--win31-black);
+}
+
+.win31-toolbar-separator {
+  width: 2px;
+  height: 20px;
+  border-left: 1px solid var(--win31-dark-gray);
+  border-right: 1px solid var(--win31-white);
+  margin: 0 2px;
+}
+
+/* ===== Utility Classes ===== */
+.win31-text-center { text-align: center; }
+.win31-text-right { text-align: right; }
+.win31-text-bold { font-weight: bold; }
+.win31-text-muted { color: var(--win31-dark-gray); }
+
+.win31-p-2 { padding: var(--space-2); }
+.win31-p-4 { padding: var(--space-4); }
+.win31-p-8 { padding: var(--space-8); }
+.win31-m-2 { margin: var(--space-2); }
+.win31-m-4 { margin: var(--space-4); }
+.win31-m-8 { margin: var(--space-8); }
+
+.win31-flex { display: flex; }
+.win31-flex-center { align-items: center; justify-content: center; }
+.win31-flex-between { justify-content: space-between; }
+.win31-flex-column { flex-direction: column; }
+.win31-gap-2 { gap: var(--space-2); }
+.win31-gap-4 { gap: var(--space-4); }
+.win31-gap-8 { gap: var(--space-8); }
