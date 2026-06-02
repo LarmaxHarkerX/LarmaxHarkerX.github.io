@@ -17,6 +17,7 @@
     "gray-matter": "^4.0.3",
     "gsap": "^3.15.0",
     "markdown-it": "^14.2.0",
+    "markdown-it-prism": "^3.0.1",
     "prismjs": "^1.30.0",
     "vite-plugin-md": "^0.22.5",
     "vue": "^3.5.34"
