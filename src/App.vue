@@ -225,13 +225,13 @@ const handleIconDblClick = (action: string) => {
 }
 
 // Handle open post
-const handleOpenPost = (slug: string) => {
+const handleOpenPost = (path: string) => {
   openWindow(
-    `post-${slug}`,
-    `Blog Post - ${slug}`,
+    `post-${path}`,
+    `Blog Post`,
     '📄',
     'BlogPost',
-    { slug }
+    { path }
   )
 }
 
@@ -321,7 +321,7 @@ const handleBackToFileManager = () => {
             />
             <BlogPostWindow 
               v-else-if="win.component === 'BlogPost'"
-              :slug="win.data?.slug"
+              :path="win.data?.path"
               @back="handleBackToFileManager"
             />
           </template>

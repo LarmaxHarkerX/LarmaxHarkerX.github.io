@@ -3,23 +3,23 @@ import { ref, onMounted, shallowRef, markRaw } from 'vue'
 import { usePosts } from '../../composables/usePosts'
 
 interface Props {
-  slug: string
+  path: string
 }
 
 const props = defineProps<Props>()
-const { getPostBySlug } = usePosts()
+const { getPostByPath } = usePosts()
 
 const post = ref<any>(null)
 const contentComponent = shallowRef<any>(null)
 
 onMounted(async () => {
-  post.value = getPostBySlug(props.slug)
+  post.value = getPostByPath(props.path)
   
   // Load markdown component
   try {
-    const modules = import.meta.glob('../../posts/*.md', { eager: true })
-    const path = `../../posts/${props.slug}.md`
-    const mod = modules[path] as any
+    const modules = import.meta.glob('../../posts/**/*.md', { eager: true })
+    const fullPath = `../../posts/${props.path}.md`
+    const mod = modules[fullPath] as any
     if (mod) {
       contentComponent.value = markRaw(mod.default)
     }
@@ -35,7 +35,6 @@ const emit = defineEmits<{
 
 <template>
   <div class="blog-post">
-    <!-- Toolbar -->
     <div class="bp-toolbar">
       <button class="bp-btn" @click="emit('back')">⬅️</button>
       <button class="bp-btn">➡️</button>
@@ -44,13 +43,12 @@ const emit = defineEmits<{
       <button class="bp-btn">🔍</button>
     </div>
     
-    <!-- Content -->
     <div class="bp-content">
       <div v-if="post" class="bp-article">
         <h1 class="bp-title">{{ post.title }}</h1>
         <div class="bp-meta">
           <span class="bp-date">{{ post.date }}</span>
-          <span class="bp-category">{{ post.category }}</span>
+          <span v-if="post.folder" class="bp-folder">{{ post.folder }}</span>
         </div>
         <div class="bp-tags">
           <span v-for="tag in post.tags" :key="tag" class="bp-tag">#{{ tag }}</span>
@@ -66,7 +64,6 @@ const emit = defineEmits<{
       </div>
     </div>
     
-    <!-- Status -->
     <div class="bp-status">
       <span>{{ post?.title || 'Loading...' }}</span>
     </div>

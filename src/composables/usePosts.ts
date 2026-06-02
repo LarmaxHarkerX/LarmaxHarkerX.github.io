@@ -1,66 +1,71 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 export interface Post {
   title: string
   date: string
   description: string
-  category: string
   tags: string[]
-  path: string
   slug: string
+  path: string
+  folder: string
 }
 
 const posts = ref<Post[]>([])
+const folders = ref<string[]>([])
 
 export function usePosts() {
   const loadPosts = async () => {
-    const modules = import.meta.glob('../../posts/*.md', { eager: true })
+    const modules = import.meta.glob('../../posts/**/*.md', { eager: true })
     
-    posts.value = Object.entries(modules).map(([path, module]: [string, any]) => {
-      const slug = path.replace('../posts/', '').replace('.md', '')
+    const allPosts: Post[] = []
+    const allFolders = new Set<string>()
+    
+    Object.entries(modules).forEach(([path, module]: [string, any]) => {
+      const relativePath = path.replace('../../posts/', '')
+      const parts = relativePath.split('/')
+      
+      let slug: string
+      let folder: string
+      
+      if (parts.length === 2) {
+        folder = parts[0]
+        slug = parts[1].replace('.md', '')
+        allFolders.add(folder)
+      } else {
+        folder = ''
+        slug = parts[0].replace('.md', '')
+      }
+      
       const frontmatter = module.frontmatter || {}
       
-      return {
+      allPosts.push({
         title: frontmatter.title || slug,
         date: frontmatter.date || '',
         description: frontmatter.description || '',
-        category: frontmatter.category || 'Uncategorized',
         tags: frontmatter.tags || [],
-        path: `/blog/${slug}`,
         slug,
-      }
-    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        path: relativePath.replace('.md', ''),
+        folder,
+      })
+    })
+    
+    posts.value = allPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    folders.value = Array.from(allFolders).sort()
   }
 
-  const getPostBySlug = (slug: string) => {
-    return posts.value.find(post => post.slug === slug)
+  const getPostByPath = (path: string) => {
+    return posts.value.find(post => post.path === path)
   }
 
-  const getPostsByCategory = (category: string) => {
-    return posts.value.filter(post => post.category === category)
+  const getPostsByFolder = (folder: string) => {
+    return posts.value.filter(post => post.folder === folder)
   }
-
-  const getPostsByTag = (tag: string) => {
-    return posts.value.filter(post => post.tags.includes(tag))
-  }
-
-  const categories = computed(() => {
-    const cats = new Set(posts.value.map(post => post.category))
-    return Array.from(cats)
-  })
-
-  const tags = computed(() => {
-    const tagSet = new Set(posts.value.flatMap(post => post.tags))
-    return Array.from(tagSet)
-  })
 
   return {
     posts,
+    folders,
     loadPosts,
-    getPostBySlug,
-    getPostsByCategory,
-    getPostsByTag,
-    categories,
-    tags,
+    getPostByPath,
+    getPostsByFolder,
   }
 }

@@ -2,64 +2,72 @@
 import { ref, computed, onMounted } from 'vue'
 import { usePosts } from '../../composables/usePosts'
 
-const { posts, loadPosts, categories } = usePosts()
+const { posts, folders, loadPosts, getPostsByFolder } = usePosts()
 
-// Current path state
-const currentPath = ref<string[]>([])
+// Current folder (empty = root)
+const currentFolder = ref('')
 
 onMounted(() => {
   loadPosts()
 })
 
 const emit = defineEmits<{
-  openPost: [slug: string]
+  openPost: [path: string]
   openParent: []
 }>()
 
-// Get current posts based on path
-const currentPosts = computed(() => {
-  if (currentPath.value.length === 0) {
-    // Root level - show categories
-    return []
+// Items to show in current view
+const currentItems = computed(() => {
+  if (currentFolder.value === '') {
+    // Root: show folders + root-level posts
+    const folderItems = folders.value.map(f => ({
+      type: 'folder' as const,
+      name: f,
+      size: '<DIR>',
+      date: '',
+    }))
+    
+    const rootPosts = posts.value
+      .filter(p => p.folder === '')
+      .map(p => ({
+        type: 'file' as const,
+        name: p.title,
+        size: '4 KB',
+        date: p.date,
+        path: p.path,
+      }))
+    
+    return [...folderItems, ...rootPosts]
+  } else {
+    // In folder: show posts in this folder
+    return getPostsByFolder(currentFolder.value).map(p => ({
+      type: 'file' as const,
+      name: p.title,
+      size: '4 KB',
+      date: p.date,
+      path: p.path,
+    }))
   }
-  
-  const category = currentPath.value[0]
-  return posts.value.filter(post => post.category === category)
 })
 
-// Get current categories (folders)
-const currentCategories = computed(() => {
-  if (currentPath.value.length === 0) {
-    // Root level - show all categories
-    return categories.value
-  }
-  
-  // Inside a category - no subcategories
-  return []
-})
-
-// Current directory path string
 const currentPathStr = computed(() => {
-  return 'C:\\BLOG\\POSTS' + (currentPath.value.length > 0 ? '\\' + currentPath.value.join('\\') : '')
+  return 'C:\\BLOG\\POSTS' + (currentFolder.value ? '\\' + currentFolder.value : '')
 })
 
-// Navigate into folder
-const enterFolder = (folderName: string) => {
-  currentPath.value.push(folderName)
+const enterFolder = (name: string) => {
+  currentFolder.value = name
 }
 
-// Navigate back
 const goBack = () => {
-  if (currentPath.value.length > 0) {
-    currentPath.value.pop()
+  if (currentFolder.value) {
+    currentFolder.value = ''
   } else {
     emit('openParent')
   }
 }
 
-// Open post
-const openPost = (slug: string) => {
-  emit('openPost', slug)
+const openFile = (path: string) => {
+  emit('openPost', path)
 }
 
 const formatDate = (dateStr: string) => {
@@ -75,7 +83,6 @@ const formatDate = (dateStr: string) => {
 
 <template>
   <div class="file-manager">
-    <!-- Toolbar -->
     <div class="fm-toolbar">
       <button class="fm-btn" @click="goBack">⬅️</button>
       <button class="fm-btn">➡️</button>
@@ -84,13 +91,11 @@ const formatDate = (dateStr: string) => {
       <button class="fm-btn">📦</button>
     </div>
     
-    <!-- Address Bar -->
     <div class="fm-address">
       <span>Directory:</span>
       <input class="fm-input" :value="currentPathStr" readonly />
     </div>
     
-    <!-- File List -->
     <div class="fm-content">
       <div class="fm-header">
         <span class="fm-col-icon"></span>
@@ -100,7 +105,6 @@ const formatDate = (dateStr: string) => {
       </div>
       
       <div class="fm-list">
-        <!-- Parent Directory -->
         <div class="fm-item" @dblclick="goBack">
           <span class="fm-icon">📁</span>
           <span class="fm-name">..</span>
@@ -108,38 +112,23 @@ const formatDate = (dateStr: string) => {
           <span class="fm-date"></span>
         </div>
         
-        <!-- Categories (Folders) -->
         <div 
-          v-for="cat in currentCategories" 
-          :key="cat"
+          v-for="item in currentItems" 
+          :key="item.name"
           class="fm-item"
-          @dblclick="enterFolder(cat)"
+          @dblclick="item.type === 'folder' ? enterFolder(item.name) : openFile(item.path)"
         >
-          <span class="fm-icon">📁</span>
-          <span class="fm-name">{{ cat }}</span>
-          <span class="fm-size">&lt;DIR&gt;</span>
-          <span class="fm-date"></span>
-        </div>
-        
-        <!-- Posts (Files) -->
-        <div 
-          v-for="post in currentPosts" 
-          :key="post.slug"
-          class="fm-item"
-          @dblclick="openPost(post.slug)"
-        >
-          <span class="fm-icon">📄</span>
-          <span class="fm-name">{{ post.title }}</span>
-          <span class="fm-size">4 KB</span>
-          <span class="fm-date">{{ formatDate(post.date) }}</span>
+          <span class="fm-icon">{{ item.type === 'folder' ? '📁' : '📄' }}</span>
+          <span class="fm-name">{{ item.name }}</span>
+          <span class="fm-size">{{ item.size }}</span>
+          <span class="fm-date">{{ formatDate(item.date) }}</span>
         </div>
       </div>
     </div>
     
-    <!-- Status Bar -->
     <div class="fm-status">
-      <span>{{ currentPosts.length }} file(s)</span>
-      <span>{{ currentCategories.length }} folder(s)</span>
+      <span>{{ currentItems.filter(i => i.type === 'file').length }} file(s)</span>
+      <span>{{ currentItems.filter(i => i.type === 'folder').length }} folder(s)</span>
     </div>
   </div>
 </template>
