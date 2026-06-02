@@ -291,12 +291,9 @@ const handleBackToFileManager = () => {
       <div v-if="bootPhase === 'loading'" class="loading-screen">
         <div class="loading-content">
           <div class="windows-logo">
-            <div class="logo-red"></div>
-            <div class="logo-green"></div>
-            <div class="logo-blue"></div>
-            <div class="logo-yellow"></div>
+            <div class="logo-icon">🪟</div>
           </div>
-          <div class="loading-text">Microsoft Windows</div>
+          <div class="loading-text">BreakWall</div>
           <div class="loading-version">Version 3.1</div>
           <div class="loading-progress">
             <div class="progress-bar"></div>
@@ -410,18 +407,18 @@ const handleBackToFileManager = () => {
 .loading-content { text-align: center; }
 
 .windows-logo {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
   width: 80px;
   height: 80px;
   margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.logo-red { background: #FF0000; }
-.logo-green { background: #00FF00; }
-.logo-blue { background: #0000FF; }
-.logo-yellow { background: #FFFF00; }
+.logo-icon {
+  font-size: 64px;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+}
 
 .loading-text {
   font-family: 'Arial', sans-serif;
