@@ -16,15 +16,16 @@ onMounted(async () => {
   post.value = getPostByPath(props.path)
   
   // Load markdown component
-  try {
-    const modules = import.meta.glob('../../posts/**/*.md', { eager: true })
-    const fullPath = `../../posts/${props.path}.md`
-    const mod = modules[fullPath] as any
-    if (mod) {
-      contentComponent.value = markRaw(mod.default)
-    }
-  } catch (e) {
-    console.error('Error loading post:', e)
+  // From src/components/windows/ to posts/ is ../../../posts/
+  const modules = import.meta.glob('../../../posts/**/*.md', { eager: true })
+  const fullPath = `../../../posts/${props.path}.md`
+  const mod = modules[fullPath] as any
+  
+  if (mod) {
+    contentComponent.value = markRaw(mod.default)
+  } else {
+    console.error('Post not found:', fullPath)
+    console.error('Available paths:', Object.keys(modules))
   }
 })
 
