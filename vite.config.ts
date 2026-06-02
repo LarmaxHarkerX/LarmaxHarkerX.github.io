@@ -35,5 +35,5 @@ export default defineConfig({
       },
     }),
   ],
-  base: '/LARMAX_BLOG/',
+  base: '/',
 })
