@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, shallowRef, markRaw } from 'vue'
+import { ref, onMounted, shallowRef, markRaw, nextTick } from 'vue'
 import { usePosts } from '../../composables/usePosts'
 
 interface Props {
@@ -11,23 +11,49 @@ const { getPostByPath } = usePosts()
 
 const post = ref<any>(null)
 const contentComponent = shallowRef<any>(null)
+const bpBody = ref<HTMLElement>()
 
 onMounted(async () => {
   post.value = getPostByPath(props.path)
   
   // Load markdown component
-  // From src/components/windows/ to posts/ is ../../../posts/
   const modules = import.meta.glob('../../../posts/**/*.md', { eager: true })
   const fullPath = `../../../posts/${props.path}.md`
   const mod = modules[fullPath] as any
   
   if (mod) {
     contentComponent.value = markRaw(mod.default)
-  } else {
-    console.error('Post not found:', fullPath)
-    console.error('Available paths:', Object.keys(modules))
+    
+    // After component renders, fix any links that weren't caught by markdown-it plugin
+    await nextTick()
+    fixLinks()
   }
 })
+
+// Fix links in rendered content
+const fixLinks = () => {
+  if (!bpBody.value) return
+  
+  const links = bpBody.value.querySelectorAll('a[href]')
+  links.forEach((link) => {
+    const anchor = link as HTMLAnchorElement
+    if (!anchor.target) {
+      anchor.target = '_blank'
+      anchor.rel = 'noopener noreferrer'
+    }
+  })
+}
+
+// Handle link clicks - safety net
+const handleBodyClick = (e: MouseEvent) => {
+  const target = e.target as HTMLElement
+  const anchor = target.tagName === 'A' ? target as HTMLAnchorElement : target.closest('a') as HTMLAnchorElement
+  
+  if (anchor && anchor.href) {
+    e.preventDefault()
+    window.open(anchor.href, '_blank', 'noopener,noreferrer')
+  }
+}
 
 const emit = defineEmits<{
   back: []
@@ -55,8 +81,8 @@ const emit = defineEmits<{
           <span v-for="tag in post.tags" :key="tag" class="bp-tag">#{{ tag }}</span>
         </div>
         <div class="bp-description">{{ post.description }}</div>
-        <hr class="bp-divider" />
-        <div class="bp-body">
+        <div class="bp-divider"></div>
+        <div class="bp-body" ref="bpBody" @click="handleBodyClick">
           <component :is="contentComponent" v-if="contentComponent" />
         </div>
       </div>

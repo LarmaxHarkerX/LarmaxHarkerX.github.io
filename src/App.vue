@@ -39,6 +39,24 @@ const windows = ref<WindowState[]>([])
 const activeWindowId = ref<string | null>(null)
 let nextZIndex = 10
 
+// History management
+const pushHistoryState = (windowId: string) => {
+  const state = { windowId, windows: windows.value.map(w => ({ id: w.id, isOpen: w.isOpen })) }
+  history.pushState(state, '', `#${windowId}`)
+}
+
+const handlePopState = (event: PopStateEvent) => {
+  if (event.state && event.state.windowId) {
+    const win = windows.value.find(w => w.id === event.state.windowId)
+    if (win) {
+      focusWindow(win.id)
+    }
+  } else {
+    // No state means we're at the desktop
+    activeWindowId.value = null
+  }
+}
+
 // BIOS messages
 const biosMessages = [
   'Award Modular BIOS v4.51PG',
@@ -56,6 +74,9 @@ const biosMessages = [
 ]
 
 onMounted(() => {
+  // Listen for browser back/forward buttons
+  window.addEventListener('popstate', handlePopState)
+  
   // BIOS animation
   let lineIndex = 0
   const biosInterval = setInterval(() => {
@@ -78,6 +99,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (timeInterval) clearInterval(timeInterval)
+  window.removeEventListener('popstate', handlePopState)
 })
 
 const updateTime = () => {
@@ -98,6 +120,7 @@ const openWindow = (id: string, title: string, icon: string, component: string, 
     activeWindowId.value = id
     existing.zIndex = nextZIndex++
     if (data) existing.data = data
+    pushHistoryState(id)
     return
   }
   
@@ -123,6 +146,7 @@ const openWindow = (id: string, title: string, icon: string, component: string, 
   })
   
   activeWindowId.value = id
+  pushHistoryState(id)
 }
 
 const closeWindow = (id: string) => {
@@ -131,6 +155,12 @@ const closeWindow = (id: string) => {
   if (activeWindowId.value === id) {
     const openWindows = windows.value.filter(w => w.isOpen && !w.isMinimized)
     activeWindowId.value = openWindows.length > 0 ? openWindows[openWindows.length - 1].id : null
+  }
+  // Replace history state to reflect closed window
+  if (activeWindowId.value) {
+    history.replaceState({ windowId: activeWindowId.value }, '', `#${activeWindowId.value}`)
+  } else {
+    history.replaceState(null, '', window.location.pathname)
   }
 }
 
