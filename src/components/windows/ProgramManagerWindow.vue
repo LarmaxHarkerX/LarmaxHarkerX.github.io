@@ -13,7 +13,6 @@ const emit = defineEmits<{
 
 <template>
   <div class="program-manager">
-    <div class="pm-group-title">📁 Main</div>
     <div class="pm-grid">
       <div 
         v-for="prog in programs" 
@@ -36,15 +35,6 @@ const emit = defineEmits<{
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.pm-group-title {
-  background: #000080;
-  color: #fff;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 4px 8px;
 }
 
 .pm-grid {
