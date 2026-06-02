@@ -291,7 +291,7 @@ const handleBackToFileManager = () => {
       <div v-if="bootPhase === 'loading'" class="loading-screen">
         <div class="loading-content">
           <div class="windows-logo">
-            <div class="logo-icon">🪟</div>
+            <div class="logo-icon">⊞</div>
           </div>
           <div class="loading-text">BreakWall</div>
           <div class="loading-version">Version 3.1</div>

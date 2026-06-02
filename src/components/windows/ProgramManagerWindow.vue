@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
 const programs = [
   { icon: '📝', label: 'File Manager', action: '/blog' },
   { icon: '📋', label: 'Notepad', action: '/shuoshuo' },
@@ -17,18 +13,16 @@ const emit = defineEmits<{
 
 <template>
   <div class="program-manager">
-    <div class="pm-group">
-      <div class="pm-group-title">📁 Main</div>
-      <div class="pm-grid">
-        <div 
-          v-for="prog in programs" 
-          :key="prog.action"
-          class="pm-icon"
-          @dblclick="emit('open', prog.action)"
-        >
-          <div class="pm-icon-img">{{ prog.icon }}</div>
-          <div class="pm-icon-label">{{ prog.label }}</div>
-        </div>
+    <div class="pm-group-title">📁 Main</div>
+    <div class="pm-grid">
+      <div 
+        v-for="prog in programs" 
+        :key="prog.action"
+        class="pm-icon"
+        @dblclick="emit('open', prog.action)"
+      >
+        <div class="pm-icon-img">{{ prog.icon }}</div>
+        <div class="pm-icon-label">{{ prog.label }}</div>
       </div>
     </div>
     <div class="pm-status">
@@ -42,14 +36,6 @@ const emit = defineEmits<{
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 4px;
-}
-
-.pm-group {
-  flex: 1;
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #000 #000 #fff;
 }
 
 .pm-group-title {
@@ -62,10 +48,12 @@ const emit = defineEmits<{
 }
 
 .pm-grid {
+  flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 16px;
   padding: 16px;
+  background: #c0c0c0;
 }
 
 .pm-icon {
