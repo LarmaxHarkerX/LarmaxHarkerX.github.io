@@ -1,40 +1,24 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import Markdown from 'vite-plugin-md'
-// @ts-ignore
 import prism from 'markdown-it-prism'
+import { setupMarkdownEnhancements } from './src/utils/markdown/externalLinksPlugin'
 
-// Plugin to add target="_blank" to external links only
-function externalLinksPlugin(md: any) {
-  const defaultRender = md.renderer.rules.link_open || function(tokens: any[], idx: number, options: any, _env: any, self: any) {
-    return self.renderToken(tokens, idx, options)
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+
+  return {
+    plugins: [
+      vue({
+        include: [/\.vue$/, /\.md$/],
+      }),
+      Markdown({
+        markdownItSetup(md) {
+          setupMarkdownEnhancements(md)
+          md.use(prism)
+        },
+      }),
+    ],
+    base: env.VITE_BASE_PATH || '/',
   }
-
-  md.renderer.rules.link_open = function(tokens: any[], idx: number, options: any, env: any, self: any) {
-    const token = tokens[idx]
-    const href = token.attrGet('href') || ''
-    
-    // Only add target="_blank" to external links, not anchor links
-    if (!href.startsWith('#')) {
-      token.attrSet('target', '_blank')
-      token.attrSet('rel', 'noopener noreferrer')
-    }
-    
-    return defaultRender(tokens, idx, options, env, self)
-  }
-}
-
-export default defineConfig({
-  plugins: [
-    vue({
-      include: [/\.vue$/, /\.md$/],
-    }),
-    Markdown({
-      markdownItSetup(md) {
-        md.use(prism)
-        md.use(externalLinksPlugin)
-      },
-    }),
-  ],
-  base: '/',
 })
