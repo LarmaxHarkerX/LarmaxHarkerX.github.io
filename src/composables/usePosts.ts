@@ -1,56 +1,22 @@
-import { ref } from 'vue'
-
-export interface Post {
-  title: string
-  date: string
-  description: string
-  tags: string[]
-  slug: string
-  path: string
-  folder: string
-}
+import { markRaw, ref } from 'vue'
+import type { Component } from 'vue'
+import { loadPostComponent, loadPostIndex } from '../modules/content/posts'
+import type { Post } from '../modules/content/types'
 
 const posts = ref<Post[]>([])
 const folders = ref<string[]>([])
+const isLoaded = ref(false)
+const postComponentCache = new Map<string, Component>()
 
 export function usePosts() {
-  const loadPosts = async () => {
-    const modules = import.meta.glob('../../posts/**/*.md', { eager: true })
-    
-    const allPosts: Post[] = []
-    const allFolders = new Set<string>()
-    
-    Object.entries(modules).forEach(([path, module]: [string, any]) => {
-      const relativePath = path.replace('../../posts/', '')
-      const parts = relativePath.split('/')
-      
-      let slug: string
-      let folder: string
-      
-      if (parts.length === 2) {
-        folder = parts[0]
-        slug = parts[1].replace('.md', '')
-        allFolders.add(folder)
-      } else {
-        folder = ''
-        slug = parts[0].replace('.md', '')
-      }
-      
-      const frontmatter = module.frontmatter || {}
-      
-      allPosts.push({
-        title: frontmatter.title || slug,
-        date: frontmatter.date || '',
-        description: frontmatter.description || '',
-        tags: frontmatter.tags || [],
-        slug,
-        path: relativePath.replace('.md', ''),
-        folder,
-      })
-    })
-    
-    posts.value = allPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    folders.value = Array.from(allFolders).sort()
+  const ensurePostsLoaded = async () => {
+    if (isLoaded.value) {
+      return
+    }
+
+    posts.value = loadPostIndex()
+    folders.value = Array.from(new Set(posts.value.map((post) => post.folder).filter(Boolean))).sort()
+    isLoaded.value = true
   }
 
   const getPostByPath = (path: string) => {
@@ -61,11 +27,33 @@ export function usePosts() {
     return posts.value.filter(post => post.folder === folder)
   }
 
+  const getPostComponentByPath = async (path: string) => {
+    await ensurePostsLoaded()
+
+    const cached = postComponentCache.get(path)
+
+    if (cached) {
+      return cached
+    }
+
+    const component = await loadPostComponent(path)
+
+    if (!component) {
+      return null
+    }
+
+    const rawComponent = markRaw(component)
+    postComponentCache.set(path, rawComponent)
+    return rawComponent
+  }
+
   return {
     posts,
     folders,
-    loadPosts,
+    isLoaded,
+    ensurePostsLoaded,
     getPostByPath,
     getPostsByFolder,
+    getPostComponentByPath,
   }
 }

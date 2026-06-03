@@ -1,37 +1,23 @@
 import { ref } from 'vue'
-
-export interface Friend {
-  slug: string
-  name: string
-  avatar: string
-  description: string
-  blog: string
-  github: string
-}
+import { loadFriendIndex } from '../modules/content/friends'
+import type { Friend } from '../modules/content/types'
 
 const friends = ref<Friend[]>([])
+const isLoaded = ref(false)
 
 export function useFriends() {
-  const loadFriends = () => {
-    const modules = import.meta.glob('../../friends/*.md', { eager: true })
-    
-    friends.value = Object.entries(modules).map(([path, mod]: [string, any]) => {
-      const slug = path.replace('../../friends/', '').replace('.md', '')
-      const fm = mod.frontmatter || {}
-      
-      return {
-        slug,
-        name: fm.name || slug,
-        avatar: fm.avatar || '',
-        description: fm.description || '',
-        blog: fm.blog || '',
-        github: fm.github || '',
-      }
-    })
+  const ensureFriendsLoaded = async () => {
+    if (isLoaded.value) {
+      return
+    }
+
+    friends.value = loadFriendIndex()
+    isLoaded.value = true
   }
 
   return {
     friends,
-    loadFriends,
+    isLoaded,
+    ensureFriendsLoaded,
   }
 }

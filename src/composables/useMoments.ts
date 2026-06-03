@@ -1,35 +1,23 @@
 import { ref } from 'vue'
-
-export interface Moment {
-  slug: string
-  date: string
-  tags: string[]
-  content: string
-  component: any
-}
+import { loadMomentIndex } from '../modules/content/moments'
+import type { Moment } from '../modules/content/types'
 
 const moments = ref<Moment[]>([])
+const isLoaded = ref(false)
 
 export function useMoments() {
-  const loadMoments = () => {
-    const modules = import.meta.glob('../../moments/*.md', { eager: true })
-    
-    moments.value = Object.entries(modules).map(([path, mod]: [string, any]) => {
-      const slug = path.replace('../../moments/', '').replace('.md', '')
-      const fm = mod.frontmatter || {}
-      
-      return {
-        slug,
-        date: fm.date || '',
-        tags: fm.tags || [],
-        content: fm.content || '',
-        component: mod.default,
-      }
-    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const ensureMomentsLoaded = async () => {
+    if (isLoaded.value) {
+      return
+    }
+
+    moments.value = loadMomentIndex()
+    isLoaded.value = true
   }
 
   return {
     moments,
-    loadMoments,
+    isLoaded,
+    ensureMomentsLoaded,
   }
 }
