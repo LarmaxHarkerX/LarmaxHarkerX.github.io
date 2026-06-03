@@ -1,22 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-
-interface WindowState {
-  id: string
-  title: string
-  icon: string
-  x: number
-  y: number
-  width: number
-  height: number
-  minWidth: number
-  minHeight: number
-  zIndex: number
-  isOpen: boolean
-  isMaximized: boolean
-  isMinimized: boolean
-  component: string
-}
+import Win3xIcon from '../shared/Win3xIcon.vue'
+import type { WindowState } from '../../modules/windows/types'
 
 interface Props {
   windows: WindowState[]
@@ -61,8 +46,8 @@ const getWindowStyle = (win: WindowState) => {
   }
   
   // Ensure window stays within viewport
-  const maxX = window.innerWidth - win.width
-  const maxY = window.innerHeight - 32 - win.height
+  const maxX = Math.max(0, window.innerWidth - win.width)
+  const maxY = Math.max(0, window.innerHeight - 32 - win.height)
   
   return {
     left: Math.min(win.x, maxX) + 'px',
@@ -87,7 +72,7 @@ const getPosition = (e: MouseEvent | TouchEvent) => {
 }
 
 const handleDragStart = (e: MouseEvent | TouchEvent, windowId: string) => {
-  if ((e.target as HTMLElement).closest('.window-controls')) return
+  if ((e.target as HTMLElement).closest('.win31-titlebar-controls')) return
   if (isMobile.value) return // Disable drag on mobile
   
   isDragging.value = true
@@ -177,7 +162,6 @@ onUnmounted(() => {
       :key="win.id"
       class="floating-window"
       :class="{ 
-        'window-active': win.id === activeWindowId,
         'window-mobile': isMobile
       }"
       :style="getWindowStyle(win)"
@@ -185,46 +169,54 @@ onUnmounted(() => {
       @touchstart="emit('focus', win.id)"
     >
       <!-- Window Frame -->
-      <div class="win31-window" style="height: 100%;">
+      <div
+        class="win31-window win31-window--fill"
+        :class="{ 'win31-window--active': win.id === activeWindowId }"
+      >
         <!-- Title Bar -->
         <div 
-          class="win31-titlebar"
-          :class="{ 'titlebar-inactive': win.id !== activeWindowId }"
+          class="win31-titlebar win31-titlebar--draggable"
+          :class="{ 'win31-titlebar--inactive': win.id !== activeWindowId }"
           @mousedown="handleDragStart($event, win.id)"
           @touchstart="handleDragStart($event, win.id)"
         >
-          <div class="titlebar-text">
-            <span class="titlebar-icon">{{ win.icon }}</span>
+          <div class="win31-titlebar-text">
+            <span class="win31-titlebar-icon">
+              <Win3xIcon :name="win.icon" size="small" :label="win.title" />
+            </span>
             {{ win.title }}
           </div>
-          <div class="window-controls">
+          <div class="win31-titlebar-controls">
             <button 
+              type="button"
               class="win31-control-btn"
-              @click="emit('minimize', win.id)"
+              @click.stop="emit('minimize', win.id)"
               title="Minimize"
             >
-              ▼
+              <Win3xIcon name="minimize" size="small" label="Minimize" />
             </button>
             <button 
               v-if="!isMobile"
+              type="button"
               class="win31-control-btn"
-              @click="emit('maximize', win.id)"
+              @click.stop="emit('maximize', win.id)"
               title="Maximize"
             >
-              ▲
+              <Win3xIcon name="maximize" size="small" label="Maximize" />
             </button>
             <button 
+              type="button"
               class="win31-control-btn control-close"
-              @click="emit('close', win.id)"
+              @click.stop="emit('close', win.id)"
               title="Close"
             >
-              ■
+              <Win3xIcon name="close" size="small" label="Close" />
             </button>
           </div>
         </div>
         
         <!-- Window Content -->
-        <div class="window-content">
+        <div class="win31-window-content">
           <slot :name="win.id" />
         </div>
         
@@ -253,95 +245,10 @@ onUnmounted(() => {
 .floating-window {
   position: absolute;
   pointer-events: auto;
-  user-select: none;
-}
-
-.win31-window {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #fff #000 #000 #fff;
-  box-shadow: 
-    inset 1px 1px 0 #dfdfdf,
-    inset -1px -1px 0 #808080;
-  display: flex;
-  flex-direction: column;
-}
-
-.window-active .win31-window {
-  box-shadow: 
-    inset 1px 1px 0 #dfdfdf,
-    inset -1px -1px 0 #808080,
-    4px 4px 0 rgba(0, 0, 0, 0.3);
-}
-
-.win31-titlebar {
-  background: #000080;
-  color: #fff;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-weight: bold;
-  font-size: 12px;
-  padding: 4px 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 24px;
-  flex-shrink: 0;
-  cursor: move;
-}
-
-.titlebar-inactive {
-  background: #808080;
-}
-
-.titlebar-text {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.titlebar-icon {
-  font-size: 14px;
-}
-
-.window-controls {
-  display: flex;
-  gap: 2px;
-}
-
-.win31-control-btn {
-  width: 20px;
-  height: 16px;
-  background: #c0c0c0;
-  border: none;
-  font-size: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow:
-    inset -1px -1px 0 #000,
-    inset 1px 1px 0 #fff,
-    inset -2px -2px 0 #808080,
-    inset 2px 2px 0 #dfdfdf;
-}
-
-.win31-control-btn:active {
-  box-shadow:
-    inset 1px 1px 0 #000,
-    inset -1px -1px 0 #fff;
 }
 
 .control-close {
   margin-left: 2px;
-}
-
-.window-content {
-  flex: 1;
-  overflow: auto;
-  background: #c0c0c0;
 }
 
 .resize-handle {
@@ -364,7 +271,7 @@ onUnmounted(() => {
 }
 
 /* Mobile styles */
-.window-mobile .win31-titlebar {
+.window-mobile .win31-titlebar--draggable {
   cursor: default;
 }
 

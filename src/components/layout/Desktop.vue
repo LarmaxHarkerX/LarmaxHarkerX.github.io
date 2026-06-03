@@ -1,11 +1,7 @@
 <script setup lang="ts">
-interface WindowState {
-  id: string
-  title: string
-  icon: string
-  isOpen: boolean
-  isMinimized: boolean
-}
+import Win3xIcon from '../shared/Win3xIcon.vue'
+import { desktopPrograms, startMenuPrograms } from '../../modules/windows/registry'
+import type { WindowState } from '../../modules/windows/types'
 
 interface Props {
   currentTime?: string
@@ -14,7 +10,7 @@ interface Props {
   activeWindowId?: string | null
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   currentTime: '00:00',
   showStartMenu: false,
   windows: () => [],
@@ -23,55 +19,58 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   toggleStart: []
+  closeStart: []
   startAction: [action: string]
   iconDblclick: [action: string]
   taskbarClick: [id: string]
 }>()
 
-const startMenuItems = [
-  { icon: '📁', label: 'Program Manager', action: '/' },
-  { icon: '📝', label: 'File Manager', action: '/blog' },
-  { icon: '📋', label: 'Notepad', action: '/shuoshuo' },
-  { icon: '📇', label: 'Cardfile', action: '/friends' },
-  { icon: 'ℹ️', label: 'About', action: '/about' },
-  { icon: '🔄', label: 'Shut Down...', action: 'shutdown' },
-]
+const handleDesktopPointerDown = (event: MouseEvent | TouchEvent) => {
+  const target = event.target as HTMLElement | null
 
-const desktopIcons = [
-  { icon: '📁', label: 'Program\nManager', action: '/' },
-  { icon: '📝', label: 'File\nManager', action: '/blog' },
-  { icon: '📋', label: 'Notepad', action: '/shuoshuo' },
-  { icon: '📇', label: 'Cardfile', action: '/friends' },
-  { icon: 'ℹ️', label: 'About', action: '/about' },
-]
+  if (!target) {
+    return
+  }
+
+  if (target.closest('.start-menu') || target.closest('.start-button')) {
+    return
+  }
+
+  emit('closeStart')
+}
+
 </script>
 
 <template>
-  <div class="win31-desktop">
+  <div class="win31-desktop" @mousedown="handleDesktopPointerDown" @touchstart="handleDesktopPointerDown">
     <!-- Desktop Icons -->
     <div class="desktop-icons">
-      <div 
-        v-for="icon in desktopIcons" 
-        :key="icon.action"
-        class="desktop-icon"
-        @dblclick="emit('iconDblclick', icon.action)"
-      >
-        <div class="icon-image">{{ icon.icon }}</div>
-        <div class="icon-label" v-html="icon.label.replace('\n', '<br>')"></div>
+        <div 
+          v-for="program in desktopPrograms" 
+          :key="program.id"
+          class="desktop-icon"
+          @dblclick="emit('iconDblclick', program.action)"
+        >
+          <div class="icon-image">
+            <Win3xIcon :name="program.icon" size="desktop" :label="program.menuLabel" />
+          </div>
+          <div class="icon-label">{{ program.desktopLabel }}</div>
+        </div>
       </div>
-    </div>
     
     <!-- Start Menu -->
     <Transition name="menu">
       <div v-if="showStartMenu" class="start-menu">
         <div 
-          v-for="item in startMenuItems" 
-          :key="item.action"
+          v-for="program in startMenuPrograms" 
+          :key="program.id"
           class="start-menu-item"
-          @click="emit('startAction', item.action)"
+          @click="emit('startAction', program.action)"
         >
-          <span class="menu-icon">{{ item.icon }}</span>
-          <span class="menu-label">{{ item.label }}</span>
+          <span class="menu-icon">
+            <Win3xIcon :name="program.icon" size="small" :label="program.menuLabel" />
+          </span>
+          <span class="menu-label">{{ program.menuLabel }}</span>
         </div>
       </div>
     </Transition>
@@ -80,11 +79,14 @@ const desktopIcons = [
     <div class="win31-taskbar">
       <div class="taskbar-left">
         <button 
+          type="button"
           class="start-button"
           :class="{ 'start-button--active': showStartMenu }"
           @click="emit('toggleStart')"
         >
-          <span class="start-icon">🪟</span>
+          <span class="start-icon">
+            <Win3xIcon name="windowsLogo" size="small" label="Start" />
+          </span>
           <span class="start-text">Start</span>
         </button>
         
@@ -94,11 +96,14 @@ const desktopIcons = [
         <button 
           v-for="win in windows.filter(w => w.isOpen)" 
           :key="win.id"
+          type="button"
           class="taskbar-window-btn"
           :class="{ 'taskbar-window-btn--active': win.id === activeWindowId && !win.isMinimized }"
           @click="emit('taskbarClick', win.id)"
         >
-          <span class="window-btn-icon">{{ win.icon }}</span>
+          <span class="window-btn-icon">
+            <Win3xIcon :name="win.icon" size="small" :label="win.title" />
+          </span>
           <span class="window-btn-title">{{ win.title }}</span>
         </button>
       </div>
@@ -125,7 +130,7 @@ const desktopIcons = [
   left: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   z-index: 0;
 }
 
@@ -134,24 +139,20 @@ const desktopIcons = [
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 8px;
+  width: 88px;
+  min-height: 92px;
+  padding: 6px 4px;
   cursor: pointer;
-  width: 80px;
   text-align: center;
   user-select: none;
 }
 
-.desktop-icon:hover {
-  background: rgba(0, 0, 128, 0.3);
-}
-
 .icon-image {
-  width: 48px;
-  height: 48px;
-  font-size: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
 }
 
 .icon-label {
@@ -160,12 +161,19 @@ const desktopIcons = [
   color: #fff;
   text-shadow: 1px 1px 0 #000;
   line-height: 1.2;
+  white-space: pre-line;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 2px 4px;
+  max-width: 100%;
 }
 
-.desktop-icon:hover .icon-label {
+.desktop-icon:hover .icon-label,
+.desktop-icon:focus-visible .icon-label {
   background: #000080;
   text-shadow: none;
-  padding: 2px 4px;
 }
 
 /* Start Menu */
@@ -202,9 +210,9 @@ const desktopIcons = [
 }
 
 .menu-icon {
-  font-size: 16px;
   width: 20px;
-  text-align: center;
+  display: inline-flex;
+  justify-content: center;
 }
 
 /* Taskbar */
@@ -263,7 +271,11 @@ const desktopIcons = [
     inset -1px -1px 0 #fff;
 }
 
-.start-icon { font-size: 14px; }
+.start-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .taskbar-divider {
   width: 2px;
@@ -300,7 +312,11 @@ const desktopIcons = [
   background: #dfdfdf;
 }
 
-.window-btn-icon { font-size: 12px; }
+.window-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .window-btn-title {
   white-space: nowrap;
@@ -325,5 +341,27 @@ const desktopIcons = [
 .menu-enter-from, .menu-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+@media (max-width: 768px) {
+  .desktop-icons {
+    top: 12px;
+    left: 12px;
+    gap: 8px;
+  }
+
+  .desktop-icon {
+    width: 78px;
+    min-height: 84px;
+  }
+
+  .start-button {
+    min-width: 56px;
+    padding: 2px 6px;
+  }
+
+  .taskbar-window-btn {
+    min-width: 84px;
+  }
 }
 </style>

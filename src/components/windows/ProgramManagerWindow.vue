@@ -1,10 +1,6 @@
 <script setup lang="ts">
-const programs = [
-  { icon: '📝', label: 'File Manager', action: '/blog' },
-  { icon: '📋', label: 'Notepad', action: '/shuoshuo' },
-  { icon: '📇', label: 'Cardfile', action: '/friends' },
-  { icon: 'ℹ️', label: 'About', action: '/about' },
-]
+import Win3xIcon from '../shared/Win3xIcon.vue'
+import { desktopPrograms } from '../../modules/windows/registry'
 
 const emit = defineEmits<{
   open: [action: string]
@@ -15,13 +11,15 @@ const emit = defineEmits<{
   <div class="program-manager">
     <div class="pm-grid">
       <div 
-        v-for="prog in programs" 
-        :key="prog.action"
+        v-for="program in desktopPrograms.filter((entry) => entry.action !== '/')" 
+        :key="program.id"
         class="pm-icon"
-        @dblclick="emit('open', prog.action)"
+        @dblclick="emit('open', program.action)"
       >
-        <div class="pm-icon-img">{{ prog.icon }}</div>
-        <div class="pm-icon-label">{{ prog.label }}</div>
+        <div class="pm-icon-img">
+          <Win3xIcon :name="program.icon" size="large" :label="program.menuLabel" />
+        </div>
+        <div class="pm-icon-label">{{ program.menuLabel }}</div>
       </div>
     </div>
     <div class="pm-status">
@@ -60,13 +58,18 @@ const emit = defineEmits<{
 }
 
 .pm-icon-img {
-  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pm-icon-label {
   font-family: 'MS Sans Serif', Arial, sans-serif;
   font-size: 11px;
   text-align: center;
+  padding: 2px 4px;
 }
 
 .pm-icon:hover .pm-icon-label {
