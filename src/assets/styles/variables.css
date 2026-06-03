@@ -1,6 +1,6 @@
 /* Windows 3.1 Design System - CSS Variables */
 
-@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
 
 :root {
   /* ===== Windows 3.1 Core Palette ===== */
@@ -9,6 +9,10 @@
   --win31-light-gray: #DFDFDF;
   --win31-white: #FFFFFF;
   --win31-black: #000000;
+  --win31-red: #C00000;
+  --win31-green: #00A000;
+  --win31-blue: #0000C0;
+  --win31-yellow: #E0B000;
   
   /* Title Bar Colors */
   --win31-navy: #000080;
@@ -19,6 +23,17 @@
   /* Desktop & Workspace */
   --win31-desktop: #008080;
   --win31-workspace: #FFFFFF;
+
+  /* Boot Scenes */
+  --boot-black: #000000;
+  --boot-amber: #d3a35a;
+  --boot-amber-bright: #f0c16e;
+  --boot-amber-dim: #8c6838;
+  --splash-blue: #0000aa;
+  --splash-white: #f3f3ff;
+  --bsod-blue: #0000aa;
+  --bsod-white: #f3f3ff;
+  --bsod-chip: #c8c8d4;
   
   /* Selection */
   --win31-selection: #000080;
@@ -36,6 +51,9 @@
   --font-system: 'MS Sans Serif', 'Arial', 'Helvetica', sans-serif;
   --font-pixel: 'VT323', 'Courier New', monospace;
   --font-mono: 'Courier New', 'Fixedsys', monospace;
+  --font-boot-terminal: 'Share Tech Mono', 'Lucida Console', 'Courier New', monospace;
+  --font-boot-ui: 'VT323', 'MS Sans Serif', monospace;
+  --font-boot-wordmark: 'Arial Black', 'Arial', 'Helvetica', sans-serif;
   
   /* Font Sizes (Win31 uses 8pt/11px system font) */
   --text-xs: 10px;
