@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Win3xIcon from '../shared/Win3xIcon.vue'
+
 const emit = defineEmits<{
   close: []
 }>()
@@ -16,11 +18,13 @@ const skills = [
   <div class="about-content">
     <!-- Header -->
     <div class="about-header">
-      <div class="about-icon">💻</div>
+      <div class="about-icon">
+        <Win3xIcon name="computer" size="large" label="LARMAX Blog" />
+      </div>
       <div class="about-info">
-        <div class="about-name">LARMAX Blog</div>
-        <div class="about-version">Version 1.0</div>
-        <div class="about-copyright">Copyright © 2024</div>
+        <div class="about-name">LARMAX Desktop Blog</div>
+        <div class="about-version">Shell Version 3.1</div>
+        <div class="about-copyright">Built for GitHub Pages</div>
       </div>
     </div>
     
@@ -33,11 +37,11 @@ const skills = [
       </div>
       <div class="about-row">
         <span class="about-label">Role:</span>
-        <span>lazy people</span>
+        <span>Writer / Tinkerer</span>
       </div>
       <div class="about-row">
         <span class="about-label">Location:</span>
-        <span>Earth</span>
+        <span>Web Desktop</span>
       </div>
     </div>
     
@@ -64,7 +68,7 @@ const skills = [
     
     <!-- OK Button -->
     <div class="about-footer">
-      <button class="about-btn" @click="emit('close')">OK</button>
+      <button type="button" class="about-btn win31-button win31-button--default" @click="emit('close')">OK</button>
     </div>
   </div>
 </template>
@@ -85,7 +89,13 @@ const skills = [
 }
 
 .about-icon {
-  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: #fff;
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
 }
 
 .about-name {
@@ -193,22 +203,6 @@ const skills = [
 }
 
 .about-btn {
-  background: #c0c0c0;
-  border: none;
-  padding: 4px 24px;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-size: 11px;
-  cursor: pointer;
-  box-shadow:
-    inset -1px -1px 0 #000,
-    inset 1px 1px 0 #fff,
-    inset -2px -2px 0 #808080,
-    inset 2px 2px 0 #dfdfdf;
-}
-
-.about-btn:active {
-  box-shadow:
-    inset 1px 1px 0 #000,
-    inset -1px -1px 0 #fff;
+  min-width: 84px;
 }
 </style>

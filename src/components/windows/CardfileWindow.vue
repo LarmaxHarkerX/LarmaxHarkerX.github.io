@@ -1,48 +1,65 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import Win3xIcon from '../shared/Win3xIcon.vue'
 import { useFriends } from '../../composables/useFriends'
 
-const { friends, loadFriends } = useFriends()
+const { friends, ensureFriendsLoaded } = useFriends()
 const currentIndex = ref(0)
 
 onMounted(() => {
-  loadFriends()
+  void ensureFriendsLoaded()
 })
 
 const currentFriend = computed(() => friends.value[currentIndex.value])
 
 const nextFriend = () => {
+  if (friends.value.length === 0) {
+    return
+  }
+
   currentIndex.value = (currentIndex.value + 1) % friends.value.length
 }
 
 const prevFriend = () => {
+  if (friends.value.length === 0) {
+    return
+  }
+
   currentIndex.value = (currentIndex.value - 1 + friends.value.length) % friends.value.length
 }
 
 const visitBlog = () => {
   if (currentFriend.value?.blog) {
-    window.open(currentFriend.value.blog, '_blank')
+    window.open(currentFriend.value.blog, '_blank', 'noopener,noreferrer')
   }
 }
 
 const visitGithub = () => {
   if (currentFriend.value?.github) {
-    window.open(currentFriend.value.github, '_blank')
+    window.open(currentFriend.value.github, '_blank', 'noopener,noreferrer')
   }
 }
 </script>
 
 <template>
   <div class="cardfile">
-    <div class="cf-toolbar">
-      <button class="cf-btn" @click="prevFriend">⬆️</button>
-      <button class="cf-btn" @click="nextFriend">⬇️</button>
-      <div class="cf-separator"></div>
-      <button class="cf-btn" @click="visitBlog" title="Blog">🔗</button>
-      <button class="cf-btn" @click="visitGithub" title="GitHub">📦</button>
+    <div class="win31-toolbar">
+      <button type="button" class="win31-toolbar-button" title="Previous card" @click="prevFriend">
+        <Win3xIcon name="up" size="small" label="Previous card" />
+      </button>
+      <button type="button" class="win31-toolbar-button" title="Next card" @click="nextFriend">
+        <Win3xIcon name="down" size="small" label="Next card" />
+      </button>
+      <div class="win31-toolbar-separator"></div>
+      <button type="button" class="win31-toolbar-button" title="Blog" @click="visitBlog">
+        <Win3xIcon name="link" size="small" label="Blog" />
+      </button>
+      <button type="button" class="win31-toolbar-button" title="GitHub" @click="visitGithub">
+        <Win3xIcon name="archive" size="small" label="GitHub" />
+      </button>
     </div>
     
-    <div class="cf-content">
+    <div class="cf-content win31-pane">
       <div class="cf-index">
         <div class="cf-index-header">Index</div>
         <div class="cf-index-list">
@@ -67,22 +84,22 @@ const visitGithub = () => {
         <div class="cf-fields">
           <div class="cf-field">
             <span class="cf-label">Blog:</span>
-            <input class="cf-input" :value="currentFriend.blog" readonly @click="visitBlog" />
+            <input class="cf-input win31-input" :value="currentFriend.blog" readonly />
           </div>
           <div class="cf-field">
             <span class="cf-label">GitHub:</span>
-            <input class="cf-input" :value="currentFriend.github" readonly @click="visitGithub" />
+            <input class="cf-input win31-input" :value="currentFriend.github" readonly />
           </div>
         </div>
         <div class="cf-actions">
-          <button class="cf-action-btn" @click="prevFriend">← Previous</button>
-          <button class="cf-action-btn primary" @click="visitBlog">Visit Blog</button>
-          <button class="cf-action-btn" @click="nextFriend">Next →</button>
+          <button class="cf-action-btn win31-button" @click="prevFriend">← Previous</button>
+          <button class="cf-action-btn win31-button primary" @click="visitBlog">Visit Blog</button>
+          <button class="cf-action-btn win31-button" @click="nextFriend">Next →</button>
         </div>
       </div>
     </div>
     
-    <div class="cf-status">
+    <div class="cf-status win31-statusbar">
       <span>Card {{ currentIndex + 1 }} of {{ friends.length }}</span>
     </div>
   </div>
@@ -95,40 +112,9 @@ const visitGithub = () => {
   flex-direction: column;
 }
 
-.cf-toolbar {
-  background: #c0c0c0;
-  padding: 4px;
-  display: flex;
-  gap: 2px;
-  border-bottom: 1px solid #808080;
-}
-
-.cf-btn {
-  width: 24px;
-  height: 22px;
-  background: #c0c0c0;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.cf-btn:hover {
-  box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #000;
-}
-
-.cf-separator {
-  width: 2px;
-  border-left: 1px solid #808080;
-  border-right: 1px solid #fff;
-  margin: 0 2px;
-}
-
 .cf-content {
   flex: 1;
   display: flex;
-  background: #fff;
-  margin: 2px;
-  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
 }
 
 .cf-index {
@@ -225,17 +211,11 @@ const visitGithub = () => {
 
 .cf-input {
   flex: 1;
-  background: #fff;
-  border: none;
-  padding: 2px 4px;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-size: 11px;
-  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
-  cursor: pointer;
+  cursor: text;
 }
 
-.cf-input:hover {
-  background: #e0e0ff;
+.cf-input:focus {
+  background: #fff;
 }
 
 .cf-actions {
@@ -245,35 +225,16 @@ const visitGithub = () => {
 }
 
 .cf-action-btn {
-  background: #c0c0c0;
-  border: none;
   padding: 4px 12px;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
   font-size: 11px;
-  cursor: pointer;
-  box-shadow:
-    inset -1px -1px 0 #000,
-    inset 1px 1px 0 #fff,
-    inset -2px -2px 0 #808080,
-    inset 2px 2px 0 #dfdfdf;
 }
 
 .cf-action-btn:active {
-  box-shadow:
-    inset 1px 1px 0 #000,
-    inset -1px -1px 0 #fff;
+  padding: 5px 11px 3px 13px;
 }
 
 .cf-action-btn.primary {
   font-weight: bold;
-}
-
-.cf-status {
-  background: #c0c0c0;
-  border-top: 1px solid #808080;
-  padding: 4px 8px;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-size: 11px;
 }
 
 @media (max-width: 500px) {
