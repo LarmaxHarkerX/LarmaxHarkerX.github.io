@@ -1,630 +1,366 @@
 ---
-title: CorelDRAW 彻底卸载指南
+title: CorelDRAW 彻底卸载指南：为什么会残留，以及怎么清得更稳
 date: 2026-03-16
-description: 怎样清干净所有残留并避免已安装新版报错 - 完整的 CorelDRAW 卸载清理教程
+description: 从官方卸载、残留目录到 Windows Installer 记录，整理一套更稳的 CorelDRAW 清理思路
 tags: [Windows, CorelDRAW, 卸载, 清理, 教程]
 ---
 
-> 最后验证日期：2026-03-16  
-> 适用场景：你已经卸载过 CorelDRAW，但安装旧版时仍提示“电脑里已经安装了更新版本”或者“newer version is already installed”。  
-> 这篇不是内容农场，也不是“打开控制面板卸载一下就完事”的废话文。它讲的是：**为什么 CorelDRAW 老是卸不干净，以及怎样一步一步把它清干净。**
+# CorelDRAW 彻底卸载指南：为什么会残留，以及怎么清得更稳
+
+很多人遇到的不是“CorelDRAW 卸不掉”，而是：**明明已经卸了，装旧版时安装器还是说系统里有更新版本。**
+
+这种情况如果只靠“把 `Program Files` 删掉”通常不够，因为 Windows 在判断某个产品是否还存在时，看的远不止程序目录。Corel 自己的帮助文档和微软的 Installer 文档都能说明这一点：文件夹没了，不代表安装链记录也没了。
+
+这篇文章就只解决一件事：
+
+> **当 CorelDRAW 看起来已经卸载，但安装器仍然认为系统里还有新版时，应该怎么按层次清理。**
+
+我会尽量把话说清楚，不写成那种“先来一长串注册表路径把人吓住”的风格。
 
 ---
 
-## 先说人话：为什么你明明卸了，安装器还说你装着新版？
+## 先理解：为什么会出现“已经安装了更新版本”
 
-因为 Windows 判断“这个软件是不是装过、是不是还有相关版本”，**看的不只是桌面图标和 Program Files 目录**。
+安装器拦你，不一定是因为桌面上还有图标，也不一定是因为 `C:\Program Files\Corel` 还没删干净。更常见的原因是下面几类东西还在：
 
-它还会看下面这些东西：
+1. **正常卸载项**  
+   就是“程序和功能”里那套登记信息。
 
-1. **卸载注册表项**：也就是“程序和功能”背后的那套登记信息。
-2. **Windows Installer 数据库**：这是 MSI 安装包自己的“户口本”。
-3. **Installer 缓存文件**：通常在 `C:\Windows\Installer`。
-4. **软件自己的用户配置和机器级缓存**：比如 `AppData`、`ProgramData`。
-5. **少量外围痕迹**：兼容性记录、许可服务事件源之类。
+2. **Windows Installer 记录**  
+   这部分包括 `Uninstall`、`Installer\UserData`、`HKCR\Installer\Products` 等位置，属于 MSI 安装链真正关心的“档案”。
 
-所以你看到的情况往往是：
+3. **安装缓存**  
+   典型位置是 `C:\Windows\Installer`。这里不是垃圾堆，而是 Installer 自己的缓存区。
 
-- 程序文件已经没了；
-- 桌面图标也没了；
-- 但安装器那边的“户口本”还在；
-- 然后旧版安装器一看：**系统里还有同一家产品链的记录**；
-- 它就直接拦你，告诉你“已经装了新版”。
+4. **用户配置和机器级残留**  
+   比如 `ProgramData`、`AppData\Roaming` 这类目录。
 
-这不是你幻觉，也不是 CorelDRAW 特有的玄学，本质上是 **Windows Installer + Corel 安装链残留** 一起导致的。
+换句话说，安装器报错时，你真正要排查的是：
 
-微软官方文档对这个机制的解释很清楚：升级安装时，安装器会通过 `FindRelatedProducts` 去找“相关产品”和“更高版本”。只要它还能匹配到相关记录，就可能中止安装。Corel 官方也提供了“手动卸载 / clean reinstall”的知识库，说明它自己也承认常规卸载不一定能清干净。
+> **Windows Installer 还认不认识这套 Corel 产品链。**
+
+微软文档里提到的 `FindRelatedProducts`、Upgrade 规则，就是这件事背后的机制；Corel 自己也专门写了“手动卸载 / clean reinstall”文档，说明它并不认为普通卸载一定足够。
 
 ---
 
-## 这篇文章到底解决什么问题？
+## 先说适用场景
 
-这篇文章解决的是这类典型场景：
+这篇适合下面这类情况：
 
-- 你之前装过 CorelDRAW 2024 / 2025；
-- 后来想装 2020、2019、X8 之类旧版；
-- 安装时被提示：
-  - 已经安装了更新版本
-  - newer version already installed
-  - 必须先卸载现有版本
-  - 安装到一半直接退出
+- 你装过 CorelDRAW 2024 / 2025；
+- 现在想装 2020、2019、X8，或者换另一版；
+- 安装器提示：
+  - 已安装更新版本；
+  - `newer version is already installed`；
+  - 必须先卸载现有版本；
+  - 安装到一半直接退出。
 
-如果你遇到的是这种情况，这篇文章就是为你写的。
-
----
-
-## 操作前先记住三个原则
-
-### 原则 1：先走正常卸载，再手动清理
-
-先去：
-
-- `Win + R`
-- 输入 `appwiz.cpl`
-- 回车
-
-把 CorelDRAW、Corel Graphics、Corel Update、Corel Shell Extension、VBA 相关项都正常卸载掉。
-
-**不要一上来就先狂删注册表。**
-
-因为能正常卸的，最好先让它自己卸。手动清理是补刀，不是起手式。
-
-### 原则 2：`C:\Windows\Installer` 里的东西不要闭眼乱删
-
-这一点非常重要。
-
-`C:\Windows\Installer` 不是垃圾桶，它是 Windows Installer 的缓存仓库。里面很多 `.msi` 和 `.msp` 文件，可能不止给 Corel 用。
-
-所以正确做法不是“看到 MSI 就全删”。正确做法是：
-
-- 先确认它到底绑定的是不是 Corel 的安装记录；
-- 确认之后，再删对应那几个；
-- 不要扩大打击范围。
-
-### 原则 3：先备份，再动注册表
-
-哪怕你不做 `.reg` 导出，至少也要先把相关键值查询结果保存下来。
-
-因为你删错了，后面要回滚会很痛苦。
+如果你只是正常卸载当前版本、不打算回装旧版，那通常不需要走到本文这么深。
 
 ---
 
-## CorelDRAW 的残留一般藏在哪？
+## 操作前先定三个原则
 
-你可以把残留理解成 4 层。
+### 原则一：先按官方路径卸，再谈手工清理
 
-### 第一层：看得见的文件夹残留
+Corel 官方给出的标准路径是：
 
-最常见的是这些地方：
+- 打开 **Control Panel / 控制面板**；
+- 进入 **Programs and Features / 程序和功能**；
+- 卸载 CorelDRAW Graphics Suite；
+- 在卸载向导里使用 `Remove`；
+- 如果你确认不保留工作区和用户文件，可以勾选 `Remove user files`。
 
-- `C:\Program Files\Corel`
-- `C:\Program Files (x86)\Corel`
-- `C:\ProgramData\Corel`
-- `C:\Users\你的用户名\AppData\Roaming\Corel`
-- `C:\Users\你的用户名\AppData\Local\Temp\Corel`
+如果连正常卸载都没试过，就直接开始删注册表，风险和工作量都会被放大。
 
-这层最好理解，就是软件虽然卸了，但配置、缓存、安装中间文件还留着。
+### 原则二：`C:\Windows\Installer` 不能闭眼乱删
 
-### 第二层：当前用户配置残留
+这一层最容易出事。
+
+Corel 的手动卸载文档确实会让你检查 `C:\Windows\Installer`，但它的逻辑是：
+
+- 先确认哪些 MSI 条目属于 Corel；
+- 再按标题或安装来源对应关系处理；
+- 不是把这个目录当缓存垃圾一把梭。
+
+### 原则三：你真正要删的是“和 Corel 安装链有明确对应关系的记录”
+
+比如某个 MSI 条目如果表面上看像 `Microsoft Visual Basic for Applications`，但 `InstallSource` 明确指向 Corel 安装介质，那它就不能再被当作“完全无关的微软组件”看待。
+
+这个判断方法比“它名字像不像 Corel”更重要。
+
+---
+
+## Corel 常见残留一般分四层
+
+### 第一层：看得见的目录残留
+
+Corel 官方文档和旧版支持页常提到这些目录：
+
+```text
+C:\Program Files\Corel\...
+C:\Users\<用户名>\AppData\Roaming\Corel\...
+C:\ProgramData\Corel\...
+```
+
+旧版本资料还会提到：
+
+```text
+C:\Users\<用户名>\Documents\Corel
+C:\Users\Public\Documents\Corel
+```
+
+它们主要影响的是配置、缓存、数据库和一些安装过程文件。
+
+### 第二层：当前用户配置
 
 常见位置：
 
-- `HKCU\Software\Corel\...`
+```text
+HKCU\Software\Corel\...
+```
 
-这层通常不会单独导致“新版已安装”，但它经常会让软件配置、工作区、插件状态、用户偏好继续残留。
+这层不一定是“拦安装”的头号元凶，但它常常会让你以为已经卸干净，结果工作区、设置和某些扩展痕迹还在。
 
-### 第三层：真正最恶心的 MSI / Installer 残留
+### 第三层：真正麻烦的 Installer / MSI 记录
 
-重点位置：
+这才是最关键的一层。重点位置包括：
 
-- `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{GUID}`
-- `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\...\Products\...`
-- `HKCR\Installer\Products\...`
-- `C:\Windows\Installer\*.msi`
+```text
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{GUID}
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\...\Products\...
+HKCR\Installer\Products\...
+C:\Windows\Installer\*.msi
+```
 
-这层最容易导致“明明看不到软件了，但安装器还认得它”。
+如果安装器始终认为你“还装着新版”，问题大概率就在这一层。
 
 ### 第四层：外围痕迹
 
-例如：
+比如：
 
 - `ShellCompatibility\Applications\coreldrw.exe`
-- `Protexis Licensing Service` 相关记录
-- 事件日志源、兼容性记录等
+- `Protexis Licensing Service` 事件源
+- `Installer\Folders` 里的旧目录索引
 
-它们往往不是主因，但如果你追求“尽量干净”，最好一并收尾。
-
----
-
-## 正确的清理顺序是什么？
-
-如果你想尽量少踩坑，建议按这个顺序来：
-
-1. **先正常卸载 CorelDRAW 主程序和相关组件**
-2. **再清文件夹残留**
-3. **再清当前用户注册表残留**
-4. **再处理 MSI / Installer 残留**
-5. **最后清外围痕迹**
-6. **重启系统，再安装目标版本**
-
-不要把第 4 步提前成第 1 步。  
-Installer 那层最危险，但也是最关键的一层。
+这些通常不是主因，但适合在最后收尾。
 
 ---
 
-## 下面开始：一步一步清干净
+## 更稳的清理顺序
+
+我建议按这个顺序走，而不是看到什么删什么：
+
+1. 先做官方卸载；
+2. 重启一次；
+3. 清理 Corel 明确留下的文件夹残留；
+4. 清理 `HKCU\Software\Corel` 这类用户配置键；
+5. 再处理 MSI / Installer 记录；
+6. 最后处理外围痕迹；
+7. 再重启，再安装目标版本。
+
+这样做的好处是：越危险的层，越放在你已经有更多证据的时候再动。
 
 ---
 
-## 第 1 步：先做一份“你准备删什么”的备份
+## 分步骤写
 
-### 小白版理解
+## 第 1 步：先卸掉主程序和相关组件
 
-你不用先学会恢复注册表，但你至少要留下证据：
+Corel 官方帮助页提到，除了主程序套件本体，某些附加组件也需要单独处理，比如：
 
-- 你删的是哪个键；
-- 它里面原来是什么值；
-- 出问题时你能知道自己到底动了哪一刀。
+- Corel Graphics - Windows Shell Extension
+- Ghostscript GPL
+- 某些版本里的 VSTA 组件
 
-### 实操思路
-
-给自己建一个备份目录，比如：
-
-`C:\Users\你的用户名\CorelCleanupBackup`
-
-然后把准备处理的注册表项先导出，或者至少先用 `reg query` 存成文本。
-
-如果你不会导出 `.reg` 文件，也没关系，把查询结果保存成 `.txt` 也比什么都不留强。
-
-### 你至少要备份这些东西
-
-- `HKCU\Software\Corel\...`
-- `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{GUID}`
-- `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\...\Products\...`
-- `HKCR\Installer\Products\...`
-- `ShellCompatibility\Applications\coreldrw.exe`
-- `Protexis Licensing Service` 相关键
+如果“程序和功能”里还看得到这些条目，先让它们走正常卸载流程。
 
 ---
 
-## 第 2 步：先清掉看得见的 Corel 文件残留
+## 第 2 步：处理看得见的文件夹残留
 
-### 先删哪些目录？
-
-优先看下面这些目录在不在：
+先检查这些位置：
 
 ```text
 C:\Program Files\Corel
-C:\Program Files (x86)\Corel
 C:\ProgramData\Corel
-C:\Users\你的用户名\AppData\Roaming\Corel
-C:\Users\你的用户名\AppData\Roaming\Corel.bak
-C:\Users\你的用户名\AppData\Local\Temp\Corel
+C:\Users\<用户名>\AppData\Roaming\Corel
+C:\Users\<用户名>\AppData\Roaming\Corel\Databases
+C:\Users\<用户名>\AppData\Roaming\Corel\Messages
 ```
 
-### 怎么判断它们是不是可以删？
+Corel 2024/2025 的文档里明确提到：
 
-很简单：
+- 某些情况下可以直接删相关目录；
+- `Databases` 目录官方甚至建议先改名成 `Databases.old` 做隔离测试。
 
-- 你已经确认 Corel 主程序卸载完了；
-- 目录就是 Corel 专属目录；
-- 里面不是你还想保留的个人素材；
-- 那就删。
+这里的思路很简单：**只删 Corel 明确专属的目录**。不要把你自己要保留的素材、模板一起带走。
 
-### 真实案例里，我们清掉了什么？
-
-在一次真实清理中，实际命中过这些残留：
-
-- `C:\Users\Administrator\AppData\Roaming\Corel.bak\CorelDRAW Graphics Suite 2025\...`
-- `C:\Users\Administrator\AppData\Local\Temp\Corel\CORELDRW_26.1.0.143\...`
-- `C:\ProgramData\Corel\CorelDRAW Graphics Suite 2020\DR22.dta`
-- `C:\ProgramData\Corel\bin\540227504\540111137\X-FORCE.bin`
-
-这些东西说明什么？
-
-- `Roaming\Corel.bak`：新版用户配置和缓存还在。
-- `Temp\Corel\CORELDRW_26.x.x.x`：新版安装/运行临时数据还在。
-- `ProgramData\Corel`：机器级配置和安装元数据还在。
-
-删完这一步后，系统表面上会干净很多，但**别急着以为完事了**。真正拦安装的，很多时候还在注册表和 Installer 里。
+如果你看不到 `AppData`，记得先打开 Windows 的“显示隐藏项目”，这是微软自己在文档里写明的常规操作。
 
 ---
 
-## 第 3 步：清理当前用户的 Corel 配置键
+## 第 3 步：清理当前用户配置键
 
-### 重点位置
+重点看：
 
 ```text
 HKCU\Software\Corel
 ```
 
-常见会看到类似：
+如果你的目标是“像这台机器从来没装过 Corel 一样重新装”，那这里面和 CorelDRAW 版本有关的用户配置键通常就没有继续保留的必要。
 
-```text
-HKCU\Software\Corel\CorelDRAW\22.0
-HKCU\Software\Corel\CorelDRAW\25.0
-HKCU\Software\Corel\CorelDRAW\26.0
-```
+但这一步仍然建议遵守一个原则：
 
-### 这些键有什么用？
+- 先导出或至少 `reg query` 留底；
+- 再删。
 
-它们通常保存：
-
-- 工作区配置
-- 最近使用信息
-- 某些功能状态
-- 插件/扩展痕迹
-
-### 该不该删？
-
-如果你的目标是：
-
-> **像这台电脑从来没装过 CorelDRAW 一样重新装**
-
-那这些键就应该清掉。
-
-真实案例里，实际删除过：
-
-- `HKCU\Software\Corel\CorelDRAW\22.0`
-- 最后连空的父键 `HKCU\Software\Corel\CorelDRAW`、`HKCU\Software\Corel` 也一起收掉了
+你不用把这步写得很戏剧化，说到底就是：**对自己删过什么留证据。**
 
 ---
 
-## 第 4 步：真正关键的一步——处理 MSI / Installer 残留
+## 第 4 步：重点排查 MSI / Installer 残留
 
-这一节是全文最重要的部分。
+这是全文最关键的一步。
 
-如果你前面都做了，安装旧版还是报“已经安装了更新版本”，那十有八九卡在这层。
+### 4.1 先看 `Uninstall` 项
 
-### 4.1 先看卸载项
-
-重点位置：
+路径示意：
 
 ```text
 HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{GUID}
 ```
 
-这类项是“程序和功能”背后的登记信息。
+你要找的不是“名字里出现 Corel”这么简单，而是：
 
-#### 真实案例中抓到的典型残留
+- `InstallSource` 指向哪里；
+- `DisplayName` 是什么；
+- 它是不是跟 Corel 安装介质绑在一起。
 
-当时命中了 3 个 GUID，内容看起来像是 VBA 组件，但它们的 `InstallSource` 明确指向：
+如果你看到某个条目名字像 VBA，但 `InstallSource` 明确来自 CorelDRAW 安装介质，那它就属于这条安装链，不能简单当成“无关项目”。
 
-```text
-d:\coreldraw graphics suite 2025 ...\x64\msis\VBA\
-```
+### 4.2 再看 `Installer\UserData`
 
-也就是说：
-
-- 表面上它写的是 `Microsoft Visual Basic for Applications 7.1`
-- 但它其实是 **跟 CorelDRAW 2025 安装链一起登记进去的组件**
-- 所以它依然可能影响 Corel 的版本检测
-
-这就是很多人卡住的地方：
-
-> 你以为自己看到的是“微软组件”，不敢动；  
-> 但它其实是被 Corel 安装介质挂进去的安装记录。
-
-### 4.2 再看 Installer 的 UserData
-
-重点位置：
-
-```text
-HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\...
-```
-
-这里面最重要的是：
+这层最有用的字段通常是：
 
 - `InstallProperties`
 - `LocalPackage`
 - `DisplayName`
 - `InstallSource`
 
-#### 为什么这里特别关键？
+它们能回答两个核心问题：
 
-因为它直接告诉你：
+1. 系统还认不认这个产品；
+2. 本地缓存 MSI 在哪里。
 
-- 系统还认不认这个产品；
-- 本地缓存 MSI 在哪；
-- 当年是从哪个安装源装进去的。
+### 4.3 再看 `HKCR\Installer\Products`
 
-真实案例里能看到这种信息：
-
-- `LocalPackage=C:\Windows\Installer\a62d45.msi`
-- `LocalPackage=C:\Windows\Installer\a62d4f.msi`
-- `LocalPackage=C:\Windows\Installer\a62d3b.msi`
-- `InstallSource=d:\coreldraw graphics suite 2025 ...\x64\msis\VBA\`
-
-这就已经不是“猜测”了，这就是**明确证据**：这些 Installer 记录和 CorelDRAW 2025 有直接关系。
-
-### 4.3 再看 HKCR\Installer\Products
-
-重点位置：
-
-```text
-HKCR\Installer\Products\...
-```
-
-这里常常会有：
+这一层常见字段有：
 
 - `ProductName`
 - `PackageName`
 - `SourceList`
 - `LastUsedSource`
 
-如果你在这里看到：
+如果这里依然把某个产品和 Corel 安装目录绑在一起，那就说明 Installer 的产品索引还没被清干净。
 
-- `PackageName=Vba71.msi`
-- `LastUsedSource` 指向 CorelDRAW 2025 安装目录
+### 4.4 最后才动 `C:\Windows\Installer`
 
-那就说明 Windows Installer 的产品索引里，**这套东西还活着**。
+这一步一定要建立在前面确认过对应关系的基础上。
 
-### 4.4 `C:\Windows\Installer` 里的 MSI 怎么处理？
+正确顺序是：
 
-记住一句话：
+1. 先通过注册表确认某个产品确实属于 Corel 安装链；
+2. 如果它还支持正常卸载，先试正常卸载；
+3. 卸载无效，再删相关 Installer 记录；
+4. 最后清它明确绑定的 MSI 缓存。
 
-> **不是先看文件名删，而是先通过注册表确认这个 MSI 到底绑定谁，再删。**
-
-真实案例里，正是通过 `LocalPackage` 反查出来这几个文件：
-
-- `C:\Windows\Installer\a62d45.msi`
-- `C:\Windows\Installer\a62d4f.msi`
-- `C:\Windows\Installer\a62d3b.msi`
-
-它们都和 Corel 2025 安装源对应得上，所以最终才删。
-
-这一步千万别学成：
-
-> “哦，我懂了，去 `C:\Windows\Installer` 里删几个看起来像 MSI 的就行。”
-
-不是。  
-那样很容易把别的软件一起打残。
-
-### 4.5 能不能先尝试正常卸载这些 MSI 组件？
-
-可以，建议先试。
-
-如果你已经找到对应的 `UninstallString` / `ProductCode`，可以先尝试标准静默卸载。
-
-如果卸载无效、键还在、缓存还在，那才进入“手动删除注册项 + 删除对应 MSI 缓存”的阶段。
-
-也就是说，这一层的标准顺序应该是：
-
-1. 先确认它确实跟 Corel 安装链绑定；
-2. 先试正常卸载；
-3. 无效再手动清注册项；
-4. 最后清它明确绑定的缓存 MSI。
+不是反过来。
 
 ---
 
-## 第 5 步：清理外围痕迹
+## 第 5 步：收尾项
 
-这一步不是最关键，但如果你是“既然搞就搞彻底”的人，那最好也做掉。
+这一层不一定是主因，但如果你已经做到前面了，顺手收掉比较稳。
 
-### 5.1 ShellCompatibility 兼容性记录
-
-常见位置：
+可检查的典型位置：
 
 ```text
 HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellCompatibility\Applications\coreldrw.exe
 HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\ShellCompatibility\Applications\coreldrw.exe
-```
-
-它们一般不是主凶，但属于历史兼容记录，留着也没什么意义。
-
-### 5.2 Protexis Licensing Service 事件源
-
-常见位置：
-
-```text
 HKLM\SYSTEM\CurrentControlSet\Services\EventLog\Application\Protexis Licensing Service
-```
-
-如果服务程序本体早没了，只剩一个事件源注册，那也可以清掉。
-
----
-
-## 第 6 步：别忘了 Installer\Folders 这种“目录索引残留”
-
-还有一种特别容易被忽略的东西：
-
-```text
 HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\Folders
 ```
 
-这里面可能会挂着某个 Corel 目录，比如：
-
-```text
-c:\ProgramData\Corel\CorelDRAW Graphics Suite 2020\
-```
-
-这类值不是主角，但它会告诉安装器：
-
-> “这个目录我认识，它以前是安装过程的一部分。”
-
-如果你已经把这个目录本体删了，而这里还挂着它，那也该顺手清掉。
+其中 `Installer\Folders` 比较容易被忽略。它不一定直接拦安装，但会继续告诉系统“某个 Corel 目录以前属于安装流程的一部分”。
 
 ---
 
-## 第 7 步：什么时候该用微软官方卸载疑难解答器？
+## 什么时候该用微软官方卸载疑难解答器
 
-如果你出现下面任意一种情况，就建议你用：
+如果你已经遇到下面这些情况，我更建议先上微软工具，而不是直接手工暴力清：
 
-- 程序和功能里已经看不到 CorelDRAW，但安装器还说有新版；
-- 某个卸载项删不掉；
+- 程序和功能里已经看不到 Corel，但安装器仍然提示有新版；
+- 卸载项删除失败；
 - MSI 卸载报错；
-- 安装和卸载都像半死不活；
-- 你不敢直接下手删 Installer 相关项。
+- 安装和卸载都进入半死不活状态。
 
-工具名字是：
+这个工具叫：
 
 **Program Install and Uninstall troubleshooter**
 
-微软官方说明里写得很直白：它就是拿来修“阻止程序安装或卸载”的问题的，还能修损坏的相关注册表键。
-
-如果目标程序没显示在列表里，它还可能要求你提供 MSI Product Code。
-
-这玩意儿不是万能的，但在“卸载链坏掉”的时候，通常比你上来硬删更稳。
+它的定位很明确：修复阻止程序安装或卸载的问题，必要时处理损坏的相关注册表键。它不是万能的，但在“安装链本身已经乱了”的时候，通常比你直接去砍 Installer 更稳。
 
 ---
 
-## 第 8 步：怎样确认自己真的清干净了？
+## 最后怎么确认“真的清干净了”
 
-这一节非常重要。
+我一般只看五件事：
 
-很多人最大的问题不是不会删，而是：**删完不会验。**
+1. Corel 相关目录已经不在了；
+2. `HKCU\Software\Corel` 不再有当前用户残留；
+3. `Uninstall` 里不再有明确指向 Corel 安装源的条目；
+4. `Installer\UserData` 和 `HKCR\Installer\Products` 里，对应 Corel 安装链的项已经清掉；
+5. 重启后重新安装目标版本，不再提示“已经安装了更新版本”。
 
-### 你至少要确认这 5 件事
-
-#### 1. 文件夹没了
-
-这些地方你查一遍：
-
-```text
-C:\ProgramData\Corel
-C:\Users\你的用户名\AppData\Roaming\Corel
-C:\Users\你的用户名\AppData\Roaming\Corel.bak
-C:\Users\你的用户名\AppData\Local\Temp\Corel
-```
-
-#### 2. 当前用户 Corel 键没了
-
-```text
-HKCU\Software\Corel
-```
-
-#### 3. 卸载项里不再有 Corel 相关残留
-
-特别是那些 `InstallSource` 指向 Corel 安装介质的 GUID 项。
-
-#### 4. Installer\UserData 和 HKCR\Installer\Products 里，对应 Corel 相关链路的项没了
-
-这一步最关键。
-
-#### 5. 重启后，再次安装旧版，不再提示“已安装新版”
-
-如果前 4 条都满足，第 5 条大概率就会成立。
+前四项是“你做过了什么”，第五项才是“结果有没有成立”。
 
 ---
 
-## 一套适合普通人的最终操作顺序
+## 一套更适合普通用户的最终顺序
 
-如果你不想看原理，只想知道“到底按什么顺序来”，那就看这一段。
+如果你不想记太多原理，只记这套就够了：
 
-### 简化版流程
+1. 在控制面板里正常卸载 CorelDRAW 和相关组件；
+2. 重启；
+3. 清 `ProgramData`、`AppData\Roaming` 等 Corel 明确残留目录；
+4. 清 `HKCU\Software\Corel`；
+5. 用微软官方卸载疑难解答器处理残留卸载链；
+6. 还不行，再去检查 `Uninstall` / `Installer\UserData` / `HKCR\Installer\Products`；
+7. 最后才处理已确认归属 Corel 的 `C:\Windows\Installer` 缓存；
+8. 再重启，再装目标版本。
 
-1. `appwiz.cpl` 里先正常卸载 CorelDRAW 及相关组件
-2. 重启一次
-3. 删除这些文件夹残留：
-   - `ProgramData\Corel`
-   - `AppData\Roaming\Corel`
-   - `AppData\Roaming\Corel.bak`
-   - `AppData\Local\Temp\Corel`
-4. 删除 `HKCU\Software\Corel` 相关键
-5. 检查 `HKLM\...\Uninstall\{GUID}` 是否还有指向 Corel 安装源的项
-6. 检查 `Installer\UserData\...\Products\...` 是否还有 `InstallSource` / `LocalPackage` 指向 Corel 安装链的项
-7. 检查 `HKCR\Installer\Products\...\SourceList` 是否还指向 Corel 安装介质
-8. 对已确认属于 Corel 安装链的项，先试标准卸载；不行再手动删除
-9. 再清对应的 `C:\Windows\Installer\*.msi`
-10. 顺手清 `Installer\Folders` 里挂着的 Corel 目录值
-11. 清外围痕迹：`ShellCompatibility`、`Protexis Licensing Service`
-12. 重启
-13. 再装目标版本
+这个顺序的核心不是“删得多”，而是：
 
----
-
-## 常见误区
-
-### 误区 1：只删 Program Files 就够了
-
-错。  
-很多时候真正拦安装的，不是程序目录，而是 Installer 数据库。
-
-### 误区 2：只看“程序和功能”里有没有条目
-
-错。  
-有些残留已经不显示在“程序和功能”里了，但 MSI 记录还在。
-
-### 误区 3：看到 `Microsoft Visual Basic for Applications` 就一定和 Corel 无关
-
-错。  
-你要看它的 `InstallSource`、`SourceList`、`LocalPackage` 是不是跟 Corel 安装源绑在一起。
-
-### 误区 4：`C:\Windows\Installer` 能当缓存垃圾直接清
-
-大错特错。  
-这里只能删**已经确认属于 Corel 安装链**的那几个，不能图省事乱删。
-
-### 误区 5：删完不重启就马上继续装
-
-有时会翻车。  
-重启一次能让安装器状态、句柄占用、缓存索引都刷新一遍。
-
----
-
-## 一个真实结论：到底哪些东西最可能是主凶？
-
-如果你只想记住一句话，那就是：
-
-> **最可能导致“已安装新版”报错的，不是 Corel 的配置文件，而是那一串跟 Corel 安装源绑定在一起的 MSI / Installer 注册信息。**
-
-从真实排查经验看，危险等级大概是这样：
-
-### 第一梯队：最可能拦安装
-
-- `HKLM\...\Uninstall\{GUID}`
-- `HKLM\...\Installer\UserData\...\Products\...`
-- `HKCR\Installer\Products\...`
-- `C:\Windows\Installer\对应的 MSI 缓存`
-
-### 第二梯队：会让系统看起来“不干净”
-
-- `C:\ProgramData\Corel`
-- `AppData\Roaming\Corel`
-- `AppData\Local\Temp\Corel`
-- `HKCU\Software\Corel`
-
-### 第三梯队：收尾项
-
-- `ShellCompatibility\Applications\coreldrw.exe`
-- `Protexis Licensing Service` 事件源
-- `Installer\Folders` 里挂着的 Corel 目录值
-
----
-
-## 最后给普通用户的建议
-
-如果你不是特别熟注册表，那最稳的策略是：
-
-1. 先正常卸载；
-2. 先清文件夹残留；
-3. 先用微软官方卸载疑难解答器；
-4. 再去动 MSI / Installer 那层；
-5. 每删一层就复查一层；
-6. 最后重启再安装旧版。
-
-不要上来就“网上抄几个注册表路径，全部删光”。  
-也不要看到 `C:\Windows\Installer` 就想一把梭。
-
-你真正要做的不是“删得猛”，而是：
-
-> **删得准。**
-
-只有删得准，才能既清干净 CorelDRAW 的痕迹，又不把 Windows 安装器别的软件一起搞残。
+> **先删最确定的，再删最危险的。**
 
 ---
 
 ## 参考依据
 
-- Corel 官方手动卸载文档：<https://kb.corel.com/en/131018>
-- Corel 官方同条目：<https://kb.corel.com/131018>
-- Microsoft 官方安装/卸载疑难解答器：<https://support.microsoft.com/en-us/topic/fix-problems-that-block-programs-from-being-installed-or-removed-cca7d1b6-65a9-3d98-426b-e9f927e1eb4d>
-- Microsoft `FindRelatedProducts`：<https://learn.microsoft.com/en-us/windows/win32/msi/findrelatedproducts-action>
-- Microsoft 旧版覆盖新版阻止机制：<https://learn.microsoft.com/en-us/windows/win32/msi/preventing-an-old-package-from-installing-over-a-newer-version>
-- Microsoft Upgrade Table：<https://learn.microsoft.com/en-us/windows/win32/msi/upgrade-table>
-
----
-
-如果以后你还要写更短的版本，可以直接把本文压缩成一句话：
-
-> **CorelDRAW 难卸干净，不是因为文件夹删不掉，而是因为 Windows Installer 还记得它。真正要清的是：ProgramData / AppData + HKCU 配置 + Uninstall + Installer\\UserData + HKCR\\Installer\\Products + 对应 MSI 缓存。**
+1. Corel 官方帮助：卸载 CorelDRAW Graphics Suite  
+   <https://product.corel.com/help/CorelDRAW/Documentation-Windows/CorelDRAW-en/CorelDRAW-Uninstall-applications.html>
+2. Corel 官方知识库：CorelDRAW Graphics Suite 2024/2025 手动卸载  
+   <https://kb.corel.com/en/131018>
+3. Corel 官方旧版知识库：CorelDRAW Graphics Suite 2017 手动卸载  
+   <https://support.corel.com/hc/en-us/articles/115015307427-CorelDRAW-Graphics-Suite-2017-How-to-manually-uninstall>
+4. Microsoft：在 Windows 中卸载或删除应用和程序  
+   <https://support.microsoft.com/en-us/windows/uninstall-or-remove-apps-and-programs-in-windows-4b55f974-2cc6-2d2b-d092-5905080eaf98>
+5. Microsoft：显示 Windows 中的隐藏文件和文件夹  
+   <https://support.microsoft.com/en-gb/windows/view-hidden-files-and-folders-in-windows-97fbc472-c603-9d90-91d0-1166d1d9f4b5>
+6. Microsoft：`FindRelatedProducts`  
+   <https://learn.microsoft.com/en-us/windows/win32/msi/findrelatedproducts-action>
+7. Microsoft：Preventing an Old Package from Installing Over a Newer Version  
+   <https://learn.microsoft.com/en-us/windows/win32/msi/preventing-an-old-package-from-installing-over-a-newer-version>
+8. Microsoft：Upgrade Table  
+   <https://learn.microsoft.com/en-us/windows/win32/msi/upgrade-table>
