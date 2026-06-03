@@ -1,20 +1,44 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import Win3xIcon from '../shared/Win3xIcon.vue'
 import { usePosts } from '../../composables/usePosts'
 
-const { posts, folders, loadPosts, getPostsByFolder } = usePosts()
+const { posts, folders, ensurePostsLoaded, getPostsByFolder } = usePosts()
+
+interface Props {
+  folder?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  folder: '',
+})
 
 // Current folder (empty = root)
 const currentFolder = ref('')
 
 onMounted(() => {
-  loadPosts()
+  void ensurePostsLoaded()
 })
 
 const emit = defineEmits<{
-  openPost: [path: string]
-  openParent: []
+  openPost: [path: string, parentFolder: string, title: string]
+  folderChange: [folder: string]
 }>()
+
+const canGoUp = computed(() => currentFolder.value !== '')
+
+const setCurrentFolder = (folder: string) => {
+  currentFolder.value = folder
+  emit('folderChange', folder)
+}
+
+watch(
+  () => props.folder,
+  (folder) => {
+    currentFolder.value = folder
+  },
+  { immediate: true },
+)
 
 // Items to show in current view
 const currentItems = computed(() => {
@@ -55,19 +79,19 @@ const currentPathStr = computed(() => {
 })
 
 const enterFolder = (name: string) => {
-  currentFolder.value = name
+  setCurrentFolder(name)
 }
 
 const goBack = () => {
-  if (currentFolder.value) {
-    currentFolder.value = ''
-  } else {
-    emit('openParent')
+  if (!canGoUp.value) {
+    return
   }
+
+  setCurrentFolder('')
 }
 
-const openFile = (path: string) => {
-  emit('openPost', path)
+const openFile = (path: string, title: string) => {
+  emit('openPost', path, currentFolder.value, title)
 }
 
 const formatDate = (dateStr: string) => {
@@ -83,20 +107,28 @@ const formatDate = (dateStr: string) => {
 
 <template>
   <div class="file-manager">
-    <div class="fm-toolbar">
-      <button class="fm-btn" @click="goBack">⬅️</button>
-      <button class="fm-btn">➡️</button>
-      <div class="fm-separator"></div>
-      <button class="fm-btn">📋</button>
-      <button class="fm-btn">📦</button>
+    <div class="win31-toolbar">
+      <button type="button" class="win31-toolbar-button" title="Back" :disabled="!canGoUp" @click="goBack">
+        <Win3xIcon name="back" size="small" label="Back" />
+      </button>
+      <button type="button" class="win31-toolbar-button" title="Forward" disabled>
+        <Win3xIcon name="forward" size="small" label="Forward" />
+      </button>
+      <div class="win31-toolbar-separator"></div>
+      <button type="button" class="win31-toolbar-button" title="Copy">
+        <Win3xIcon name="copy" size="small" label="Copy" />
+      </button>
+      <button type="button" class="win31-toolbar-button" title="Archive">
+        <Win3xIcon name="archive" size="small" label="Archive" />
+      </button>
     </div>
     
     <div class="fm-address">
       <span>Directory:</span>
-      <input class="fm-input" :value="currentPathStr" readonly />
+      <input class="fm-input win31-input" :value="currentPathStr" readonly />
     </div>
     
-    <div class="fm-content">
+    <div class="fm-content win31-pane win31-pane--scrollable">
       <div class="fm-header">
         <span class="fm-col-icon"></span>
         <span class="fm-col-name">Name</span>
@@ -105,8 +137,10 @@ const formatDate = (dateStr: string) => {
       </div>
       
       <div class="fm-list">
-        <div class="fm-item" @dblclick="goBack">
-          <span class="fm-icon">📁</span>
+        <div v-if="canGoUp" class="fm-item" @dblclick="goBack">
+          <span class="fm-icon">
+            <Win3xIcon name="folder" size="small" label="Parent folder" />
+          </span>
           <span class="fm-name">..</span>
           <span class="fm-size"></span>
           <span class="fm-date"></span>
@@ -114,11 +148,13 @@ const formatDate = (dateStr: string) => {
         
         <div 
           v-for="item in currentItems" 
-          :key="item.name"
+          :key="item.type === 'folder' ? `folder-${item.name}` : `file-${item.path}`"
           class="fm-item"
-          @dblclick="item.type === 'folder' ? enterFolder(item.name) : openFile(item.path)"
+          @dblclick="item.type === 'folder' ? enterFolder(item.name) : openFile(item.path, item.name)"
         >
-          <span class="fm-icon">{{ item.type === 'folder' ? '📁' : '📄' }}</span>
+          <span class="fm-icon">
+            <Win3xIcon :name="item.type === 'folder' ? 'folder' : 'document'" size="small" :label="item.type" />
+          </span>
           <span class="fm-name">{{ item.name }}</span>
           <span class="fm-size">{{ item.size }}</span>
           <span class="fm-date">{{ formatDate(item.date) }}</span>
@@ -126,7 +162,7 @@ const formatDate = (dateStr: string) => {
       </div>
     </div>
     
-    <div class="fm-status">
+    <div class="fm-status win31-statusbar">
       <span>{{ currentItems.filter(i => i.type === 'file').length }} file(s)</span>
       <span>{{ currentItems.filter(i => i.type === 'folder').length }} folder(s)</span>
     </div>
@@ -138,34 +174,6 @@ const formatDate = (dateStr: string) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-}
-
-.fm-toolbar {
-  background: #c0c0c0;
-  padding: 4px;
-  display: flex;
-  gap: 2px;
-  border-bottom: 1px solid #808080;
-}
-
-.fm-btn {
-  width: 24px;
-  height: 22px;
-  background: #c0c0c0;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.fm-btn:hover {
-  box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #000;
-}
-
-.fm-separator {
-  width: 2px;
-  border-left: 1px solid #808080;
-  border-right: 1px solid #fff;
-  margin: 0 2px;
 }
 
 .fm-address {
@@ -181,20 +189,10 @@ const formatDate = (dateStr: string) => {
 
 .fm-input {
   flex: 1;
-  background: #fff;
-  border: none;
-  padding: 2px 4px;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-size: 11px;
-  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
 }
 
 .fm-content {
   flex: 1;
-  background: #fff;
-  margin: 2px;
-  overflow: auto;
-  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
 }
 
 .fm-header {
@@ -252,13 +250,7 @@ const formatDate = (dateStr: string) => {
 }
 
 .fm-status {
-  background: #c0c0c0;
-  border-top: 1px solid #808080;
-  padding: 4px 8px;
-  display: flex;
   justify-content: space-between;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-size: 11px;
 }
 
 @media (max-width: 600px) {

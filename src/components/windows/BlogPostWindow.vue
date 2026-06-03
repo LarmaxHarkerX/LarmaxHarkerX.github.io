@@ -1,36 +1,120 @@
 <script setup lang="ts">
-import { ref, onMounted, shallowRef, markRaw, nextTick } from 'vue'
+import { nextTick, ref, shallowRef, watch } from 'vue'
+import type { Component } from 'vue'
+import Win3xIcon from '../shared/Win3xIcon.vue'
 import { usePosts } from '../../composables/usePosts'
+import type { Post } from '../../modules/content/types'
 
 interface Props {
   path: string
 }
 
 const props = defineProps<Props>()
-const { getPostByPath } = usePosts()
+const { ensurePostsLoaded, getPostByPath, getPostComponentByPath } = usePosts()
 
-const post = ref<any>(null)
-const contentComponent = shallowRef<any>(null)
-const bpBody = ref<HTMLElement>()
+const post = ref<Post | null>(null)
+const contentComponent = shallowRef<Component | null>(null)
+const bpBody = ref<HTMLElement | null>(null)
+const bpScrollPane = ref<HTMLElement | null>(null)
+const isLoading = ref(true)
 
-onMounted(async () => {
-  post.value = getPostByPath(props.path)
-  
-  // Load markdown component
-  const modules = import.meta.glob('../../../posts/**/*.md', { eager: true })
-  const fullPath = `../../../posts/${props.path}.md`
-  const mod = modules[fullPath] as any
-  
-  if (mod) {
-    contentComponent.value = markRaw(mod.default)
-    
-    // After component renders, fix any links that weren't caught by markdown-it plugin
-    await nextTick()
-    fixLinks()
+function normalizeAnchorId(text: string) {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\u4e00-\u9fff-]/g, '')
+}
+
+function resolveInPageHash(href: string) {
+  if (href.startsWith('#')) {
+    return href.slice(1)
   }
-})
 
-// Fix links in rendered content
+  try {
+    const url = new URL(href, window.location.href)
+    const current = new URL(window.location.href)
+
+    if (
+      url.origin === current.origin
+      && url.pathname === current.pathname
+      && url.search === current.search
+      && url.hash
+    ) {
+      return url.hash.slice(1)
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+function scrollToAnchor(anchorId: string) {
+  if (!bpBody.value || !bpScrollPane.value) {
+    return
+  }
+
+  const escapedId = window.CSS?.escape ? window.CSS.escape(anchorId) : anchorId
+  const element = bpBody.value.querySelector<HTMLElement>(`#${escapedId}`)
+
+  if (!element) {
+    return
+  }
+
+  const containerRect = bpScrollPane.value.getBoundingClientRect()
+  const elementRect = element.getBoundingClientRect()
+  const nextTop = elementRect.top - containerRect.top + bpScrollPane.value.scrollTop - 8
+
+  bpScrollPane.value.scrollTo({ top: Math.max(0, nextTop), behavior: 'smooth' })
+}
+
+function prepareArticleContent() {
+  if (!bpBody.value) {
+    return
+  }
+
+  const usedIds = new Map<string, number>()
+  const headings = bpBody.value.querySelectorAll<HTMLElement>('h1, h2, h3, h4, h5, h6')
+
+  headings.forEach((heading) => {
+    if (heading.id) {
+      usedIds.set(heading.id, (usedIds.get(heading.id) ?? 0) + 1)
+      return
+    }
+
+    const baseId = normalizeAnchorId(heading.textContent || '')
+
+    if (!baseId) {
+      return
+    }
+
+    const count = usedIds.get(baseId) ?? 0
+    usedIds.set(baseId, count + 1)
+    heading.id = count === 0 ? baseId : `${baseId}-${count + 1}`
+  })
+}
+
+const loadPost = async () => {
+  isLoading.value = true
+  await ensurePostsLoaded()
+  post.value = getPostByPath(props.path) ?? null
+  contentComponent.value = await getPostComponentByPath(props.path)
+
+  await nextTick()
+  prepareArticleContent()
+  fixLinks()
+  isLoading.value = false
+}
+
+watch(
+  () => props.path,
+  () => {
+    void loadPost()
+  },
+  { immediate: true },
+)
+
 const fixLinks = () => {
   if (!bpBody.value) return
   
@@ -39,15 +123,17 @@ const fixLinks = () => {
     const anchor = link as HTMLAnchorElement
     const href = anchor.getAttribute('href') || ''
     
-    // Only add target="_blank" to external links, not anchor links
-    if (!href.startsWith('#')) {
+    if (!resolveInPageHash(href)) {
       anchor.target = '_blank'
       anchor.rel = 'noopener noreferrer'
+      return
     }
+
+    anchor.removeAttribute('target')
+    anchor.removeAttribute('rel')
   })
 }
 
-// Handle link clicks - safety net
 const handleBodyClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement
   const anchor = target.tagName === 'A' ? target as HTMLAnchorElement : target.closest('a') as HTMLAnchorElement
@@ -55,19 +141,14 @@ const handleBodyClick = (e: MouseEvent) => {
   if (!anchor) return
   
   const href = anchor.getAttribute('href') || ''
-  
-  // Anchor link - scroll to element
-  if (href.startsWith('#')) {
+  const inPageHash = resolveInPageHash(href)
+
+  if (inPageHash) {
     e.preventDefault()
-    const id = href.slice(1)
-    const element = bpBody.value?.querySelector(`#${id}`) || document.getElementById(id)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    scrollToAnchor(inPageHash)
     return
   }
-  
-  // External link - open in new tab
+
   if (anchor.href) {
     e.preventDefault()
     window.open(anchor.href, '_blank', 'noopener,noreferrer')
@@ -81,15 +162,23 @@ const emit = defineEmits<{
 
 <template>
   <div class="blog-post">
-    <div class="bp-toolbar">
-      <button class="bp-btn" @click="emit('back')">⬅️</button>
-      <button class="bp-btn">➡️</button>
-      <div class="bp-separator"></div>
-      <button class="bp-btn">📋</button>
-      <button class="bp-btn">🔍</button>
+    <div class="win31-toolbar">
+      <button type="button" class="win31-toolbar-button" title="Back" @click="emit('back')">
+        <Win3xIcon name="back" size="small" label="Back" />
+      </button>
+      <button type="button" class="win31-toolbar-button" title="Forward" disabled>
+        <Win3xIcon name="forward" size="small" label="Forward" />
+      </button>
+      <div class="win31-toolbar-separator"></div>
+      <button type="button" class="win31-toolbar-button" title="Copy" disabled>
+        <Win3xIcon name="copy" size="small" label="Copy" />
+      </button>
+      <button type="button" class="win31-toolbar-button" title="Search" disabled>
+        <Win3xIcon name="search" size="small" label="Search" />
+      </button>
     </div>
     
-    <div class="bp-content">
+    <div ref="bpScrollPane" class="bp-content win31-pane win31-pane--scrollable">
       <div v-if="post" class="bp-article">
         <h1 class="bp-title">{{ post.title }}</h1>
         <div class="bp-meta">
@@ -105,12 +194,15 @@ const emit = defineEmits<{
           <component :is="contentComponent" v-if="contentComponent" />
         </div>
       </div>
-      <div v-else class="bp-loading">
+      <div v-else-if="isLoading" class="bp-loading">
         Loading...
+      </div>
+      <div v-else class="bp-loading">
+        Post not found.
       </div>
     </div>
     
-    <div class="bp-status">
+    <div class="bp-status win31-statusbar">
       <span>{{ post?.title || 'Loading...' }}</span>
     </div>
   </div>
@@ -123,40 +215,8 @@ const emit = defineEmits<{
   flex-direction: column;
 }
 
-.bp-toolbar {
-  background: #c0c0c0;
-  padding: 4px;
-  display: flex;
-  gap: 2px;
-  border-bottom: 1px solid #808080;
-}
-
-.bp-btn {
-  width: 24px;
-  height: 22px;
-  background: #c0c0c0;
-  border: none;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.bp-btn:hover {
-  box-shadow: inset -1px -1px 0 #fff, inset 1px 1px 0 #000;
-}
-
-.bp-separator {
-  width: 2px;
-  border-left: 1px solid #808080;
-  border-right: 1px solid #fff;
-  margin: 0 2px;
-}
-
 .bp-content {
   flex: 1;
-  background: #fff;
-  margin: 2px;
-  overflow: auto;
-  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #fff;
   padding: 16px;
 }
 
@@ -205,6 +265,16 @@ const emit = defineEmits<{
 
 .bp-body {
   font-size: 12px;
+}
+
+.bp-body :deep(img),
+.bp-body :deep(picture),
+.bp-body :deep(video),
+.bp-body :deep(svg) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px auto;
 }
 
 .bp-body :deep(h1) {
@@ -311,13 +381,5 @@ const emit = defineEmits<{
   font-family: 'MS Sans Serif', Arial, sans-serif;
   font-size: 12px;
   color: #808080;
-}
-
-.bp-status {
-  background: #c0c0c0;
-  border-top: 1px solid #808080;
-  padding: 4px 8px;
-  font-family: 'MS Sans Serif', Arial, sans-serif;
-  font-size: 11px;
 }
 </style>
