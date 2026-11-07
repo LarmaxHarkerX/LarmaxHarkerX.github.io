@@ -34,6 +34,11 @@ Shirone 遵循「配置管行为，数据管内容」的清晰分层架构：
 - **`src/data/*.ts`**：承载**具体的站点内容实体**（项目条目 `projects.ts`、技能清单 `skills.ts`、时间线节点 `timeline.ts`、设备列表 `devices.ts`、友链 `friends.ts`、罗盘 `compass.ts`、番剧 `anime.ts` 与本地音乐 `music.ts`）；
 - **`src/utils/feature-data.ts`**：提供构建期纯函数，将 config 的过滤/排序等行为规则应用到对应 data 实体集合上，输出给页面/组件。
 
+个人条目未提供的信息应直接省略：`SkillItem.level` 缺省时不显示熟练度徽标或刻度；
+`GameItem.status` 与 `AnimeItem.status` 缺省时不显示游玩/观看状态；
+影视的 `rating` 缺省时不显示评分。已有明确填写的等级、状态和评分继续按原规则渲染，
+不要用零分、待玩或已看等默认值替代站长尚未提供的个人信息。
+
 | 判别问题 | 归属 | 处理方式 |
 | --- | --- | --- |
 | 它控制「页面是否开启 / 排序 / 凭据」？ | **Config** | 写在 `src/config/*Config.ts`（如 `enable: boolean`, `categories`, `order`） |

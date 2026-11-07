@@ -6,7 +6,7 @@ import { withUserConfig } from "../utils/config-overlay.ts";
  * 类型见 src/types/config.ts。
  */
 export const profileConfig: ProfileConfig = withUserConfig("profile", {
-	avatar: "assets/images/demo-avatar.webp", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar: "assets/images/larmax-harker-avatar.png", // GitHub: LarmaxHarkerX
 	name: "唐辫小二 Larmax Harker",
 	bio: "记录想法、生活和正在折腾的项目。",
 	links: [

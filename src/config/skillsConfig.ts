@@ -17,19 +17,24 @@ export const skillsConfig: SkillsConfig = withUserConfig("skills", {
 	description: "$t:skillsBanner",
 	categories: [
 		{
-			key: "frontend",
-			label: "Frontend",
-			icon: "material-symbols:web-rounded",
+			key: "video",
+			label: "视频与合成",
+			icon: "material-symbols:movie-outline-rounded",
 		},
 		{
-			key: "backend",
-			label: "Backend",
-			icon: "material-symbols:dns-rounded",
+			key: "3d",
+			label: "三维与实时引擎",
+			icon: "material-symbols:deployed-code-outline-rounded",
 		},
 		{
-			key: "tooling",
-			label: "Tooling",
-			icon: "material-symbols:construction-rounded",
+			key: "design",
+			label: "图像与设计",
+			icon: "material-symbols:palette-outline-rounded",
+		},
+		{
+			key: "audio",
+			label: "音频与音乐",
+			icon: "material-symbols:graphic-eq-rounded",
 		},
 	],
 	// disabledNames: [],

@@ -134,7 +134,7 @@ export function normalizeAnimeItem(raw: unknown): AnimeItem | null {
 	}
 	const title = record.title.trim();
 
-	// 2. 状态校验：必须是五态之一
+	// 2. 已提供的状态必须是五态之一；未提供时保留为未指定。
 	const rawStatus = String(record.status || "");
 	let status: AnimeStatus | null = null;
 	if (VALID_STATUSES.has(rawStatus as AnimeStatus)) {
@@ -142,7 +142,7 @@ export function normalizeAnimeItem(raw: unknown): AnimeItem | null {
 	} else if (rawStatus.toLowerCase() === "onhold") {
 		status = "onHold";
 	}
-	if (!status) {
+	if (record.status !== undefined && !status) {
 		return null;
 	}
 
@@ -233,7 +233,7 @@ export function normalizeAnimeItem(raw: unknown): AnimeItem | null {
 
 	const item: AnimeItem = {
 		title,
-		status,
+		...(status ? { status } : {}),
 		rating,
 		year,
 		genres,
@@ -254,7 +254,9 @@ export function normalizeAnimeItem(raw: unknown): AnimeItem | null {
  */
 export function sortAnimeList(items: AnimeItem[]): AnimeItem[] {
 	return [...items].sort((a, b) => {
-		const statusDiff = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
+		const statusDiff =
+			(a.status ? STATUS_ORDER[a.status] : 5) -
+			(b.status ? STATUS_ORDER[b.status] : 5);
 		if (statusDiff !== 0) return statusDiff;
 
 		const yearA = Number.parseInt(a.year, 10) || 0;

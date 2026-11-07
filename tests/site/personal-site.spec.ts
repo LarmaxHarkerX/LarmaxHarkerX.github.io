@@ -29,6 +29,118 @@ test("homepage publishes exactly the three migrated articles", async ({
 	expect(links).toEqual(posts.map((post) => `/posts/${post.slug}/`).sort());
 });
 
+const personalPages = [
+	{ path: "/moments/", selector: ".moment-card", count: 1 },
+	{ path: "/projects/", selector: ".project-card", count: 1 },
+	{ path: "/timeline/", selector: ".timeline-card", count: 1 },
+	{ path: "/anime/", selector: ".anime-card", count: 12 },
+	{ path: "/devices/", selector: ".device-card", count: 3 },
+	{ path: "/games/", selector: ".game-card", count: 29 },
+	{ path: "/skills/", selector: ".skill-card", count: 7 },
+] as const;
+
+for (const item of personalPages) {
+	test(`${item.path} publishes only the owner's collection`, async ({
+		page,
+	}) => {
+		await page.goto(item.path);
+		await expect(page.locator(item.selector)).toHaveCount(item.count);
+	});
+}
+
+test("the seven requested skills display full proficiency meters", async ({
+	page,
+}) => {
+	await page.goto("/skills/");
+	await expect(page.locator(".skill-card")).toHaveCount(7);
+	await expect(page.locator(".skill-card__level")).toHaveCount(7);
+	const meters = page.locator('.skill-card [role="meter"]');
+	await expect(meters).toHaveCount(7);
+	for (const meter of await meters.all()) {
+		await expect(meter).toHaveAttribute("aria-valuenow", "4");
+	}
+	await expect(page.locator(".skill-card__segment--active")).toHaveCount(28);
+	await expect(page.locator(".skill-card h2")).toHaveText([
+		"Adobe After Effects",
+		"Blender",
+		"Adobe Photoshop",
+		"Unreal Engine",
+		"FL Studio",
+		"REAPER",
+		"VEGAS Pro",
+	]);
+});
+
+test("movies without personal scores or progress do not show invented metadata", async ({
+	page,
+}) => {
+	await page.goto("/anime/?q=继母与女儿的蓝调");
+	await expect(page.locator(".anime-card")).toHaveCount(4);
+	await expect(page.locator(".anime-card__rating")).toHaveCount(0);
+	await expect(page.locator(".anime-card__status")).toHaveCount(0);
+	await expect(page.locator(".anime-card__progress")).toHaveCount(0);
+	await expect(page.locator(".anime-card__title")).toContainText([
+		"继母与女儿的蓝调",
+		"2020",
+		"2022",
+		"2024",
+	]);
+});
+
+test("game collection does not carry demo ratings hours or inferred progress", async ({
+	page,
+}) => {
+	await page.goto("/games/");
+	await expect(page.locator(".game-card")).toHaveCount(29);
+	await expect(page.locator(".game-card__cover")).toHaveCount(29);
+	await expect(
+		page.locator('[data-game="nte-neverness-to-everness"]'),
+	).toHaveCount(0);
+	await expect(page.locator(".game-card__rating")).toHaveCount(0);
+	await expect(page.locator(".game-card__hours")).toHaveCount(0);
+	await expect(page.locator(".game-card__status")).toHaveCount(0);
+});
+
+test("NHK case files are separate watched records and can all be loaded", async ({
+	page,
+}) => {
+	await page.goto("/anime/?q=未解决事件");
+	await expect(page.locator(".anime-section__count")).toContainText("29");
+	const more = page.locator(".anime-section__more button");
+	while (await more.isVisible()) {
+		await more.click();
+	}
+	await expect(page.locator(".anime-card")).toHaveCount(29);
+	await expect(page.locator(".anime-card__status")).toHaveCount(29);
+	await expect(page.locator(".anime-card__rating")).toHaveCount(0);
+	const titles = await page.locator(".anime-card__title").allTextContents();
+	expect(new Set(titles).size).toBe(29);
+	expect(titles.filter((title) => title.includes("NHK特别篇")).length).toBe(10);
+	expect(titles.filter((title) => title.includes("新系列")).length).toBe(19);
+});
+
+test("compass groups the requested official creative and AI websites", async ({
+	page,
+}) => {
+	await page.goto("/compass/");
+	const design = page.locator('section[data-shelf="design"]');
+	for (const href of [
+		"https://www.pinterest.com/",
+		"https://www.behance.net/",
+		"https://dribbble.com/",
+	]) {
+		await expect(design.locator(`a[href="${href}"]`)).toHaveCount(1);
+	}
+	const assistants = page.locator('section[data-shelf="ai"]');
+	for (const href of [
+		"https://chatgpt.com/",
+		"https://gemini.google.com/",
+		"https://claude.ai/",
+	]) {
+		await expect(assistants.locator(`a[href="${href}"]`)).toHaveCount(1);
+	}
+});
+
 for (const post of posts) {
 	test(`article ${post.slug} has its category and public canonical URL`, async ({
 		page,

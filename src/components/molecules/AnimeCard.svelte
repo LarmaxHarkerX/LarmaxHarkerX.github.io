@@ -22,7 +22,9 @@ let {
 	delay = 0,
 }: { anime: AnimeItem; delay?: number } = $props();
 
-const statusMeta = $derived(ANIME_STATUS_META[anime.status]);
+const statusMeta = $derived(
+	anime.status ? ANIME_STATUS_META[anime.status] : undefined,
+);
 const isWatching = $derived(
 	anime.status === "watching" && anime.progress !== undefined,
 );
@@ -39,7 +41,7 @@ const metaLine = $derived(
 <article
 	class="anime-card"
 	data-status={anime.status}
-	style={`--anime-status-color: ${statusMeta.color};`}
+	style={statusMeta ? `--anime-status-color: ${statusMeta.color};` : undefined}
 	use:reveal={{ delay }}
 >
 	<!-- 封面内部内容（img/占位 + 播放层 + 评分）：link/非 link 两分支共享，避免重复维护 -->
@@ -64,10 +66,12 @@ const metaLine = $derived(
 				<Icon icon="material-symbols:play-arrow-rounded" />
 			</span>
 		{/if}
+		{#if anime.rating !== undefined}
 		<span class="anime-card__rating">
 			<Icon icon="material-symbols:star-rounded" aria-hidden="true" />
 			<span>{anime.rating}</span>
 		</span>
+		{/if}
 	{/snippet}
 
 	{#if anime.link}
@@ -89,12 +93,14 @@ const metaLine = $derived(
 	{/if}
 
 	<div class="anime-card__body">
+		{#if statusMeta}
 		<div class="anime-card__header-row">
 			<span class="anime-card__status">
 				<span class="anime-card__status-dot" aria-hidden="true"></span>
 				{i18n(statusMeta.key)}
 			</span>
 		</div>
+		{/if}
 
 		<span class="anime-card__title" title={anime.title}>{anime.title}</span>
 

@@ -16,8 +16,8 @@ const levelMeta: Record<SkillLevel, { value: number; key: I18nKey }> = {
 	expert: { value: 4, key: I18nKey.skillLevelExpert },
 };
 
-const meta = $derived(levelMeta[skill.level]);
-const levelLabel = $derived(i18n(meta.key));
+const meta = $derived(skill.level ? levelMeta[skill.level] : undefined);
+const levelLabel = $derived(meta ? i18n(meta.key) : undefined);
 const fallback = $derived((skill.name.charAt(0) || "?").toUpperCase());
 </script>
 
@@ -32,7 +32,9 @@ const fallback = $derived((skill.name.charAt(0) || "?").toUpperCase());
 		</span>
 		<div class="skill-card__identity">
 			<h2>{skill.name}</h2>
-			<span class="skill-card__level">{levelLabel}</span>
+			{#if levelLabel}
+				<span class="skill-card__level">{levelLabel}</span>
+			{/if}
 		</div>
 	</div>
 
@@ -40,6 +42,7 @@ const fallback = $derived((skill.name.charAt(0) || "?").toUpperCase());
 		<p class="skill-card__description">{skill.description}</p>
 	{/if}
 
+	{#if meta}
 	<div
 		class="skill-card__meter"
 		role="meter"
@@ -53,6 +56,7 @@ const fallback = $derived((skill.name.charAt(0) || "?").toUpperCase());
 			<span class:skill-card__segment--active={segment <= meta.value}></span>
 		{/each}
 	</div>
+	{/if}
 </article>
 
 <style lang="stylus">

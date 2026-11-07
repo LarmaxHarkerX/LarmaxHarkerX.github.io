@@ -63,10 +63,28 @@ export const compassData: CompassShelf[] = [
 	},
 	{
 		key: "design",
-		name: "Design",
+		name: "设计与灵感",
 		icon: "material-symbols:palette-outline-rounded",
-		blurb: "Colors, icons and inspiration",
+		blurb: "视觉参考、作品展示、配色与图标",
 		entries: [
+			{
+				label: "Pinterest",
+				href: "https://www.pinterest.com/",
+				note: "收集视觉灵感与参考图",
+				icon: "fa7-brands:pinterest",
+			},
+			{
+				label: "Behance",
+				href: "https://www.behance.net/",
+				note: "创意作品与设计项目展示",
+				icon: "fa7-brands:behance",
+			},
+			{
+				label: "Dribbble",
+				href: "https://dribbble.com/",
+				note: "设计作品与界面灵感",
+				icon: "fa7-brands:dribbble",
+			},
 			{
 				label: "Iconify",
 				href: "https://icon-sets.iconify.design",
@@ -82,6 +100,29 @@ export const compassData: CompassShelf[] = [
 				label: "Excalidraw",
 				href: "https://excalidraw.com",
 				note: "Hand-drawn whiteboard collaboration",
+			},
+		],
+	},
+	{
+		key: "ai",
+		name: "AI 助手",
+		icon: "material-symbols:auto-awesome-outline-rounded",
+		blurb: "ChatGPT、Gemini 与 Claude 的官方入口",
+		entries: [
+			{
+				label: "ChatGPT",
+				href: "https://chatgpt.com/",
+				note: "OpenAI 的对话助手",
+			},
+			{
+				label: "Gemini",
+				href: "https://gemini.google.com/",
+				note: "Google 的 AI 助手",
+			},
+			{
+				label: "Claude",
+				href: "https://claude.ai/",
+				note: "Anthropic 的对话助手",
 			},
 		],
 	},

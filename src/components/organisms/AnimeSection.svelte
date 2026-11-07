@@ -57,7 +57,9 @@ const LIST_MODE_CLASS: Record<AnimeLayoutMode, string> = {
 
 /** 状态筛选 chips：只列数据中出现的状态（单选，再点取消 = 全部） */
 const statusItems = $derived(
-	Array.from(new Set(animes.map((anime) => anime.status))).map((status) => ({
+	Array.from(
+		new Set(animes.flatMap((anime) => (anime.status ? [anime.status] : []))),
+	).map((status) => ({
 		value: status,
 		label: i18n(ANIME_STATUS_META[status].key),
 		leadingIcon: ANIME_STATUS_META[status].icon,

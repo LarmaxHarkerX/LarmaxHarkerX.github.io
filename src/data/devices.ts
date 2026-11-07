@@ -1,76 +1,63 @@
 /**
- * 设备展示页数据源（纯内容）。
- * 页面展示与筛选规则由 src/config/devicesConfig.ts 控制。
+ * 个人设备清单。电脑规格来自本机只读硬件查询，不包含设备名、序列号或磁盘标识。
  */
 import type { DeviceItem } from "@/types/devicesConfig";
 
 export const devicesData: DeviceItem[] = [
 	{
-		id: "macbook-pro-16",
-		name: 'MacBook Pro 16"',
-		brand: "Apple",
+		id: "omen-16",
+		name: "OMEN by HP Laptop 16",
+		brand: "HP",
 		category: "desk",
 		status: "active",
-		specs: "M3 Max / 64GB / 2TB",
-		description:
-			"Primary workstation for development, design, and heavy rendering workloads.",
-		icon: "material-symbols:laptop-mac-rounded",
+		specs: "Intel Core i7-11800H / RTX 3070 Laptop / 64 GB",
+		description: "用来做视频、音频、三维创作，也用它搭建和维护这个博客。",
+		specDetails: [
+			{ key: "model", label: "机型", value: "OMEN by HP Laptop 16-b0xxx" },
+			{
+				key: "cpu",
+				label: "处理器",
+				value: "Intel Core i7-11800H，8 核 16 线程",
+			},
+			{
+				key: "gpu",
+				label: "显卡",
+				value: "NVIDIA GeForce RTX 3070 Laptop GPU / Intel UHD Graphics",
+			},
+			{ key: "memory", label: "内存", value: "64 GB（32 GB × 2，3200 MT/s）" },
+			{
+				key: "storage",
+				label: "存储",
+				value: "Samsung 1 TB NVMe SSD + Kingston 1 TB NVMe SSD",
+			},
+			{ key: "os", label: "系统", value: "Windows 11，64 位" },
+		],
+		icon: "material-symbols:laptop-windows-rounded",
 		featured: true,
-		year: "2024",
-		link: "https://www.apple.com/macbook-pro/",
 	},
 	{
-		id: "iphone-16-pro",
-		name: "iPhone 16 Pro",
-		brand: "Apple",
+		id: "redmi-k30-pro",
+		name: "Redmi K30 Pro",
+		brand: "Redmi",
 		category: "mobile",
 		status: "active",
-		specs: "Natural Titanium / 256GB",
-		description:
-			"Daily driver smartphone with outstanding cameras and a smooth 120Hz ProMotion display.",
-		icon: "material-symbols:phone-iphone",
-		featured: true,
-		year: "2024",
+		specs: "Redmi K30 Pro / 256 GB / 5G",
+		description: "我的手机之一，256 GB 存储版本。",
+		icon: "material-symbols:phone-android-rounded",
+		link: "https://www.mi.com/redmik30pro/specs",
 	},
 	{
-		id: "sony-wh1000xm5",
-		name: "Sony WH-1000XM5",
-		brand: "Sony",
-		category: "audio",
-		status: "active",
-		specs: "Silver / ANC / LDAC",
-		description:
-			"Industry-leading noise-canceling headphones for immersive coding sessions and travels.",
-		icon: "material-symbols:headphones-rounded",
-		year: "2023",
-	},
-	{
-		id: "custom-keyboard-75",
-		name: "Custom 75% Mechanical Keyboard",
-		brand: "Custom",
-		category: "peripheral",
-		status: "active",
-		specs: "Anodized Aluminum / Linear Switches",
-		description:
-			"Custom gasket-mounted keyboard tuned for deep, quiet typing acoustics.",
-		icon: "material-symbols:keyboard-outline-rounded",
-		year: "2025",
-	},
-	{
-		id: "ipad-pro-11",
-		name: 'iPad Pro 11"',
-		brand: "Apple",
+		id: "huawei-mate-x2",
+		name: "HUAWEI Mate X2",
+		brand: "HUAWEI",
 		category: "mobile",
-		status: "backup",
-		specs: "Space Gray / 128GB",
-		description:
-			"Secondary mobile screen and digital notepad for sketching ideas and reading papers.",
-		icon: "material-symbols:tablet-mac-rounded",
-		year: "2021",
+		status: "active",
+		specs: "Mate X2 / 512 GB / 折叠屏",
+		description: "我的另一部手机，512 GB 存储版本。",
+		icon: "material-symbols:phone-android-rounded",
 	},
 ];
 
-/** 获取所有设备数据列表 */
 export function getDevicesList(): DeviceItem[] {
 	return devicesData;
 }

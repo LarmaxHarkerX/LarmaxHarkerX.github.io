@@ -18,6 +18,11 @@ export const gamesConfig: GamesConfig = withUserConfig("games", {
 	description: "$t:gamesBanner",
 	categories: [
 		{
+			key: "rhythm",
+			label: "音乐游戏",
+			icon: "material-symbols:music-note-rounded",
+		},
+		{
 			key: "open-world",
 			label: "Open World",
 			icon: "material-symbols:explore-outline-rounded",
@@ -46,6 +51,42 @@ export const gamesConfig: GamesConfig = withUserConfig("games", {
 			label: "Casual",
 			icon: "material-symbols:extension-outline-rounded",
 			description: "Cozy, casual & party games",
+		},
+		{
+			key: "arcade",
+			label: "Arcade",
+			icon: "material-symbols:sports-esports-outline-rounded",
+			description: "Coin-op classics, score attacks & rhythm",
+		},
+		{
+			key: "platformer",
+			label: "Platformer",
+			icon: "material-symbols:explore-outline-rounded",
+			description: "3D platforming & stylish action",
+		},
+		{
+			key: "shooter",
+			label: "Shooter",
+			icon: "material-symbols:swords-outline-rounded",
+			description: "First-person shooters & co-op",
+		},
+		{
+			key: "puzzle",
+			label: "Puzzle",
+			icon: "material-symbols:extension-outline-rounded",
+			description: "Portal puzzles & brain teasers",
+		},
+		{
+			key: "horror",
+			label: "Horror",
+			icon: "material-symbols:dark-mode-outline-rounded",
+			description: "Survival horror & tension",
+		},
+		{
+			key: "racing",
+			label: "Racing",
+			icon: "material-symbols:rocket-launch-rounded",
+			description: "Racing & hoverboard speed",
 		},
 	],
 	// disabledIds: [],

@@ -21,7 +21,8 @@ export interface SkillItem {
 	description?: string;
 	icon?: string;
 	category: SkillCategory["key"];
-	level: SkillLevel;
+	/** 未提供熟练度时省略，卡片不显示等级和刻度。 */
+	level?: SkillLevel;
 }
 
 /** 技能页配置（行为层）。 */

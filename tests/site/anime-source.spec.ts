@@ -141,6 +141,15 @@ test.describe("Anime 数据源与配置解析契约", () => {
 		expect(overflow?.progress).toEqual({ watched: 12, total: 12 });
 	});
 
+	test("normalizeAnimeItem preserves an unspecified watch status and rejects an invalid one", () => {
+		const item = normalizeAnimeItem({ title: "Unclassified collection item" });
+		expect(item).not.toBeNull();
+		expect(item?.status).toBeUndefined();
+		expect(
+			normalizeAnimeItem({ title: "Invalid status", status: "unknown" }),
+		).toBeNull();
+	});
+
 	test("sortAnimeList: 稳定排序（状态优先级 -> 年份倒序 -> 标题字典序）", () => {
 		const items = [
 			{

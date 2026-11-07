@@ -55,7 +55,7 @@ const statusMeta: Record<
 	},
 };
 
-const meta = $derived(statusMeta[game.status]);
+const meta = $derived(game.status ? statusMeta[game.status] : undefined);
 const showCover = $derived(Boolean(game.cover) && !coverFailed);
 const ratingLabel = $derived(
 	game.rating === undefined
@@ -67,7 +67,7 @@ const ratingLabel = $derived(
 <article
 	class={`game-card ${showCover ? "game-card--with-cover" : "game-card--no-cover"} ${game.featured ? "game-card--featured" : ""}`}
 	data-game={game.id}
-	style={`--game-status-bg: ${meta.bg}; --game-status-fg: ${meta.fg};`}
+	style={meta ? `--game-status-bg: ${meta.bg}; --game-status-fg: ${meta.fg};` : undefined}
 	use:reveal={{ delay }}
 >
 	<div class="game-card__banner">
@@ -95,10 +95,12 @@ const ratingLabel = $derived(
 			</span>
 		{/if}
 
+		{#if meta}
 		<span class="game-card__status" data-status={game.status} aria-label={i18n(meta.key)}>
 			<Icon icon={meta.icon} aria-hidden="true" />
 			{i18n(meta.key)}
 		</span>
+		{/if}
 
 		<div class="game-card__caption">
 			<h2 class="game-card__title">{game.name}</h2>

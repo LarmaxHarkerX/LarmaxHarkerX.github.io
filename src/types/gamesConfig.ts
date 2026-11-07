@@ -37,7 +37,8 @@ export interface GameItem {
 	/** 所属分类（对应 GameCategory.key）。 */
 	category: string;
 	/** 游玩状态。 */
-	status: GameStatus;
+	/** 未提供游玩进度时省略，卡片不显示状态。 */
+	status?: GameStatus;
 	/** 横屏封面图（站内绝对路径，建议 16:9 或更宽的本地 WebP/AVIF）。 */
 	cover?: string;
 	/** 无封面时使用的 Iconify 图标。 */
